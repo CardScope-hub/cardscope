@@ -1,9 +1,10 @@
 // Browser entry points reuse the same collection, scanner and binder modules.
 (() => {
+ const appBase=new URL('./',document.currentScript?.src||window.location.href);
  $('web-open-collection').onclick=()=>show('collection');
  $('web-open-binders').onclick=()=>show('binders');
  $('web-copy-link').onclick=async()=>{
-  const url=new URL('/app.html',window.location.origin).href;
+  const url=new URL('app.html',appBase).href;
   try{
    if(!navigator.clipboard?.writeText)throw Error();
    await navigator.clipboard.writeText(url);message('Link do CardScope skopiowany. Otwórz go na drugim urządzeniu.');
