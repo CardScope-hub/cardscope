@@ -1,0 +1,5 @@
+PaddleOCR model weights: PaddlePaddle/PaddleOCR, Apache-2.0.
+Guten OCR: gutenye/ocr, MIT.
+ONNX Runtime: Microsoft, MIT.
+OpenCV: OpenCV contributors, Apache-2.0.
+Models and runtimes are bundled from the exact dependency lockfile.

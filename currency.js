@@ -1,0 +1,19 @@
+(()=>{
+ let selected='PLN',table=null,offline=false;const key='cardscope.currency',cacheKey='cardscope.fx';
+ try{const preference=localStorage.getItem(key);if(['PLN','EUR','USD'].includes(preference))selected=preference;const saved=JSON.parse(localStorage.getItem(cacheKey)||'null');if(valid(saved)){table=saved;offline=true;}}catch{}
+ function valid(t){return t&&/^\d{4}-\d{2}-\d{2}$/.test(t.date)&&['PLN','EUR','USD'].every(c=>Number.isFinite(t.rates?.[c])&&t.rates[c]>0)&&t.rates.PLN===1;}
+ function convert(amount,from,to=selected){if(!Number.isFinite(amount))return null;if(from===to)return amount;if(!table?.rates[from]||!table?.rates[to])return null;return amount*table.rates[from]/table.rates[to];}
+ const raw=(amount,currency)=>new Intl.NumberFormat('pl-PL',{style:'currency',currency}).format(amount);
+ function format(amount,currency='EUR'){const value=convert(amount,currency);return value===null?raw(amount,currency)+' (brak kursu)':raw(value,selected);}
+ function sum(items){let total=0;for(const item of items){const value=convert(item.amount,item.currency);if(value===null)return 'Brak kursu — suma niedostępna';total+=value;}return raw(total,selected);}
+ function note(){return table?`${table.source||'NBP'} · kurs z ${table.date}${offline?' · zapisana kopia':''}. Porównanie cen według tego samego kursu.`:'Pobieram kursy NBP…';}
+ function update(){const select=document.getElementById('display-currency'),status=document.getElementById('fx-status');if(select)select.value=selected;if(status)status.textContent=note();if(document.body.dataset.view==='collection')render();if(document.body.dataset.view==='detail'&&typeof detailCard!=='undefined'&&detailCard)openDetail(detailCard);if(document.body.dataset.view==='scan-result'){refreshResultPrice();if(typeof displayedMarketOffers!=='undefined'&&displayedMarketOffers?.card?.id===matched?.id)renderOffers(displayedMarketOffers.card,displayedMarketOffers.offers);}globalThis.CardBinders?.refreshCurrency();globalThis.CardExperience?.refreshHome();}
+ globalThis.CardCurrency={format,convert,sum,note,get selected(){return selected},set(value){if(!['PLN','EUR','USD'].includes(value))return;selected=value;try{localStorage.setItem(key,value)}catch{}update();},async refresh(){try{const response=await fetch('/api/fx',{cache:'no-store',signal:AbortSignal.timeout(15000)});if(!response.ok)throw Error();const data=await response.json();if(!valid(data))throw Error();table=data;offline=!!data.stale;try{localStorage.setItem(cacheKey,JSON.stringify(data))}catch{}update();}catch{offline=true;update();const status=document.getElementById('fx-status');if(status&&!table)status.textContent='Nie udało się pobrać kursów. Pokazujemy waluty źródłowe. Ponów odświeżenie.';}}};
+ document.getElementById('display-currency').onchange=e=>CardCurrency.set(e.target.value);
+ document.getElementById('fx-refresh').onclick=()=>CardCurrency.refresh();update();void CardCurrency.refresh();
+ // Keep the application viewport stable while retaining ordinary vertical scrolling.
+ for(const name of ['gesturestart','gesturechange','gestureend'])document.addEventListener(name,e=>e.preventDefault(),{passive:false});
+ document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
+ document.addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault()},{passive:false});
+ document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&['+','-','=','0'].includes(e.key))e.preventDefault()});
+})();

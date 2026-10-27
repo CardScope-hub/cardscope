@@ -1,0 +1,54 @@
+{
+  "id": "/",
+  "name": "CardScope — Twoja kolekcja",
+  "short_name": "CardScope",
+  "lang": "pl",
+  "start_url": "/app.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#111117",
+  "theme_color": "#111117",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "description": "Karty TCG, bindery, skaner i wyceny — w jednej kolekcji online.",
+  "categories": [
+    "entertainment",
+    "utilities"
+  ],
+  "shortcuts": [
+    {
+      "name": "Moja kolekcja",
+      "short_name": "Kolekcja",
+      "url": "/app.html?view=collection",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Moje bindery",
+      "short_name": "Bindery",
+      "url": "/app.html?view=binders",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

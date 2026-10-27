@@ -1,0 +1,33 @@
+// Pure catalog matching: rank every edition before paginating the UI.
+const normalize=s=>String(s??'').normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim();
+const cardNumber=s=>String(s??'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/^(\D*)0+(?=\d)/,'$1');
+function editDistance(a,b){if(Math.abs(a.length-b.length)>2)return 99;let prev=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){const next=[i];for(let j=1;j<=b.length;j++)next[j]=Math.min(next[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]!==b[j-1]));prev=next}return prev[b.length]}
+function readEvidence(text){text=String(text).replace(/\b[A-Z]{2,5}(?:EN|FR|DE|IT|ES|PT|JP)(?=[0-9OI]{1,4}\s*[/／])/gi,' ');const lines=String(text).split('\n').map(normalize).filter(Boolean),numbers=[];for(const m of String(text).toUpperCase().matchAll(/\b([A-Z]{0,4}[0-9OI]{1,4})\s*[/／]\s*([A-Z]{0,4}[0-9OI]{1,4})\b/g)){const fix=s=>s.replace(/\s/g,'').replace(/[OI]+(?=[0-9OI]*$)/g,x=>x.replace(/O/g,'0').replace(/I/g,'1'));numbers.push({local:cardNumber(fix(m[1])),total:cardNumber(fix(m[2])),clean:!/[OI]/.test(m[1]+m[2])})}for(const m of String(text).toUpperCase().matchAll(/\b((?:SWSH|SVP|SM|XY|BW|HGSS|DP|TG|GG|SV)\s*\d{1,4})\b/g))numbers.push({local:cardNumber(m[1]),total:null,clean:true});return {lines,numbers}}
+function nameScore(name,lines){const n=normalize(name);let best=0;for(const line of lines){if(CardScanText.compact(line)===CardScanText.compact(name)||(' '+line+' ').includes(' '+n+' '))return 1;const base=name.replace(/\s+(?:ex|gx|vmax|vstar|v|lv\.?x)$/i,'');const score=Math.max(CardScanText.nameScore(name,line),base!==name?CardScanText.nameScore(base,line)*.94:0);const length=CardScanText.compact(name).length;const threshold=length<5?.99:length<9?.79:.75;if(score>=threshold)best=Math.max(best,score===1?.98:score)}return best}
+function rankCatalog(catalog,sets,text,options={}){const evidence=readEvidence(text),names=new Map(),setMap=new Map(sets.map(s=>[s.id,s]));const direct=normalize(text);return catalog.map(c=>{const setId=c.id.slice(0,c.id.lastIndexOf('-')),set=setMap.get(setId),n=normalize(c.name);if(!names.has(n))names.set(n,nameScore(c.name,options.nameLines||evidence.lines));const name=names.get(n),number=cardNumber(c.localId);const hits=evidence.numbers.filter(x=>x.local===number);const full=hits.find(x=>x.total&&(/^\d+$/.test(x.total)?Number(x.total)===set?.cardCount?.official:x.total.replace(/\d/g,'')===number.replace(/\d/g,'')));const num=hits.length>0||direct===normalize(c.localId)||direct===normalize(c.id);const setMatch=set&&(' '+direct+' ').includes(' '+normalize(set.name)+' ');return {c,set,name,num,full,score:name*100+(num?55:0)+(full?45:0)+(setMatch?25:0),certain:name===1&&!!full?.clean&&/^\d+$/.test(full.total)};}).filter(x=>x.name>=.75||x.num).sort((a,b)=>b.score-a.score||a.c.id.localeCompare(b.c.id))}
+// Auto-selection uses header/footer evidence, never names mentioned in attack text.
+function rankScanCatalogBase(catalog,sets,evidence){const header=evidence.names.map(x=>x.text).join('\n'),footer=evidence.numbers.map(x=>x.text).join('\n');const primary=rankCatalog(catalog,sets,header+'\n'+footer,{nameLines:readEvidence(header).lines}),fallback=rankCatalog(catalog,sets,evidence.full||'');const reliableNames=evidence.names.filter(x=>x.confidence>=45).map(x=>x.text).join('\n'),reliableNumbers=evidence.numbers.filter(x=>x.confidence>=40).map(x=>x.text).join('\n');const reliable=rankCatalog(catalog,sets,reliableNames+'\n'+reliableNumbers,{nameLines:readEvidence(reliableNames).lines}),eligible=new Set(reliable.filter(x=>x.certain).map(x=>x.c.id));const numberPairs=new Set(readEvidence(footer).numbers.filter(n=>n.clean&&n.total&&/^\d+$/.test(n.total)).map(n=>n.local+'/'+n.total));const result=primary.map(x=>({...x,certain:x.certain&&eligible.has(x.c.id)&&nameScore(x.c.name,readEvidence(reliableNames).lines)===1&&numberPairs.size===1}));const ids=new Set(result.map(x=>x.c.id));for(const x of fallback)if(!ids.has(x.c.id))result.push({...x,certain:false,score:x.score*.7});result.sort((a,b)=>b.score-a.score);if(result[1]&&result[0].score-result[1].score<12)result[0].certain=false;return result}
+
+// A missing stylized ex badge is recoverable only from a unique name + printed fraction.
+function missingEx(name,lines){
+ if(!/\s+ex$/i.test(name))return false;
+ const base=CardScanText.compact(name.replace(/\s+ex$/i,''));if(base.length<5)return false;
+ return lines.some(line=>{const cleaned=normalize(line).replace(/\bhp\s*\d+\b/g,' ').replace(/\b(?:basic|stage|hp)\b/g,' ').replace(/\b\d+\b/g,' ').trim(),read=CardScanText.compact(cleaned);return [base,base+'e',base+'x'].includes(read)});
+}
+function rankScanCatalog(catalog,sets,evidence){
+ let ranked=rankScanCatalogBase(catalog,sets,evidence);
+ const names=readEvidence(evidence.names.filter(x=>x.confidence>=65).map(x=>x.text).join('\n')).lines;
+ const numbers=readEvidence(evidence.numbers.map(x=>x.text).join('\n')).numbers;
+ const reliable=readEvidence(evidence.numbers.filter(x=>x.confidence>=65).map(x=>x.text).join('\n')).numbers;
+ const pairs=new Set(numbers.filter(n=>n.total).map(n=>n.local+'/'+n.total));
+ if(pairs.size===1&&reliable.some(n=>n.clean&&n.total)){
+  const exact=ranked.filter(x=>x.full?.clean);if(exact.length){
+   const joint=exact.filter(x=>x.name>=.75);ranked=joint.length?joint:exact;
+   if(ranked.length===1&&missingEx(ranked[0].c.name,names))ranked[0]={...ranked[0],certain:true,recoveredSuffix:true};
+  }
+ }
+ if(pairs.size>1)ranked=ranked.map(x=>({...x,certain:false}));
+ if(!ranked.some(x=>x.full)){const numbered=ranked.filter(x=>x.num&&x.name>=.85);if(numbered.length)ranked=numbered}
+ // Scanner suggestions are a shortlist; full manual search remains unbounded.
+ return ranked.slice(0,6);
+};
