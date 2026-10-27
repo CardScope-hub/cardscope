@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#100d18">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex,nofollow">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src https:; base-uri 'self'; form-action 'none'; object-src 'none'">
+  <title>Twoje konto · CardScope</title>
+  <link rel="icon" href="./icon.svg">
+  <link rel="stylesheet" href="./auth.css?v=1">
+  <script src="./supabase-config.js?v=1" defer></script>
+  <script src="./vendor/supabase-2.118.0.js" defer></script>
+  <script src="./auth-client.js?v=1" defer></script>
+  <script src="./auth-page.js?v=1" defer></script>
+</head>
+<body>
+<div class="cs-login">
+  <a href="#cs-login-panel" class="cs-login-skip">Przejdź do logowania</a>
+  <header class="cs-login-header">
+    <a class="cs-login-brand" href="./app.html"><span aria-hidden="true">◈</span>CardScope</a>
+    <a class="cs-login-back" href="./app.html">← Wróć do aplikacji</a>
+  </header>
+  <main class="cs-login-layout">
+    <section class="cs-login-story" aria-labelledby="story-title">
+      <span class="cs-login-eyebrow"><i aria-hidden="true"></i> TWOJE KARTY. TWOJA HISTORIA.</span>
+      <h1 id="story-title">Małe karty.<br><em>Wielkie historie.</em></h1>
+      <p>Każde odkrycie ma swoje miejsce.<br>Wracaj do CardScope po kolejne.</p>
+      <div class="cs-login-art" aria-hidden="true">
+        <div class="cs-login-orbit"></div>
+        <div class="cs-login-binder"><div class="cs-login-binder-spine"></div><span>CARDSCOPE · PERSONAL ARCHIVE</span><b>✧</b><strong>Moja<br>kolekcja.</strong><small>ONE CARD. ONE STORY.</small></div>
+        <div class="cs-login-card cs-login-card-back"><img src="./assets/poncho.webp" width="600" height="825" alt=""></div>
+        <div class="cs-login-card cs-login-card-front"><img src="./assets/charizard.webp" width="600" height="825" alt=""><span></span></div>
+        <div class="cs-login-art-tag"><span>✦</span><div>TWÓJ ŚWIAT KOLEKCJI<small>Zaczyna się od jednej karty.</small></div></div>
+        <span class="cs-login-spark cs-login-spark-one">✧</span><span class="cs-login-spark cs-login-spark-two">✦</span>
+      </div>
+      <div class="cs-login-games">POKÉMON <i>·</i> MAGIC <i>·</i> ONE PIECE <i>·</i> WEIẞ SCHWARZ <i>·</i> RIFTBOUND</div>
+    </section>
+    <section class="cs-login-panel" id="cs-login-panel" aria-labelledby="auth-title" tabindex="-1">
+      <div class="cs-login-panel-top"><span class="cs-login-emblem" aria-hidden="true">◈</span><span id="auth-status" class="cs-login-status" role="status">Przygotowuję logowanie…</span></div>
+      <div id="auth-config" class="auth-notice" role="alert" hidden></div>
+      <div id="auth-tabs" class="auth-tabs" aria-label="Wybierz logowanie lub rejestrację">
+        <button id="auth-tab-login" type="button" aria-pressed="true">Zaloguj się</button>
+        <button id="auth-tab-register" type="button" aria-pressed="false">Załóż konto</button>
+      </div>
+      <h2 id="auth-title">Dobrze Cię<br><em>widzieć.</em></h2>
+      <p id="auth-intro" class="cs-login-intro">Zaloguj się e-mailem i hasłem do konta CardScope.</p>
+      <div id="auth-message" class="auth-notice" role="status" aria-live="polite" hidden></div>
+      <form id="auth-form" action="#" method="post">
+        <fieldset id="auth-fields" disabled>
+          <label id="auth-name-field" hidden>Pseudonim<input id="auth-name" type="text" autocomplete="nickname" maxlength="50" placeholder="Jak się do Ciebie zwracać?"></label>
+          <label id="auth-email-field">Adres e-mail<input id="auth-email" type="email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" maxlength="254" required placeholder="twoj@email.pl"></label>
+          <label id="auth-password-field">Hasło<span class="auth-password-row"><input id="auth-password" type="password" autocomplete="current-password" maxlength="256" required><button id="auth-show-password" type="button" aria-label="Pokaż hasło" aria-pressed="false">Pokaż</button></span></label>
+          <label id="auth-confirm-field" hidden>Powtórz hasło<input id="auth-confirm" type="password" autocomplete="new-password" maxlength="256"></label>
+          <p id="auth-password-help" class="auth-password-help" hidden>Użyj co najmniej 8 znaków. Projekt może wymagać silniejszego hasła.</p>
+          <button id="auth-submit" class="cs-login-primary" type="submit">Zaloguj się <span aria-hidden="true">↗</span></button>
+        </fieldset>
+      </form>
+      <button id="auth-reset" class="auth-link" type="button">Nie pamiętam hasła</button>
+      <button id="auth-back-login" class="auth-link" type="button" hidden>← Wróć do logowania</button>
+      <div id="auth-account" hidden>
+        <div class="cs-login-account"><span class="cs-login-avatar" id="auth-avatar" aria-hidden="true">CS</span><div><small>ZALOGOWANO JAKO</small><strong id="auth-account-name"></strong><span id="auth-account-email"></span></div><span class="cs-login-account-check" aria-label="Zalogowano">✓</span></div>
+        <a id="auth-open-app" class="cs-login-primary" href="./app.html">Otwórz CardScope <span aria-hidden="true">↗</span></a>
+        <button id="auth-signout" class="auth-link" type="button">Wyloguj się na tym urządzeniu</button>
+      </div>
+      <noscript><p class="auth-notice">Włącz JavaScript w przeglądarce, aby korzystać z logowania.</p></noscript>
+      <p class="auth-storage-note">Ta wersja obsługuje konto Supabase. Karty i bindery nadal są zapisane lokalnie w tej przeglądarce; logowanie nie włącza ich synchronizacji ani nie rozdziela lokalnych kolekcji między kontami.</p>
+    </section>
+  </main>
+  <footer class="cs-login-footer"><span>CARDSCOPE <i>·</i> COLLECT SOMETHING GREAT.</span><span>Twoje karty. Twój świat.</span></footer>
+</div>
+</body>
+</html>

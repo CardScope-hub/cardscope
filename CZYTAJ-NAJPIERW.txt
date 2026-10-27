@@ -1,0 +1,22 @@
+BRAKUJĄCA STRONA LOGOWANIA CARDSCOPE
+
+1. Rozpakuj ten ZIP.
+2. W repozytorium GitHub wybierz Add file → Upload files.
+3. Wgraj login.html, auth.css, auth-client.js, auth-page.js, auth-header.js
+   oraz cały folder vendor. Plik login.html ma być OBOK app.html.
+4. Jeżeli masz już uzupełniony supabase-config.js, zachowaj go.
+   Jeśli go nie masz: zmień nazwę supabase-config.example.js na
+   supabase-config.js i wpisz Project URL oraz Publishable key z Supabase.
+   Nie wpisuj service_role ani sb_secret_.
+5. Kliknij Commit changes i poczekaj na zakończenie publikacji w Actions.
+6. Otwórz adres swojej strony, dopisując /login.html w tym samym folderze,
+   w którym znajduje się app.html.
+
+Plik nazywa się login.html — nie login.js ani login bez rozszerzenia.
+Ta paczka ma pliki bez dodatkowego nadrzędnego folderu wewnątrz ZIP-a.
+Nie zmienia app.html ani Twojego istniejącego supabase-config.js.
+Dołączone skrypty wymagają konfiguracji Supabase Auth i adresu powrotu
+login.html w Authentication → URL Configuration → Redirect URLs.
+Szczegółowa instrukcja jest w START-TUTAJ.txt.
+
+Logowanie nie podłącza synchronizacji kolekcji i binderów z Supabase.

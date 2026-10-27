@@ -1,105 +1,144 @@
-# CardScope Web — komplet strony i aplikacji
+CARDSCOPE — LOGOWANIE SUPABASE NA GITHUB PAGES
+Wersja 1 · 27.10.2026
 
-Wersja źródeł: ab93493dba377d6bc72117f76fb37bdd07ea48f5
-Data eksportu: 27 października 2026.
-Aplikacja: https://cardscope.prettytang.chatgpt.site
+Ta paczka dodaje stronę logowania login.html, rejestrację e-mail/hasło,
+potwierdzanie e-maila, reset hasła, sesję i wylogowanie. Nie wymaga Node.js,
+budowania projektu ani Cloudflare. Używa biblioteki Supabase 2.118.0 dołączonej
+lokalnie w folderze vendor. Styl pasuje do obecnego CardScope.
 
-Paczka zawiera komplet plików źródłowych aktualnej wersji projektu oraz wygenerowane zasoby OCR. Zawiera nowy układ przeglądarkowy, widoczne przyciski instalacji, stronę logowania i całą dotychczasową funkcjonalność CardScope. Kod aplikacji jest taki sam jak w opublikowanej wersji; niniejsza instrukcja i manifest opisują eksport.
+1. UZUPEŁNIJ JEDEN PLIK
 
-## Nowa wersja przeglądarkowa
+Rozpakuj ZIP. Jeśli masz już uzupełniony supabase-config.js w repozytorium,
+zachowaj go. Jeśli go nie masz, zmień nazwę dołączonego
+supabase-config.example.js na supabase-config.js i otwórz go w Notatniku lub VS Code.
+Wpisz URL i publiczny klucz swojego projektu pomiędzy cudzysłowami:
 
-Otwórz https://cardscope.prettytang.chatgpt.site — to działająca strona z tym samym kontem, kolekcją, binderami i wycenami. Widoczność strony pozostaje taka jak wcześniej: prywatna, dla właściciela.
+window.CARDSCOPE_SUPABASE = Object.freeze({
+  url: "https://TWOJ-PROJEKT.supabase.co",
+  publishableKey: "sb_publishable_TWOJ_KLUCZ"
+});
 
-- Wygodniejsza nawigacja na komputerze, ten sam fioletowy styl na telefonie.
-- Przycisk dodania do ekranu głównego i instrukcje dla trzech platform.
-- Podsumowanie zapisanych cen kart w wybranej walucie, z uwzględnieniem liczby sztuk.
-- Skróty systemowe do kolekcji i binderów, jeżeli system je obsługuje.
-- Te same moduły skanera, katalogów i synchronizacji. Zaloguj się na to samo konto i poczekaj na zakończony zapis, aby odtworzyć dane na innym urządzeniu.
+Znajdziesz je w Supabase → projekt → Connect.
+Klucz jest także w Settings → API Keys → Publishable key.
+Obsługiwany jest również starszy publiczny klucz anon.
 
-Główne pliki do edycji:
+NIGDY nie wpisuj service_role, sb_secret_, hasła bazy lub tokenu użytkownika.
+Ten plik będzie publiczny. Klucz publishable jest do tego przeznaczony.
+GitHub Pages nie odczytuje konfiguracji logowania z serwerowego pliku .env.
 
-- `public/app.html` — treść i układ strony.
-- `public/web.css` — nowy wygląd przeglądarkowy i sekcja instalacji.
-- `public/web.js` — nawigacja, skróty i kopiowanie linku.
-- `public/pwa.js` — instalacja i instrukcje zależne od urządzenia.
-- `public/manifest.json` i `public/sw.js` — ikony, skróty i powłoka offline.
-- `app/login/page.tsx` i `app/login/login.css` — strona konta/logowania.
-- `docs/WEB-AND-PWA.md` — szczegóły wspólnego zapisu i działania strony.
+2. WGRAJ PLIKI NA GITHUB
 
-Ten pakiet nie przełącza aplikacji na Supabase. Zachowuje obecny backend Sites/D1/R2 i logowanie ChatGPT. Wcześniejszy ZIP z połączeniem Supabase jest oddzielnym pakietem; pełna migracja nadal wymaga integracji z aplikacją.
+W swoim repozytorium wybierz Add file → Upload files.
+Wgraj pliki z paczki i folder vendor tak, aby login.html
+znalazł się w tym samym miejscu co istniejący app.html.
+Zachowaj strukturę folderu vendor. Nie usuwaj obecnych plików aplikacji.
+Nie wgrywaj ZIP-a jako pojedynczego pliku ani dodatkowego folderu nad login.html.
+Kliknij Commit changes. Zaczekaj na zakończenie publikacji w Actions.
 
-## Co jest w środku
+Paczka korzysta z istniejących plików icon.svg, assets/poncho.webp
+i assets/charizard.webp. Brak ilustracji nie blokuje logowania.
 
-- `public/` — właściwy interfejs CardScope, style, skaner, kolekcja, bindery, instalacja PWA, waluty i service worker.
-- `server/` — API katalogów, wycen, kolekcji i binderów oraz zachowane funkcje tłumaczenia.
-- `data/` — wbudowane katalogi i teksty kart, wraz z dokumentacją pochodzenia.
-- `scanner/` — kod pracownika OCR i licencje.
-- `public/ocr-runtime/` — gotowy pakiet OCR, modele ONNX i WebAssembly. Dołączony również mimo tego, że normalnie powstaje podczas budowania.
-- `db/` i `drizzle/` — schemat bazy i migracje SQL.
-- `app/`, `build/`, `lib/`, `components/`, `hooks/` — szkielet aplikacji oraz integracja Vinext / Cloudflare / Sites.
-- `scripts/` — budowanie, importy i narzędzia projektu.
-- `tests/` — testy aplikacji.
-- `package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml` — zależności i ich przypięte wersje.
-- `docs/LEARNING-RESTORE.md` — informacje o zachowanej sekcji „Jak grać”.
+3. USTAW SUPABASE AUTH
 
-## Uruchomienie deweloperskie
+W Supabase → Authentication → Sign In / Providers sprawdź, czy Email
+i tworzenie nowych kont są włączone. Nie twórz własnej tabeli z hasłami.
+Supabase zapisuje użytkowników w swoim systemie Auth. Samo logowanie nie
+wymaga uruchamiania wcześniejszego SQL dla tabel collection i binders.
 
-To projekt serwerowy, a nie pojedyncza strona uruchamiana przez dwukrotne kliknięcie HTML.
+Otwórz Authentication → URL Configuration.
+Site URL ustaw na rzeczywisty adres działającej strony.
+Do Redirect URLs dodaj dokładny adres strony logowania.
 
-Wymagania wynikające z konfiguracji projektu: Node.js co najmniej 22.13.0 oraz pnpm 11.25.0. Pierwsza instalacja zależności wymaga internetu.
+Jeśli używasz strony głównej konta CardScope-hub, są to:
+  Site URL: https://cardscope-hub.github.io
+  Redirect URL: https://cardscope-hub.github.io/login.html
 
-W terminalu, wewnątrz wypakowanego folderu `CardScope-Web` (tam, gdzie jest `package.json`). Jeśli nie masz pnpm, zainstaluj przypiętą wersję poleceniem `npm install --global pnpm@11.25.0`:
+Jeżeli Twoja strona ma dodatkowy folder lub własną domenę, użyj tego adresu.
+Przykład: https://twoj-login.github.io/nazwa-repo/login.html
+Nie dodawaj przypadkowej domeny; musi to być adres, pod którym otwierasz stronę.
+Nie zmieniaj domeny między wysłaniem linku i zakończeniem odzyskiwania hasła.
 
-```sh
-pnpm install --frozen-lockfile
-node scripts/build-ocr.mjs
-pnpm dev
-```
+4. PODŁĄCZ IKONĘ PROFILU W APLIKACJI
 
-Otwórz adres podany przez serwer, domyślnie `http://localhost:5173/app.html`. W trybie lokalnym projekt ma przygotowany testowy mechanizm logowania dla localhost. Nie łączy on z Twoją produkcyjną kolekcją. Lokalny zapis w IndexedDB jest osobny od zapisu na koncie.
+Na GitHub otwórz app.html i kliknij ikonę ołówka (Edit).
+Na samym końcu, tuż PRZED </body>, dopisz te cztery linie:
 
-Pełna synchronizacja wymaga bazy D1 i magazynu R2 oraz zastosowania migracji SQL z `drizzle/` w używanym środowisku. Konfigurację lokalnych powiązań `DB` i `BUCKET` znajdziesz w `vite.config.ts`. Jeżeli lokalna baza jest pusta i zgłasza brak tabel, zastosuj obie migracje do tej lokalnej bazy przed testowaniem synchronizacji.
+<script src="./supabase-config.js?v=1"></script>
+<script src="./vendor/supabase-2.118.0.js"></script>
+<script src="./auth-client.js?v=1"></script>
+<script src="./auth-header.js?v=1"></script>
 
-Budowanie:
+Zapisz Commit changes. Zrób to tylko raz, aby nie tworzyć dwóch klientów Auth.
+Ten dodatek zmienia link ikony CS na login.html i pokazuje status sesji.
+Nie nadpisuje app.html, ustawień PWA, Twoich zmian ani zapisanych kart.
 
-```sh
-pnpm build
-```
+5. SPRAWDŹ
 
-Nie należy wgrywać samego folderu `public/` na hosting statyczny i oczekiwać działania wszystkich funkcji. API, synchronizacja, sesje i część katalogów wymagają backendu.
+Otwórz swoją stronę /login.html przez HTTPS.
+Wybierz „Załóż konto”, wpisz pseudonim, e-mail i hasło.
+Jeśli wymagane jest potwierdzenie e-maila, kliknij link z wiadomości.
+Następnie zaloguj się na stronie i sprawdź widoczną nazwę/e-mail.
+Odśwież stronę — sesja powinna się odtworzyć, jeśli zapis przeglądarki jest dozwolony.
+Użytkownika zobaczysz w Supabase → Authentication → Users.
+Sprawdź też wylogowanie i odzyskiwanie hasła.
 
-## Hosting i dane
+Większość błędów jest wyjaśniona po polsku w formularzu. Jeżeli widzisz
+komunikat o konfiguracji, sprawdź dwie wartości w supabase-config.js.
+Jeżeli profil nadal prowadzi do /login zamiast login.html, odśwież app.html
+po zakończeniu publikacji, zamknij stare okno aplikacji i otwórz stronę ponownie.
+Zmiany pliku konfiguracji mogą wymagać twardego odświeżenia przeglądarki.
 
-Aktualne wdrożenie korzysta z Sites, Cloudflare Workers, D1 i R2. Dane kolekcji są przypisane do tożsamości dostarczanej przez Sites. Przy przenoszeniu na własny hosting trzeba skonfigurować bazę, magazyn zdjęć i uwierzytelnianie. Sam plik ZIP nie przenosi konta ani danych z działającej aplikacji.
+6. WIADOMOŚCI E-MAIL
 
-Zachowano oryginalną konfigurację projektu w `.openai/hosting.json`; zawarty identyfikator projektu nie jest kluczem dostępu i nie nadaje uprawnień do hostingu.
+Domyślna wysyłka Supabase służy do testowania, ma niski limit i obsługuje
+tylko dozwolone adresy zespołu projektu. Do rejestracji innych osób i resetu
+ich haseł skonfiguruj własne SMTP w Authentication → Email → SMTP Settings
+(nazwa sekcji może się różnić). Użyj ustawień otrzymanych od dostawcy poczty.
+Nie rozwiązuj problemu wyłączaniem potwierdzeń adresu e-mail.
+Jeżeli włączysz CAPTCHA w Supabase, trzeba też dodać widget CAPTCHA do formularza;
+ten pakiet nie ma klucza witryny CAPTCHA i nie zawiera tej integracji.
 
-W archiwum nie ma `node_modules`, historii Git, lokalnych plików sesji, haseł ani danych użytkowników z produkcyjnej bazy. Zależności odtwarza się z lockfile. Dane własnej kolekcji można wyeksportować osobno z aplikacji.
+CO TEN PAKIET ROBI Z DANYMI
 
-## Aktualne zachowanie
+Konto jest prawdziwym kontem Supabase Auth; hasła wysyła bezpośrednio biblioteka
+Supabase przez HTTPS. Nie zapisujemy haseł w plikach ani w konsoli.
+Sesję i token odświeżania przechowuje standardowy klient Supabase w przeglądarce.
+Kod wymaga potwierdzenia użytkownika przez auth.getUser() przed pokazaniem konta.
 
-- Gry: Pokémon, Magic: The Gathering, One Piece, Riftbound oraz Weiß Schwarz EN i JP.
-- Rozpoznawanie lokalne i opcjonalny odczyt ciągły; użytkownik potwierdza właściwą kartę.
-- Bindery z układem stron, okładkami, animacją i historią wyceny.
-- Udostępnianie bindera eksportuje plik HTML będący kopią stanu w danym momencie.
-- Ceny preferują Cardmarket, gdy dostępna jest zgodna wycena; nie każda karta ma automatyczną cenę.
-- Przyciski „Dodaj aplikację” otwierają dostępne okno instalacji lub ilustrowaną instrukcję dla iPhone, Androida i komputera. Instalacja jest opcjonalna.
-- „Jak grać” jest ukryte, a kod i zapisane mechanizmy pozostają w projekcie. Obecny backend tłumaczeń nie korzysta z AI.
-- Opcjonalny kod skanowania przez AI pozostaje w projekcie, ale wymaga osobnego klucza po stronie serwera. Lokalny skaner go nie potrzebuje.
+To etap LOGOWANIA, NIE migracja danych aplikacji. Kolekcja i bindery obecnej
+wersji GitHub Pages nadal pozostają w jej lokalnym magazynie. Konta Supabase
+nie rozdzielają jeszcze tych lokalnych kart między osobami używającymi tej
+samej przeglądarki. Nie twierdzimy, że karty są zapisane na koncie Supabase.
+Nie ma też blokady dostępu do statycznego app.html; samo ukrycie interfejsu
+logowaniem nie zabezpiecza danych. Docelowe prywatne dane wymagają reguł RLS
+i oddzielnej integracji zapisu/odczytu. Starsze /api/… nadal nie działają
+na GitHub Pages bez osobnego backendu.
 
-Część starszych opisów w oryginalnym `README.md` dokumentuje wcześniejsze etapy rozwoju; powyższy opis dotyczy aktualnego eksportu.
+W tym kroku nie zmieniono oryginalnej strony hostowanej przez Sites.
+Nie podłączono Twojego projektu na żywo: nie podano jego URL ani klucza.
+Nie zmieniono Twojego repozytorium GitHub — wgraj tę paczkę według kroków 1–4.
 
-## Sprawdzenie kodu
+DLA PROGRAMISTY
 
-Przykładowe testy niezależne od prywatnych zdjęć testowych:
+auth-client.js: konfiguracja, klient SDK, walidacja sesji, operacje Auth,
+obsługa PASSWORD_RECOVERY, brak await w callbacku onAuthStateChange.
+auth-page.js: formularze, stany oczekiwania, reset pól hasła, tekstowe renderowanie.
+auth-header.js: link profilu i informacja o rzeczywistym zakresie synchronizacji.
+login.html/auth.css: responsywny widok bez zewnętrznych fontów i skryptów CDN.
+vendor/supabase-2.118.0.js: przypięta oficjalna biblioteka przeglądarkowa.
+Biblioteka używa flowType: implicit dla statycznej strony klienckiej;
+powroty z e-maila kierują wyłącznie do login.html obok pliku auth-client.js.
+Linki next/returnTo z parametrów użytkownika nie są wykonywane.
 
-```sh
-node --test tests/web-pwa.test.cjs tests/experience.test.cjs tests/binder-ui.test.mjs tests/currency.test.mjs
-node tests/ui-flow.cjs
-```
+Dołączone testy: node --test tests/auth.test.cjs (wymaga Node.js 22.13+).
+11 testów automatycznych wykonano z kontrolowanymi odpowiedziami SDK. Obejmują
+odrzucenie klucza tajnego, potwierdzanie sesji, błędne hasło, rejestrację bez
+sesji, reset hasła, konflikt z wylogowaniem, callbacki i formularz.
+Nie przetestowano prawdziwej wysyłki poczty ani logowania w Twoim projekcie.
+Podgląd wizualny przeglądarki w środowisku wykonania jest niedostępny.
 
-Niektóre testy fotograficzne wymagają własnych zdjęć wejściowych; zdjęcia użytkownika nie są częścią eksportu. Ta wersja przeszła budowanie, 22 testy funkcjonalne i test przepływu skan → karta → kolekcja/binder. Podgląd wizualny przeglądarki był niedostępny w środowisku wykonania. Ten eksport nie był ponownie uruchamiany od zera na innym komputerze ani testowany na fizycznym iPhonie.
-
-## Prawa do zasobów
-
-Zachowaj informacje o źródłach i licencje z `data/`, `scanner/licenses/`, `public/ocr-runtime/licenses/` i `vendor/`. Ilustracje kart i zewnętrzne katalogi mają własnych właścicieli; eksport kodu nie zmienia ich licencji.
+DOKUMENTACJA
+https://supabase.com/docs/guides/auth/passwords
+https://supabase.com/docs/guides/auth/redirect-urls
+https://supabase.com/docs/guides/auth/auth-smtp
+https://supabase.com/docs/guides/getting-started/api-keys
