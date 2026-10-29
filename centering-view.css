@@ -1,0 +1,26 @@
+/* A large photo viewport, with controls kept outside the image. */
+#centering .ctr-layout{grid-template-columns:minmax(0,1.65fr) minmax(270px,.7fr);align-items:start}
+.ctr-photo-stage,#centering .ctr-viewer{position:relative;width:100%;height:62svh;min-height:200px;max-height:720px;overflow:hidden;touch-action:none;overscroll-behavior:contain;border:1px solid #c6b0ff40;border-radius:20px;background:radial-gradient(ellipse at center,#21172e,#0b0911);isolation:isolate;outline-offset:3px;scroll-margin-block:24px}
+.ctr-photo-stage[data-mode="move"][data-zoomed="true"]{cursor:grab}
+.ctr-photo-stage.is-dragging[data-mode="move"]{cursor:grabbing}
+.ctr-photo-stage[data-mode="line"]{cursor:crosshair}
+#centering .ctr-viewer canvas,#ctr-camera-dialog #cc-photo{position:absolute;left:0;top:0;display:block;max-width:none;max-height:none;margin:0;object-fit:fill;border-radius:0;transform-origin:0 0;user-select:none;-webkit-user-select:none;touch-action:none;will-change:transform}
+.ctr-photo-controls{padding:12px 0 0}
+.ctr-zoom-bar{display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #c6b0ff26;border-radius:16px;background:#1b1425}
+.ctr-zoom-bar button{min-width:44px;min-height:44px;margin:0;padding:8px 12px;border:1px solid #c6b0ff30;border-radius:11px;background:#c6b0ff10;color:#ecdefd;font-size:20px;line-height:1;touch-action:manipulation}
+.ctr-zoom-bar button:last-child{font-size:12px;min-width:72px}
+.ctr-zoom-bar output{font-variant-numeric:tabular-nums;font-size:13px;color:#e6d4ff;min-width:38px;text-align:center}
+.ctr-zoom-bar input[type="range"]{flex:1;width:0;min-width:32px;min-height:44px;margin:0;padding:0;border:0;accent-color:#bd9aff;touch-action:pan-y}
+.ctr-photo-controls .ctr-photo-help{font-size:11px;line-height:1.5;color:#ae9cbd;margin:8px 2px 12px}
+.ctr-photo-modes{display:flex;gap:8px;margin-top:10px}
+.ctr-photo-modes button{flex:1;min-height:42px;padding:9px 10px;border:1px solid #c6b0ff30;border-radius:12px;background:#ffffff04;color:#baaac9;font-size:12px}
+.ctr-photo-modes button[aria-pressed="true"]{background:#c6b0ff24;border-color:#c6b0ff90;color:#ead9ff}
+#ctr-camera-dialog[data-mode="review"]{width:min(96vw,1060px);padding:18px;max-height:94svh}
+#ctr-camera-dialog[data-mode="review"] .ctr-camera-intro{display:none}
+#ctr-camera-dialog[data-mode="review"] .ctr-camera-head{position:sticky;top:-18px;z-index:3;background:var(--bg,#111117);padding:8px 0}
+#ctr-camera-dialog[data-mode="review"] .ctr-camera-head h2{font-size:20px;margin:8px 0}
+#ctr-camera-dialog[data-mode="review"] #cc-review .actions{position:sticky;bottom:-18px;z-index:2;background:var(--bg,#111117);padding:12px 0;margin-bottom:0;border-top:1px solid #c6b0ff20}
+#ctr-camera-dialog .ctr-photo-stage{height:60svh;max-height:700px}
+#cc-review .ctr-photo-controls{max-width:660px;margin:auto}
+@media(max-width:900px){#centering .ctr-layout{grid-template-columns:1fr;gap:20px}}
+@media(max-width:520px){.ctr-zoom-bar{gap:6px;padding:6px}.ctr-zoom-bar button{padding:8px;min-width:40px}.ctr-zoom-bar button:last-child{min-width:64px}.ctr-photo-stage,#centering .ctr-viewer{border-radius:15px}#ctr-camera-dialog[data-mode="review"]{padding:12px}#ctr-camera-dialog[data-mode="review"] .ctr-camera-head{top:-12px}#ctr-camera-dialog[data-mode="review"] #cc-review .actions{bottom:-12px}}
