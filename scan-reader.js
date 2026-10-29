@@ -1,10 +1,10 @@
 async function readScanPass(worker,image,pass){await worker.setParameters({tessedit_pageseg_mode:pass.psm,user_defined_dpi:'300',preserve_interword_spaces:'1',tessedit_char_whitelist:pass.latin?'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/-_@+ |':''});const {data}=await worker.recognize(enhancedRegion(image,pass.region,pass.enhance,pass.latin?2600:1800),{rotateAuto:true});return {text:data.text||'',confidence:data.confidence||0,source:pass.latin?'number-crop':'card'}}
 async function readWeissNumbers(image,evidence,token){
  let worker;
- try{await loadOCR();if(token!==scanId)return;worker=await Tesseract.createWorker('eng',1,{}, {load_system_dawg:'0',load_freq_dawg:'0'});
+ try{await loadOCR();if(token!==scanId)return;worker=await Tesseract.createWorker('eng',1,{}, {load_system_dawg:'0',load_freq_dawg:'0'});CardScanRuntime.track(worker);
   const passes=CardScanText.weissNumberPasses;
   for(let i=0;i<passes.length;i++){if(token!==scanId)return;status('Numer Weiß Schwarz · zbliżenie '+(i+1)+' / '+passes.length);const read=await readScanPass(worker,image,passes[i]);if(token!==scanId)return;addScanEvidence(evidence,passes[i],read)}
- }finally{if(worker)await worker.terminate().catch(()=>{})}
+ }finally{if(worker){CardScanRuntime.untrack(worker);await worker.terminate().catch(()=>{})}}
 }
 function addScanEvidence(evidence,pass,read){if(pass.kind==='full')evidence.full=read.text;else evidence[pass.kind].push(read);const lines=[...evidence.names,...evidence.numbers].map(x=>x.text.trim()).filter(Boolean);$('scan-readout').textContent=[...new Set(lines)].join('\n').slice(0,650)||'Jeszcze nie odczytano tekstu.';}
 function resetScanReadout(){const preview=$('scan-photo');preview.hidden=!photo;if(photo)preview.src=photo;else preview.removeAttribute('src');$('scan-evidence').hidden=!photo;$('scan-readout').textContent='Odczytuję tekst…';}
