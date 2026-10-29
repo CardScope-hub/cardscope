@@ -10,7 +10,8 @@
  const migrate=document.createElement('button');migrate.type='button';migrate.className='text-btn';migrate.textContent='Przenieś lokalne karty i bindery na konto';
  const backup=document.createElement('button');backup.type='button';backup.className='text-btn';backup.textContent='Pobierz kopię kart i binderów';
  actions.append(migrate,backup);panel.append(account,info,actions,notice);
- document.getElementById('sync-panel')?.insertAdjacentElement('afterend',panel);
+ // The Start screen is #scan; nesting here follows its existing navigation visibility.
+ document.getElementById('scan')?.prepend(panel);
  let busy=false;
  function render(){
   const user=auth.state.user,s=cloud.state,raw=user?.user_metadata?.display_name;
