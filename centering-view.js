@@ -12,7 +12,7 @@
   return constrain({...s,zoom,x:point.x-(point.x-s.x)*ratio,y:point.y-(point.y-s.y)*ratio});
  }
  root.CenteringViewMath={fitSize,constrain,zoomAt};
- function create({viewport,content,prefix,onPlace}){
+ function create({viewport,content,prefix,onPlace,pickLine,onViewChange}){
   const el=suffix=>document.getElementById(prefix+'-'+suffix);
   let natural=null,mode='move',gesture=null;
   let state={width:0,height:0,w:0,h:0,zoom:1,x:0,y:0};
@@ -25,6 +25,7 @@
    el('zoom-value').textContent=state.zoom.toFixed(1).replace('.',',')+'×';
    el('zoom-out').disabled=state.zoom<=1.001;el('zoom-in').disabled=state.zoom>=4.999;
    viewport.dataset.zoomed=String(state.zoom>1.001);viewport.dataset.mode=mode;
+   onViewChange?.({...state});
   }
   function layout(reset=false){
    if(!natural||!viewport.clientWidth||!viewport.clientHeight)return;
@@ -46,7 +47,7 @@
    if(!natural)return;state=zoomAt(state,value,point);paint();
   }
   function setMode(value){
-   mode=value==='line'&&onPlace?'line':'move';cancelGesture();
+   mode=pickLine?'auto':value==='line'&&onPlace?'line':'move';cancelGesture();
    el('mode-move')?.setAttribute('aria-pressed',String(mode==='move'));
    el('mode-line')?.setAttribute('aria-pressed',String(mode==='line'));paint();
   }
@@ -59,7 +60,8 @@
    event.preventDefault();viewport.focus({preventScroll:true});
    pointers.set(event.pointerId,local(event));viewport.setPointerCapture(event.pointerId);
    if(pointers.size>=2){pinchStart();return;}
-   gesture={type:mode,start:{...state},point:local(event),moved:false};
+   const type=pickLine?(pickLine(event)?'line':'move'):mode;
+   gesture={type,start:{...state},point:local(event),moved:false};
    viewport.classList.add('is-dragging');
   });
   viewport.addEventListener('pointermove',event=>{
@@ -78,7 +80,7 @@
   });
   function endPointer(event){
    if(!pointers.has(event.pointerId))return;
-   if(event.type==='pointerup'&&pointers.size===1&&gesture?.type==='line'&&!gesture.moved)onPlace?.(event);
+   if(event.type==='pointerup'&&pointers.size===1&&gesture?.type==='line'&&(!pickLine||gesture.moved))onPlace?.(event);
    pointers.delete(event.pointerId);
    if(viewport.hasPointerCapture?.(event.pointerId))viewport.releasePointerCapture(event.pointerId);
    if(pointers.size>=2)pinchStart();

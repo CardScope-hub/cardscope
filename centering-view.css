@@ -24,3 +24,23 @@
 #cc-review .ctr-photo-controls{max-width:660px;margin:auto}
 @media(max-width:900px){#centering .ctr-layout{grid-template-columns:1fr;gap:20px}}
 @media(max-width:520px){.ctr-zoom-bar{gap:6px;padding:6px}.ctr-zoom-bar button{padding:8px;min-width:40px}.ctr-zoom-bar button:last-child{min-width:64px}.ctr-photo-stage,#centering .ctr-viewer{border-radius:15px}#ctr-camera-dialog[data-mode="review"]{padding:12px}#ctr-camera-dialog[data-mode="review"] .ctr-camera-head{top:-12px}#ctr-camera-dialog[data-mode="review"] #cc-review .actions{bottom:-12px}}
+
+/* The handles stay the same touch-friendly size while the photograph zooms. */
+.ctr-guide-handles{position:absolute;inset:0;z-index:2;pointer-events:none}
+.ctr-guide-handle{position:absolute;display:flex;align-items:center;justify-content:center;width:76px;min-height:44px;height:44px;padding:0;margin:0;transform:translate(-50%,-50%);border:0;border-radius:0;background:transparent;box-shadow:none;pointer-events:auto;touch-action:none;cursor:ew-resize}
+.ctr-guide-handle[data-axis="y"]{cursor:ns-resize}
+.ctr-guide-handle span{display:block;pointer-events:none;padding:5px 7px;border:1px solid #bd9aff;border-radius:7px;background:#1c122ef0;color:#e4cfff;font-size:10px;font-weight:700;line-height:1.1;white-space:nowrap;box-shadow:0 2px 7px #0008}
+.ctr-guide-handle[data-kind="inner"] span{border-color:#ffc29d;border-style:dashed;background:#321e16f0;color:#ffdcc5}
+.ctr-guide-handle[aria-pressed="true"]{z-index:1}
+.ctr-guide-handle[aria-pressed="true"] span{box-shadow:0 0 0 2px #fff,0 3px 12px #000b}
+.ctr-guide-handle:focus-visible{outline:2px solid #fff;outline-offset:-3px;border-radius:12px}
+.ctr-guide-legend{display:flex;flex-wrap:wrap;gap:10px 18px;margin:12px 0 8px;font-size:12px;line-height:1.6;color:#d3c3e1}
+.ctr-guide-legend span{display:flex;align-items:center;gap:5px}
+.ctr-guide-legend i{display:inline-block;width:22px;border-top:3px solid #bd9aff}
+.ctr-guide-legend .ctr-legend-inner i{border-color:#ffc29d;border-top-style:dashed}
+.ctr-selected-guide{display:flex;flex-direction:column;gap:5px;margin:14px 0;padding:12px;border:1px solid #bd9aff50;border-radius:12px;background:#bd9aff0d}
+.ctr-selected-guide>span{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#bba6cd}
+.ctr-selected-guide strong{font-size:13px;line-height:1.5;color:#e4cfff}
+.ctr-selected-guide[data-kind="inner"]{border-color:#ffc29d55;background:#ffc29d08}
+.ctr-selected-guide[data-kind="inner"] strong{color:#ffdcc5}
+.ctr-photo-stage[data-mode="auto"][data-zoomed="true"]{cursor:grab}
