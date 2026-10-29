@@ -85,6 +85,14 @@
     get state() { return state; },
     subscribe(callback) { listeners.add(callback); callback(state); return () => listeners.delete(callback); },
     errorText, refresh,
+    async syncSession(expectedOwner) {
+      requireClient();
+      const {data,error}=await client.auth.getSession();
+      if(error)throw error;
+      const session=data.session;
+      if(!session||session.user?.id!==expectedOwner||state.user?.id!==expectedOwner)throw Error('Zaloguj się ponownie na konto tej kolekcji.');
+      return {userId:session.user.id,accessToken:session.access_token};
+    },
     async signIn(email,password) {
       requireClient(); recovery=false;linkError=false;
       const data=assertResult(await client.auth.signInWithPassword({email:email.trim(),password}));
@@ -114,7 +122,8 @@
     const config=configValues(window.CARDSCOPE_SUPABASE);
     if (!window.supabase?.createClient) throw Error('Nie wczytano biblioteki logowania. Sprawdź, czy wgrano folder vendor z paczki.');
     client=window.supabase.createClient(config.url,config.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'implicit',storageKey:'cardscope-auth:'+new URL(config.url).hostname}});
-    client.auth.onAuthStateChange((event) => {
+    client.auth.onAuthStateChange((event,session) => {
+      if(session?.user?.id&&state.user?.id&&session.user.id!==state.user.id){serial++;publish({status:'loading',user:null,recovery:false,error:''});}
       if(event==='PASSWORD_RECOVERY')recovery=true;
       if(event==='SIGNED_OUT'){serial++;recovery=false;publish({status:'guest',user:null,recovery:false,error:''});return;}
       // Never await Supabase inside its auth callback: it owns a session lock.

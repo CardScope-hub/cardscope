@@ -1,9 +1,9 @@
 // Resolve every asset against this worker's directory, including GitHub project pages.
 const BASE=new URL('./',self.location.href);
 const CACHE_PREFIX='cardscope-shell:'+BASE.pathname+':';
-const CACHE=CACHE_PREFIX+'scanner-paths-1';
+const CACHE=CACHE_PREFIX+'cloud-sync-1';
 const APP_URL=new URL('app.html',BASE).href;
-const SHELL=["web.css?v=37", "web.js?v=pwa-paths-1", "pwa.js?v=37", "live-scan.js?v=37", "binder-share.js?v=37", "currency.js?v=37", "add-flow.js?v=37", "binders.css?v=37", "binders.mjs?v=37", "binder-core.mjs?v=37", "binder-store.mjs?v=37", "experience.css?v=37", "learning.js?v=37", "centering-camera.js?v=37", "centering.js?v=37", "app.html", "styles.css?v=37", "storage.js?v=37", "install.js?v=pwa-paths-1", "app-experience.js?v=37", "details.js?v=37", "imaging.js?v=37", "scanner.js?v=37", "matching.js?v=37", "scan-text.js?v=37", "scan-index.js?v=37", "neural-evidence.js?v=37", "neural-scan.js?v=scanner-paths-1", "vision-scan.js?v=37", "scan-reader.js?v=37", "recognition.js?v=37", "games.js?v=37", "markets.js?v=37", "manifest.json?v=pwa-paths-1", "icon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png", "assets/charizard.webp", "assets/poncho.webp"].map(path=>new URL(path,BASE).href);
+const SHELL=["cloud-sync.js?v=cloud-sync-1","web.css?v=37", "web.js?v=pwa-paths-1", "pwa.js?v=37", "live-scan.js?v=37", "binder-share.js?v=37", "currency.js?v=37", "add-flow.js?v=37", "binders.css?v=37", "binders.mjs?v=cloud-sync-1", "binder-core.mjs?v=37", "binder-store.mjs?v=cloud-sync-1", "experience.css?v=37", "learning.js?v=37", "centering-camera.js?v=37", "centering.js?v=37", "app.html", "styles.css?v=37", "storage.js?v=cloud-sync-1", "install.js?v=cloud-sync-1", "app-experience.js?v=37", "details.js?v=37", "imaging.js?v=37", "scanner.js?v=37", "matching.js?v=37", "scan-text.js?v=37", "scan-index.js?v=37", "neural-evidence.js?v=37", "neural-scan.js?v=scanner-paths-1", "vision-scan.js?v=37", "scan-reader.js?v=37", "recognition.js?v=37", "games.js?v=37", "markets.js?v=37", "manifest.json?v=pwa-paths-1", "icon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png", "assets/charizard.webp", "assets/poncho.webp"].map(path=>new URL(path,BASE).href);
 self.addEventListener('install',event=>event.waitUntil((async()=>{
  const cache=await caches.open(CACHE);
  for(const url of SHELL){

@@ -1,5 +1,5 @@
 import {binderValue,binderQuote,readQuote,quoteFromCard,validateQuote,LAYOUTS,MAX_PAGES,createBinder,reconfigure,availableCards,placementPlan,swapSlots,clearSlot} from './binder-core.mjs?v=37';
-import {createBinderStore} from './binder-store.mjs?v=37';
+import {createBinderStore} from './binder-store.mjs?v=cloud-sync-1';
 const themes=[['amethyst','Ametyst','#8555cf'],['lavender','Lawenda','#b59ae1'],['plum','Śliwka','#7d467f'],['midnight','Nocny fiolet','#332d61'],['iris','Irys','#6963cb'],['pearl','Perłowy liliowy','#d3bfdc']];
 const patterns=[['aurora','Zorza'],['linen','Płótno'],['stars','Konstelacja']],emblems=[['diamond','✧','Diament'],['star','✦','Gwiazda'],['moon','☾','Księżyc'],['pokeball','◉','Poké Ball'],['dragon','♜','Smok'],['bolt','ϟ','Błyskawica'],['flower','❀','Kwiat']];
 const store=createBinderStore(),$b=id=>document.getElementById(id),el=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n};

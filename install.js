@@ -7,3 +7,11 @@ $('import-file').onchange=async e=>{const file=e.target.files[0];if(!file)return
 // Never reload automatically: a scan or unsaved card may still be open.
 if('serviceWorker' in navigator){let controlled=!!navigator.serviceWorker.controller;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(controlled)$('app-update').hidden=false;controlled=true});}
 $('app-update-reload').onclick=()=>{if(photo&&document.body.dataset.view!=='collection'&&!confirm('Bieżący skan nie został zapisany. Wczytać aktualizację?'))return;window.location.reload()};
+
+window.addEventListener('cardscope:account-change',()=>{
+ scanId++;globalThis.CardScanner?.cancel();globalThis.CardBinders?.closeDialogs();
+ photo=null;matched=null;marketPrice=null;cards=[];
+ $('form').reset();$('preview').removeAttribute('src');$('preview').hidden=true;
+ $('matches').replaceChildren();$('collection').querySelectorAll?.('[data-private]').forEach(x=>x.remove());
+ show('scan');globalThis.CardExperience?.refreshHome();
+});
