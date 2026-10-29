@@ -111,7 +111,15 @@ def refresh_onepiece():
   except Exception as e:FAILURES.append('OPTCG '+endpoint+': '+type(e).__name__)
  save('prices-onepiece.json',{'schema':1,'sections':sections})
 
-def refresh_pokemon(guide=None):save('prices-pokemon.json',{'schema':1,'cardmarket':compact_guide(guide or fetch('https://downloads.s3.cardmarket.com/productCatalog/priceGuide/price_guide_6.json'))})
+def refresh_pokemon(guide=None,stamp=None):
+ old=load(BASE/'prices-pokemon.json',{});data=dict(old);data['schema']=1
+ try:data['cardmarket']=compact_guide(guide or fetch('https://downloads.s3.cardmarket.com/productCatalog/priceGuide/price_guide_6.json'))
+ except Exception as e:FAILURES.append('Cardmarket Pokemon: '+type(e).__name__)
+ if stamp:
+  try:data['tcgGroups']=tcg_groups(3,old.get('tcgGroups'),stamp,{'24722','24837'})
+  except Exception as e:FAILURES.append('TCGCSV Pokemon: '+type(e).__name__)
+ if not data.get('cardmarket') and not data.get('tcgGroups'):raise ValueError('No Pokemon prices available')
+ save('prices-pokemon.json',data)
 def refresh_fx(table=None):
  d=(table or fetch('https://api.nbp.pl/api/exchangerates/tables/A/?format=json'))[0]
  rates={'PLN':1,**{r['code']:r['mid'] for r in d['rates'] if r['code'] in ['EUR','USD']}}
@@ -122,7 +130,7 @@ def main():
  parser=argparse.ArgumentParser();parser.add_argument('--only',default='pokemon,riftbound,weiss,weiss-jp,onepiece,fx');parser.add_argument('--seed',type=Path);args=parser.parse_args();wanted=args.only.split(',')
  seed=lambda n:load(args.seed/n) if args.seed else None
  stamp=None
- if any(x in wanted for x in ['riftbound','weiss']):
+ if any(x in wanted for x in ['pokemon','riftbound','weiss']):
   p=args.seed/'tcg-updated.json' if args.seed else None
   try:
    stamp=p.read_text().strip() if p and p.exists() else fetch('https://tcgcsv.com/last-updated.txt',text=True)
@@ -130,7 +138,7 @@ def main():
   except Exception as e:FAILURES.append('TCGCSV source date: '+type(e).__name__);stamp=None
  for name in wanted:
   try:
-   if name=='pokemon':refresh_pokemon(seed('cm6.json'))
+   if name=='pokemon':refresh_pokemon(seed('cm6.json'),stamp)
    elif name=='riftbound':refresh_rift(stamp,seed('cm22.json'),seed('dotgg-rift.json'))
    elif name=='weiss':refresh_weiss(stamp)
    elif name=='weiss-jp':refresh_weiss_jp()

@@ -1,7 +1,7 @@
 // Public catalog data only. No session, tokens or collection records enter this cache.
 globalThis.CardCatalog=(()=>{
  const base=new URL('./',document.currentScript?.src||location.href),memory=new Map(),snapshots=new Map();
- const cacheName='cardscope-public-catalog-v2',maxAge=6*60*60*1000;
+ const cacheName='cardscope-public-catalog-v3',maxAge=6*60*60*1000;
  async function json(url,{ttl=maxAge,timeout=18000,fallback=true}={}){
   url=new URL(url,base).href;const hit=memory.get(url);if(hit&&Date.now()-hit.at<ttl)return hit.promise;
   const promise=(async()=>{let cache,cached;
@@ -18,10 +18,10 @@ globalThis.CardCatalog=(()=>{
    throw Error(last?.name==='AbortError'?'Katalog odpowiada zbyt długo. Sprawdź połączenie i spróbuj ponownie.':'Nie udało się pobrać katalogu. Sprawdź połączenie z internetem.');
   })();memory.set(url,{at:Date.now(),promise});promise.catch(()=>memory.delete(url));return promise;
  }
- async function snapshot(game){if(!snapshots.has(game))snapshots.set(game,json('catalog-'+game+'.json',{ttl:86400000}).then(d=>{if(game==='weiss-jp'){const editions=new Map();for(const r of d.cards){const key=CardWeiss.number(r[3])+'|'+CardWeiss.rarity(r[4]);if(!editions.has(key))editions.set(key,new Set());editions.get(key).add(r[6]);}d.wsAmbiguous=new Set([...editions].filter(([,images])=>images.size>1).map(([key])=>key));}return d;}).catch(e=>{snapshots.delete(game);throw e}));return snapshots.get(game)}
+ async function snapshot(game){if(!snapshots.has(game))snapshots.set(game,json('catalog-'+game+'.json'+(game==='riftbound'?'?v=expansions-1':''),{ttl:86400000}).then(d=>{if(game==='weiss-jp'){const editions=new Map();for(const r of d.cards){const key=CardWeiss.number(r[3])+'|'+CardWeiss.rarity(r[4]);if(!editions.has(key))editions.set(key,new Set());editions.get(key).add(r[6]);}d.wsAmbiguous=new Set([...editions].filter(([,images])=>images.size>1).map(([key])=>key));}return d;}).catch(e=>{snapshots.delete(game);throw e}));return snapshots.get(game)}
  const num=n=>n!=null&&Number.isFinite(Number(n))&&Number(n)>0?Number(n):null;
  const baseCard=(key,game,id,name,number,set,image,source)=>({gameKey:key,game,id:String(id),name,localId:String(number||''),set:{name:set||'',cardCount:{}},artworkUrl:image||null,catalogLanguage:'en',variantsList:['Nieustalony'],variants:{},source});
- function riftCard(c){const x=baseCard('riftbound','Riftbound',c.id,c.name,c.riftbound_id,c.set?.label,c.media?.image_url,'Riftcodex');x.tcgplayerId=c.tcgplayer_id;x.sourceUrl='https://riftcodex.com/';x.marketUrl='https://www.cardmarket.com/en/Riftbound/Products/Search?searchString='+encodeURIComponent(c.name+' '+c.riftbound_id);return x}
+ function riftCard(c){const x=baseCard('riftbound','Riftbound',c.id,c.name,c.riftbound_id,c.set?.label,c.media?.image_url,c.source||'Riftcodex');x.tcgplayerId=c.tcgplayer_id;x.sourceUrl=c.sourceUrl||'https://riftcodex.com/';x.aliases=c.aliases||[];x.rarity=c.rarity||'';x.rulesText=c.rulesText;x.marketUrl='https://www.cardmarket.com/en/Riftbound/Products/Search?searchString='+encodeURIComponent(c.name+' '+c.riftbound_id);return x}
  function mtgCard(c){const x=baseCard('mtg','Magic: The Gathering',c.id,c.printed_name||c.name,c.collector_number,c.set_name,c.image_uris?.large||c.card_faces?.[0]?.image_uris?.large,'Scryfall');x.backArtwork=c.card_faces?.[1]?.image_uris?.large;x.variantsList=[...(c.nonfoil?['Normal']:[]),...(c.foil?['Foil']:[]),...(c.finishes?.includes('etched')?['Etched']:[])];if(!x.variantsList.length)x.variantsList=['Nieustalony'];x.variants={normal:c.nonfoil,holo:c.foil};x.pricing={cardmarket:{unit:'EUR',trend:num(c.prices?.eur),'trend-holo':num(c.prices?.eur_foil)}};x.priceSource='scryfall-cardmarket';x.marketUrl=c.purchase_uris?.cardmarket;x.sourceUrl=c.scryfall_uri;x.tcgplayerId=c.tcgplayer_id;x.offers=[['Normal','usd'],['Foil','usd_foil'],['Etched','usd_etched']].filter(([,k])=>num(c.prices?.[k])).map(([variant,k])=>({source:'TCGplayer',via:'Scryfall',metric:'source',amount:num(c.prices[k]),currency:'USD',variant,match:'exact',name:c.name,set:c.set_name,productId:c.tcgplayer_id,url:c.purchase_uris?.tcgplayer||c.scryfall_uri,updated:null}));return x}
  function entry(game,c,d){
   if(game==='riftbound')return riftCard(c);
@@ -57,9 +57,9 @@ globalThis.CardCatalog=(()=>{
   if(id)return {card:rows.find(c=>c.id===id)||null};
   const code=game==='riftbound'&&q.match(/^([a-z]{2,6})\s*[- ]\s*(\d+[a-z*]?)(?:-(\d+))?$/i);
   const number=game==='riftbound'&&q.match(/^(\d{1,4})([a-z*]?)\s*\/\s*(\d{2,4})$/i);
-  const found=rows.map(c=>{let s=score(c,q,ocr);if(code){const key=(code[1]+'-'+code[2]).toLowerCase();s=(c.localId.toLowerCase()===key||c.localId.toLowerCase().startsWith(key+'-'))&&(!code[3]||c.localId.endsWith('-'+code[3]))?200:0}if(number){const m=c.localId.match(/-(\d+)([a-z*]?)-(\d+)$/i);s=m&&Number(m[1])===Number(number[1])&&m[2].toLowerCase()===number[2].toLowerCase()&&Number(m[3])===Number(number[3])?200:0}return {c,s}}).filter(x=>x.s>0).sort((a,b)=>b.s-a.s||a.c.name.localeCompare(b.c.name));
+  const found=rows.map(c=>{let s=score(c,q,ocr);if(code){const key=(code[1]+'-'+code[2]).toLowerCase().replace(/-0+(?=\d)/,'-'),actual=c.localId.toLowerCase().replace(/-0+(?=\d)/,'-');s=(actual===key||actual.startsWith(key+'-'))&&(!code[3]||c.localId.endsWith('-'+code[3]))?200:0}if(number){const m=c.localId.match(/-(\d+)([a-z*]?)-(\d+)$/i);s=m&&Number(m[1])===Number(number[1])&&m[2].toLowerCase()===number[2].toLowerCase()&&Number(m[3])===Number(number[3])?200:0}return {c,s}}).filter(x=>x.s>0).sort((a,b)=>b.s-a.s||a.c.name.localeCompare(b.c.name));
   if(game==='riftbound'&&!found.length&&params.fresh!=='1')return search({...params,fresh:'1'});
-  return {cards:found.slice((page-1)*36,page*36).map(x=>x.c),total:found.length,catalogCount:rows.length,nextPage:found.length>page*36?page+1:null,source:game==='riftbound'?'Riftcodex':game==='onepiece'?'OPTCG API':d.source,note:'Kopia katalogu: '+date+'. Porównaj numer i ilustrację. Nowsze wydania mogą nie być dostępne.'};
+  return {cards:found.slice((page-1)*36,page*36).map(x=>x.c),total:found.length,catalogCount:rows.length,nextPage:found.length>page*36?page+1:null,source:game==='riftbound'?(d.displaySource||'Riftcodex'):game==='onepiece'?'OPTCG API':d.source,note:'Kopia katalogu: '+date+'. Porównaj numer i ilustrację. Nowsze wydania mogą nie być dostępne.'};
  }
  async function weissVariants(c){
   const game=c.gameKey||c.catalogGame;if(!['weiss','weiss-jp'].includes(game))return [c];

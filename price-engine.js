@@ -32,6 +32,16 @@ globalThis.CardPrices=(()=>{
   return unique(offers);
  }
  function tcgOffers(c,groups,id){const out=[];for(const g of Object.values(groups||{}))for(const [finish,q] of Object.entries(g.rows?.[String(id)]||{}))if(positive(q.amount))out.push({source:'TCGplayer',via:'TCGCSV · plik dzienny',amount:q.amount,currency:'USD',variant:globalThis.CardWeiss?.is(c)?CardWeiss.rarity(c.rarity):variant(finish),metric:q.metric||'market',name:c.name,set:c.set?.name||g.name,number:c.localId,updated:stamp(g.updated),productId:String(id),url:'https://www.tcgplayer.com/product/'+id,match:'exact'});return out}
+ async function pokemonSupplementOffers(c,groups){
+  if(c.catalogLanguage!=='en'||![24722,24837].includes(Number(c.tcgplayerGroupId))||!/^\d+$/.test(String(c.tcgplayerId||'')))return [];
+  const saved=tcgOffers(c,groups,c.tcgplayerId);if(saved.length)return saved;
+  // Newly cataloged cards can be priced before the next daily repository refresh.
+  const d=await CardCatalog.json('https://tcgcsv.com/tcgplayer/3/'+c.tcgplayerGroupId+'/prices',{ttl:3600000,timeout:7000});
+  if(d.success!==true||!Array.isArray(d.results))throw Error('Źródło nie zwróciło wyceny tego wydania.');
+  const rows={};for(const p of d.results){if(String(p.productId)!==String(c.tcgplayerId))continue;const amount=positive(p.marketPrice)?p.marketPrice:p.midPrice;if(positive(amount))rows[p.subTypeName||'Nieustalony']={amount,metric:positive(p.marketPrice)?'market':'mid'}}
+  // The endpoint does not supply a quote timestamp; do not use download time as one.
+  return tcgOffers(c,{live:{name:c.set?.name,rows:{[c.tcgplayerId]:rows}}},c.tcgplayerId).map(o=>({...o,via:'TCGCSV · katalog publiczny'}));
+ }
  function unique(offers){const m=new Map();for(const o of offers){const key=[o.source,o.currency,o.variant,o.productId||'',o.metric].join('|'),old=m.get(key);if(!old||Date.parse(o.updated||0)>Date.parse(old.updated||0))m.set(key,o)}return [...m.values()]}
  function riftCode(code){const m=String(code||'').toUpperCase().match(/^([A-Z]{2,6})-(\d+)([A-Z*]?)(?:-\d+)?$/);return m?m[1]+'-'+m[2].padStart(3,'0')+(m[3]==='*'?'-STAR':m[3]):String(code||'').toUpperCase()}
  function riftOffers(c,data){const id=String(c.tcgplayerId||''),map=data.mapping?.[id],out=tcgOffers(c,data.tcgGroups,id);
@@ -44,7 +54,7 @@ globalThis.CardPrices=(()=>{
  function isStale(o){return !stamp(o?.updated)||Date.now()-Date.parse(o.updated)>3*86400000}
  async function offers(c,{force=false}={}){const game=c.gameKey||'pokemon';if(c.catalogLanguage==='ja'&&!['pokemon','weiss-jp'].includes(game))return {offers:[],note:'Brak potwierdzonej ceny japońskiego wydania.'};let out=native(c),warning='';
   try{
-   if(game==='pokemon'){const d=await snapshot('pokemon',force);out=native(c,d.cardmarket)}
+   if(game==='pokemon'){let d={};try{d=await snapshot('pokemon',force);out=native(c,d.cardmarket)}catch(e){warning=e.message}try{out.push(...await pokemonSupplementOffers(c,d.tcgGroups))}catch(e){if(!out.length)warning=e.message}}
    else if(game==='riftbound')out=riftOffers(c,await snapshot('riftbound',force));
    else if(game==='weiss-jp'){out=CardWeiss.japaneseOffer(c,await snapshot('weiss',force));warning=out.length?'NovaTCG: cena konkretnego wydania JP w sklepie, przeliczana z USD. Brak w sprzedaży oznacza wyłącznie cenę katalogową.':'Brak ceny tej rzadkości i numeru JP w źródle. Sprawdź inne dostępne wydania lub wpisz cenę ręcznie.';}
    else if(game==='weiss')out=tcgOffers(c,(await snapshot('weiss',force)).tcgGroups,c.tcgplayerId||c.id);
