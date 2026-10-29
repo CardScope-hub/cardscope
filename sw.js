@@ -1,7 +1,7 @@
 // Resolve every asset against this worker's directory, including GitHub project pages.
 const BASE=new URL('./',self.location.href);
 const CACHE_PREFIX='cardscope-shell:'+BASE.pathname+':';
-const CACHE=CACHE_PREFIX+'weiss-1';
+const CACHE=CACHE_PREFIX+'scanner-layout-1';
 const APP_URL=new URL('app.html',BASE).href;
 const SHELL=["weiss-pricing.js?v=weiss-1","weiss-ui.js?v=weiss-1","price-engine.js?v=weiss-1","cloud-sync.js?v=cloud-sync-1", "catalog-client.js?v=weiss-1", "scan-engine.js?v=scanner-stable-2","web.css?v=37", "web.js?v=pwa-paths-1", "pwa.js?v=37", "live-scan.js?v=scanner-stable-2", "binder-share.js?v=37", "currency.js?v=prices-1", "add-flow.js?v=prices-1", "binders.css?v=37", "binders.mjs?v=cloud-sync-1", "binder-core.mjs?v=37", "binder-store.mjs?v=cloud-sync-1", "experience.css?v=37", "learning.js?v=37", "centering-camera.js?v=37", "centering.js?v=37", "app.html", "styles.css?v=37", "storage.js?v=cloud-sync-1", "install.js?v=cloud-sync-1", "app-experience.js?v=37", "details.js?v=weiss-1", "imaging.js?v=37", "scanner.js?v=37", "matching.js?v=scanner-stable-2", "scan-text.js?v=scanner-stable-2", "scan-index.js?v=scanner-stable-2", "neural-evidence.js?v=scanner-stable-2", "neural-scan.js?v=scanner-stable-2", "vision-scan.js?v=37", "scan-reader.js?v=scanner-stable-2", "recognition.js?v=weiss-1", "games.js?v=scanner-stable-2", "markets.js?v=weiss-1", "manifest.json?v=pwa-paths-1", "icon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png", "assets/charizard.webp", "assets/poncho.webp"].map(path=>new URL(path,BASE).href);
 self.addEventListener('install',event=>event.waitUntil((async()=>{
