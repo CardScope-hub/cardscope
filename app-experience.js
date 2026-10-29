@@ -50,7 +50,7 @@
   },
   enter(view,previous){
    if(view==='scan')this.refreshHome();
-   const navView=({'detail':'collection','scan-result':'scanner','processing':'scanner','edit':'collection','binder':'binders'})[view]||view;
+   const navView=({'detail':'collection','scan-result':'scanner','processing':'scanner','edit':'collection','binder':'binders','install':'scan'})[view]||view;
    document.querySelectorAll('.nav [data-view]').forEach(button=>{
     const active=button.dataset.view===navView;button.classList.toggle('active',active);
     if(active)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');
@@ -79,7 +79,6 @@
  }
  $('collection-scan').onclick=openScanner;
  $('home-open-collection').onclick=()=>show('collection');
- $('home-open-centering').onclick=()=>show('centering');
  $('home-first-scan').onclick=openScanner;
  $('header-about').onclick=()=>show('about');
  for(const id of ['collection-game','collection-sort'])$(id).onchange=()=>render();
