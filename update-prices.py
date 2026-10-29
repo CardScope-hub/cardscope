@@ -87,7 +87,12 @@ def refresh_weiss(stamp):
  cat=load(BASE/'catalog-weiss.json')
  if not cat:raise ValueError('Missing catalog-weiss.json')
  groups=set(str(c['groupId']) for c in cat['cards'] if c.get('groupId'))
- save('prices-weiss.json',{'schema':1,'tcgGroups':tcg_groups(20,old.get('tcgGroups'),stamp,groups)})
+ save('prices-weiss.json',{'schema':1,'japanese':old.get('japanese'),'tcgGroups':tcg_groups(20,old.get('tcgGroups'),stamp,groups)})
+
+def refresh_weiss_jp():
+ import importlib.util
+ spec=importlib.util.spec_from_file_location('weiss_jp_prices',BASE/'update-weiss-jp.py')
+ module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);module.BASE=BASE;module.refresh()
 
 def refresh_onepiece():
  old=load(BASE/'prices-onepiece.json',{});sections=dict(old.get('sections',{}))
@@ -114,7 +119,7 @@ def refresh_fx(table=None):
  save('prices-fx.json',{'date':d['effectiveDate'],'source':'NBP · tabela A','rates':rates})
 
 def main():
- parser=argparse.ArgumentParser();parser.add_argument('--only',default='pokemon,riftbound,weiss,onepiece,fx');parser.add_argument('--seed',type=Path);args=parser.parse_args();wanted=args.only.split(',')
+ parser=argparse.ArgumentParser();parser.add_argument('--only',default='pokemon,riftbound,weiss,weiss-jp,onepiece,fx');parser.add_argument('--seed',type=Path);args=parser.parse_args();wanted=args.only.split(',')
  seed=lambda n:load(args.seed/n) if args.seed else None
  stamp=None
  if any(x in wanted for x in ['riftbound','weiss']):
@@ -128,6 +133,7 @@ def main():
    if name=='pokemon':refresh_pokemon(seed('cm6.json'))
    elif name=='riftbound':refresh_rift(stamp,seed('cm22.json'),seed('dotgg-rift.json'))
    elif name=='weiss':refresh_weiss(stamp)
+   elif name=='weiss-jp':refresh_weiss_jp()
    elif name=='onepiece':refresh_onepiece()
    elif name=='fx':refresh_fx(seed('nbp.json'))
    print('Updated',name,flush=True)
@@ -135,5 +141,5 @@ def main():
  if FAILURES:print('Some sources failed; prior dated quotes retained:',*FAILURES,sep='\n')
  # Partial outages must not discard successful updates; source dates disclose age.
  for name in wanted:
-  if not (BASE/('prices-'+name+'.json')).exists():raise SystemExit('No price file for '+name)
+  if not (BASE/('prices-'+('weiss' if name=='weiss-jp' else name)+'.json')).exists():raise SystemExit('No price file for '+name)
 if __name__=='__main__':main()

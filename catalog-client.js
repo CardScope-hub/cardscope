@@ -18,7 +18,7 @@ globalThis.CardCatalog=(()=>{
    throw Error(last?.name==='AbortError'?'Katalog odpowiada zbyt długo. Sprawdź połączenie i spróbuj ponownie.':'Nie udało się pobrać katalogu. Sprawdź połączenie z internetem.');
   })();memory.set(url,{at:Date.now(),promise});promise.catch(()=>memory.delete(url));return promise;
  }
- async function snapshot(game){if(!snapshots.has(game))snapshots.set(game,json('catalog-'+game+'.json',{ttl:86400000}).catch(e=>{snapshots.delete(game);throw e}));return snapshots.get(game)}
+ async function snapshot(game){if(!snapshots.has(game))snapshots.set(game,json('catalog-'+game+'.json',{ttl:86400000}).then(d=>{if(game==='weiss-jp'){const editions=new Map();for(const r of d.cards){const key=CardWeiss.number(r[3])+'|'+CardWeiss.rarity(r[4]);if(!editions.has(key))editions.set(key,new Set());editions.get(key).add(r[6]);}d.wsAmbiguous=new Set([...editions].filter(([,images])=>images.size>1).map(([key])=>key));}return d;}).catch(e=>{snapshots.delete(game);throw e}));return snapshots.get(game)}
  const num=n=>n!=null&&Number.isFinite(Number(n))&&Number(n)>0?Number(n):null;
  const baseCard=(key,game,id,name,number,set,image,source)=>({gameKey:key,game,id:String(id),name,localId:String(number||''),set:{name:set||'',cardCount:{}},artworkUrl:image||null,catalogLanguage:'en',variantsList:['Nieustalony'],variants:{},source});
  function riftCard(c){const x=baseCard('riftbound','Riftbound',c.id,c.name,c.riftbound_id,c.set?.label,c.media?.image_url,'Riftcodex');x.tcgplayerId=c.tcgplayer_id;x.sourceUrl='https://riftcodex.com/';x.marketUrl='https://www.cardmarket.com/en/Riftbound/Products/Search?searchString='+encodeURIComponent(c.name+' '+c.riftbound_id);return x}
@@ -26,8 +26,8 @@ globalThis.CardCatalog=(()=>{
  function entry(game,c,d){
   if(game==='riftbound')return riftCard(c);
   if(game==='onepiece'){const x=baseCard(game,'One Piece',c.card_image_id,c.card_name,c.card_set_id||c.card_image_id,c.set_name,c.card_image,'OPTCG API');x.marketUrl='https://www.cardmarket.com/en/OnePiece/Products/Search?searchString='+encodeURIComponent(x.localId);return x}
-  if(game==='weiss-jp')return {...baseCard(game,'Weiß Schwarz','jp-'+c[0],c[1],c[3],d.sets[c[5]],d.imageBase+c[6],d.source),aliases:[c[2]],catalogLanguage:'ja',rarity:c[4],sourceUrl:d.sourceUrl,catalogDate:d.snapshotDate};
-  return {...baseCard(game,'Weiß Schwarz',c.id,c.name,c.number,c.set,c.image,d.source),rarity:c.rarity,backArtwork:c.back||null,sourceUrl:c.sourceUrl||'https://www.tcgplayer.com/product/'+c.id,marketUrl:'https://www.cardmarket.com/en/WeissSchwarz/Products/Search?searchString='+encodeURIComponent(c.number)};
+  if(game==='weiss-jp')return {...baseCard(game,'Weiß Schwarz','jp-'+c[0],c[1],c[3],d.sets[c[5]],d.imageBase+c[6],d.source),aliases:[c[2]],catalogLanguage:'ja',rarity:c[4],priceIdentityAmbiguous:d.wsAmbiguous?.has(CardWeiss.number(c[3])+'|'+CardWeiss.rarity(c[4]))||false,variantsList:[CardWeiss.rarity(c[4])],sourceUrl:d.sourceUrl,catalogDate:d.snapshotDate};
+  return {...baseCard(game,'Weiß Schwarz',c.id,c.name,c.number,c.set,c.image,d.source),rarity:c.rarity,variantsList:[CardWeiss.rarity(c.rarity)],backArtwork:c.back||null,sourceUrl:c.sourceUrl||'https://www.tcgplayer.com/product/'+c.id,marketUrl:'https://www.cardmarket.com/en/WeissSchwarz/Products/Search?searchString='+encodeURIComponent(c.number)};
  }
  function score(c,q,ocr){const T=CardScanText,read=T.weissReads(q)[0],actual=T.weissReads(c.localId)[0];
   if(read&&actual&&(read.value.includes('-')||/\d+[A-Z]+\d/.test(read.value.split('/')[1]))){const distance=T.weissDistance(read.value,actual.value);return distance===0?200:ocr&&Number.isFinite(distance)?180-distance*10:0}
@@ -61,5 +61,11 @@ globalThis.CardCatalog=(()=>{
   if(game==='riftbound'&&!found.length&&params.fresh!=='1')return search({...params,fresh:'1'});
   return {cards:found.slice((page-1)*36,page*36).map(x=>x.c),total:found.length,catalogCount:rows.length,nextPage:found.length>page*36?page+1:null,source:game==='riftbound'?'Riftcodex':game==='onepiece'?'OPTCG API':d.source,note:'Kopia katalogu: '+date+'. Porównaj numer i ilustrację. Nowsze wydania mogą nie być dostępne.'};
  }
- return Object.freeze({json,search,snapshot,riftCard,mtgCard,score});
+ async function weissVariants(c){
+  const game=c.gameKey||c.catalogGame;if(!['weiss','weiss-jp'].includes(game))return [c];
+  const d=await snapshot(game),key=CardWeiss.family(c.localId||c.number);
+  const rows=d.cards.filter(r=>CardWeiss.family(game==='weiss-jp'?r[3]:r.number)===key).map(r=>entry(game,r,d));
+  return rows.sort((a,b)=>CardWeiss.rarity(a.rarity).localeCompare(CardWeiss.rarity(b.rarity))||a.localId.localeCompare(b.localId)||a.id.localeCompare(b.id));
+ }
+ return Object.freeze({json,search,snapshot,riftCard,mtgCard,score,weissVariants});
 })();
