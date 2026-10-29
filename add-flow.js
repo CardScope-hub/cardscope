@@ -27,22 +27,5 @@
  $('processing-back').onclick=cancel;
  $('result-back').onclick=()=>mode==='catalog'?catalog():openScanner();
 })();
-// Read prices without changing the active scanner or selected catalog card.
-globalThis.CardPriceLookup=async card=>{
- if(card.catalogGame==='weiss-jp')return null; // Never substitute an English edition's quote.
- const currency=card.priceCurrency||'EUR',at=new Date().toISOString();let data;
- if(card.catalogGame==='pokemon'||!card.catalogGame)data=await catalogJSON('https://api.tcgdex.net/v2/'+(card.catalogLanguage||'en')+'/cards/'+encodeURIComponent(card.catalogId));
- else if(card.catalogGame==='weiss')data=(await otherJSON({game:'weiss',id:card.catalogId})).card;
- else if(card.catalogGame==='mtg')data=(await otherJSON({game:'mtg',id:card.catalogId})).card;
- if(data&&currency==='EUR'&&card.priceSource!=='tcgplayer'){
-  // Reverse holo has no distinct quote in this source; do not substitute holo.
-  if(card.variant==='Reverse Holo')return null;
-  const amount=marketMetric(data,card.variant,'trend');if(amount!==null)return {amount,currency,at:data.pricing?.cardmarket?.updated||at,source:card.catalogGame==='mtg'?'Scryfall / Cardmarket':'TCGdex / Cardmarket'};
- }
- let offers=data?.offers||[];
- const tcg=data?.pricing?.tcgplayer;
- if(tcg?.unit==='USD'){const key=({Normal:'normal',Holo:'holofoil',Foil:'holofoil','Reverse Holo':'reverseholofoil'})[card.variant],quote=tcg[key];if(quote?.productId&&Number.isFinite(quote.marketPrice))offers.push({amount:quote.marketPrice,currency:'USD',variant:card.variant,match:'exact',source:'TCGplayer',updated:tcg.updated,url:'https://www.tcgplayer.com/product/'+quote.productId});}
- if(!offers.length&&card.priceUrl){const response=await fetch('/api/market?'+new URLSearchParams({game:card.catalogGame,name:card.name,set:card.set,number:card.number}),{cache:'no-store',signal:AbortSignal.timeout(60000)});if(!response.ok)return null;offers=(await response.json()).offers||[];}
- const exact=offers.filter(o=>o.match==='exact'&&o.currency===currency&&offerVariant(o.variant)===offerVariant(card.variant)&&(!card.priceUrl||o.url===card.priceUrl));
- return exact.length===1?{amount:exact[0].amount,currency,at:exact[0].updated||at,source:exact[0].source}:null;
-};
+// Same exact-printing price engine for scanner, saved cards and binders.
+globalThis.CardPriceLookup=async card=>{const quote=await CardPrices.lookup(card);return quote?{amount:quote.amount,currency:quote.currency,at:quote.at,source:quote.source}:null};

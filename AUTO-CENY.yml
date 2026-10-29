@@ -1,0 +1,28 @@
+# Save as .github/workflows/cardscope-prices.yml in CardScope-hub/cardscope.
+name: CardScope — codzienne ceny
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 22 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: cardscope-public-prices
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+      - name: Pobierz publiczne wyceny
+        run: python3 update-prices.py
+      - name: Zapisz tylko pliki cen
+        shell: bash
+        run: |
+          git add -- prices-pokemon.json prices-riftbound.json prices-weiss.json prices-onepiece.json prices-fx.json
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Odśwież publiczne wyceny kart i kursy NBP'
+          git push
