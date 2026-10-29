@@ -42,10 +42,33 @@
    }
    const selected=select.value||'all';let found=selected==='all'?[...items]:items.filter(c=>c.game===selected);
    const mode=$('collection-sort').value;
+   let sortNote='';
    if(mode==='name')found.sort((a,b)=>a.name.localeCompare(b.name,'pl',{sensitivity:'base'}));
    else if(mode==='quantity')found.sort((a,b)=>b.qty-a.qty);
+   else if(mode==='value-asc'||mode==='value-desc'){
+    const currency=globalThis.CardCurrency,target=currency?.selected||'PLN',values=new Map();
+    let missingRates=0;
+    for(const card of found){
+     let value=null;
+     if(Number.isFinite(card.price)&&card.price>=0){
+      const source=card.priceCurrency||'EUR';
+      const converted=source===target?card.price:currency?.convert(card.price,source,target);
+      if(Number.isFinite(converted)&&converted>=0)value=converted;else missingRates++;
+     }
+     values.set(card,value);
+    }
+    const direction=mode==='value-asc'?1:-1;
+    found.sort((a,b)=>{
+     const av=values.get(a),bv=values.get(b);
+     if(av===null)return bv===null?0:1;
+     if(bv===null)return -1;
+     return direction*(av-bv);
+    });
+    sortNote=' · według ceny 1 szt. · bez wyceny na końcu';
+    if(missingRates)sortNote+=' · brak kursu dla '+missingRates+' pozycji — również na końcu';
+   }
    else found.sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
-   $('collection-visible').textContent=found.length+' / '+cards.length+' pozycji w kolekcji';
+   $('collection-visible').textContent=found.length+' / '+cards.length+' pozycji w kolekcji'+sortNote;
    return found;
   },
   enter(view,previous){
