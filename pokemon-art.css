@@ -1,0 +1,7 @@
+.pokemon-art-note{display:block;color:#c7b5df;font-size:11px;line-height:1.45;text-align:center;margin:7px 0;white-space:normal;overflow-wrap:anywhere;font-weight:400}
+.pokemon-art-note[hidden]{display:none!important}
+.pokemon-thumb-wrap{display:flex;flex-direction:column;align-items:center;width:100%;min-width:50px}
+.match-choice .pokemon-art-note,#live-results .pokemon-art-note{grid-column:1/-1;font-size:10px}
+.b-pocket>.pokemon-art-note{position:absolute;bottom:4px;left:4px;right:4px;margin:0;padding:3px;border-radius:5px;background:rgba(21,13,33,.9);color:#e7daf8;font-size:9px;z-index:2}
+.b-pick-art>.pokemon-art-note{position:absolute;left:3px;right:3px;bottom:3px;padding:3px;background:#21162ee8;border-radius:5px;font-size:9px}
+#result-image-note{position:relative;z-index:1;max-width:300px;margin:8px auto}
