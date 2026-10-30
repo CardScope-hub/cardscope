@@ -1,6 +1,6 @@
 // OCR runs on the device. Card images and fresh prices come from TCGdex.
 let ocrLibrary,catalogCache=new Map(),lastCandidates=[],candidatePage=0;
-const catalogLanguages={en:{name:'Angielski',ocr:'eng',badge:'🇬🇧 EN'},ja:{name:'Japoński',ocr:'jpn',badge:'🇯🇵 JA'},de:{name:'Niemiecki',ocr:'deu',badge:'🇩🇪 DE'},fr:{name:'Francuski',ocr:'fra',badge:'🇫🇷 FR'},es:{name:'Hiszpański',ocr:'spa',badge:'🇪🇸 ES'},it:{name:'Włoski',ocr:'ita',badge:'🇮🇹 IT'},'pt-br':{name:'Portugalski',ocr:'por',badge:'🇧🇷 PT'}};
+const catalogLanguages={qya:{name:'Inny',badge:'✧ QYA'},other:{name:'Inny',badge:'Inny'},en:{name:'Angielski',ocr:'eng',badge:'🇬🇧 EN'},ja:{name:'Japoński',ocr:'jpn',badge:'🇯🇵 JA'},de:{name:'Niemiecki',ocr:'deu',badge:'🇩🇪 DE'},fr:{name:'Francuski',ocr:'fra',badge:'🇫🇷 FR'},es:{name:'Hiszpański',ocr:'spa',badge:'🇪🇸 ES'},it:{name:'Włoski',ocr:'ita',badge:'🇮🇹 IT'},'pt-br':{name:'Portugalski',ocr:'por',badge:'🇧🇷 PT'}};
 function selectedLanguage(){return $('scan-language').value||'en'}
 async function catalogJSON(url){return /\/cards\/[^/]+$/.test(url)?CardPokemon.card(url):CardCatalog.json(url)}
 function getCatalog(lang){let entry=catalogCache.get(lang);if(!entry||Date.now()-entry.time>3600000){entry={time:Date.now(),promise:CardPokemon.index(lang).catch(e=>{catalogCache.delete(lang);throw e})};catalogCache.set(lang,entry)}return entry.promise}
