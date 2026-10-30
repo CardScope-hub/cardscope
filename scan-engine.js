@@ -20,7 +20,7 @@ globalThis.CardScanRuntime=(()=>{
   return new Promise((resolve,reject)=>{
    let done=false;const finish=(error,result)=>{if(done)return;done=true;clearTimeout(timer);pending=null;if(error){shutdown();reject(error)}else{warm=true;idle=setTimeout(shutdown,45000);resolve({...result,width:canvas.width,height:canvas.height})}};
    const timer=setTimeout(()=>finish(Error('Przekroczono czas odczytu.')),warm?45000:100000);pending={finish};
-   worker.onmessage=({data})=>{if(data.error)finish(Error('Silnik odczytu nie odpowiedział.'));else if(data.result)finish(null,data.result);else options.onstage?.(data.stage)};
+   worker.onmessage=({data})=>{if(data.error)finish(Error('Błąd odczytu: '+String(data.error).slice(0,300)));else if(data.result)finish(null,data.result);else options.onstage?.(data.stage)};
    worker.onerror=()=>finish(Error('Nie udało się uruchomić silnika odczytu.'));
    try{worker.postMessage({width:canvas.width,height:canvas.height,pixels:pixels.buffer},[pixels.buffer])}catch(e){finish(e)}
   });
