@@ -1,0 +1,28 @@
+/* Scoped to the three inline card translation panels. */
+.origins-pl[hidden]{display:none!important}
+.origins-pl{box-sizing:border-box;min-width:0;max-width:100%;margin:16px 0 20px;padding:20px;border:1px solid #b68ee645;border-radius:20px;background:linear-gradient(135deg,#a76ee516,#a76ee507);color:#e9dff5;text-align:left;overflow-wrap:anywhere}
+.origins-pl .origins-pl-heading{display:flex;gap:12px;align-items:center;margin-bottom:17px}
+.origins-pl .origins-pl-badge{display:grid;place-items:center;flex:0 0 37px;height:37px;border:1px solid #c59bf05c;border-radius:11px;background:#bd8eed1c;color:#d6b3ff;font:700 12px/1 system-ui;letter-spacing:1px}
+.origins-pl h3{margin:0 0 4px;font-size:16px;line-height:1.35;letter-spacing:-.2px;color:#f3eaff;font-weight:650}
+.origins-pl .origins-pl-meta{display:block;font-size:10px;line-height:1.5;color:#ba9fce;letter-spacing:.35px}
+.origins-pl .origins-pl-rules p{margin:0 0 12px;font-size:14px;line-height:1.85;color:#e9dff5;text-align:left}
+.origins-pl .origins-pl-rules p:last-child{margin-bottom:0}
+.origins-pl .origins-pl-symbol{display:inline;padding:2px 5px;border:1px solid #e0c8ff30;border-radius:5px;background:#e1d0ff0d;color:#e7d5fa;font-size:.85em;line-height:inherit;box-decoration-break:clone;-webkit-box-decoration-break:clone;white-space:normal}
+.origins-pl-symbol+.origins-pl-symbol{margin-left:3px}
+.origins-pl .origins-pl-symbol[data-kind=fury]{color:#ffb5a8;border-color:#eb8f704f}
+.origins-pl .origins-pl-symbol[data-kind=calm]{color:#a7e6c5;border-color:#88d2a34f}
+.origins-pl .origins-pl-symbol[data-kind=mind]{color:#aaceff;border-color:#82adf64f}
+.origins-pl .origins-pl-symbol[data-kind=body]{color:#f0c68c;border-color:#d8a9664f}
+.origins-pl .origins-pl-symbol[data-kind=chaos]{color:#d5b4ff;border-color:#bc8df94f}
+.origins-pl .origins-pl-symbol[data-kind=order]{color:#f3e6a0;border-color:#dacb774f}
+.origins-pl .origins-pl-disclosure{margin:16px 0 0;padding-top:12px;border-top:1px solid #be9bd728}
+.origins-pl .origins-pl-disclosure summary{min-height:30px;cursor:pointer;font-size:12px;line-height:1.7;color:#d0acee;padding:4px 0;touch-action:manipulation}
+.origins-pl .origins-pl-disclosure summary:focus-visible{outline:2px solid #ceabf8;outline-offset:4px;border-radius:3px}
+.origins-pl .origins-pl-disclosure[open]>summary{margin-bottom:12px}
+.origins-pl .origins-pl-disclosure .origins-pl-rules p{font-size:12px;color:#c8b5d7}
+.origins-pl dl{margin:0}
+.origins-pl dt{font-size:12px;font-weight:600;color:#ddc4ef;margin:13px 0 4px}
+.origins-pl dd{font-size:12px;line-height:1.75;margin:0;color:#bca8ca}
+.origins-pl .origins-pl-note{font-size:10px;line-height:1.7;color:#b39bc3;margin:16px 0 0;text-align:left}
+.b-slot-actions>.origins-pl{margin:0 0 8px;padding:16px;border-radius:16px}
+@media(max-width:420px){.origins-pl{padding:16px}.origins-pl .origins-pl-rules p{font-size:13px}.origins-pl h3{font-size:15px}}
