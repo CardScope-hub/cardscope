@@ -1,7 +1,7 @@
 // Shared local engine, one frame at a time; selecting a candidate never saves it automatically.
-(()=>{let enabled=false,generation=0,classic=null,usingClassic=false;const toggle=$('live-toggle'),label=$('live-status'),results=$('live-results');if(!toggle)return;
+(()=>{let enabled=false,generation=0,classic=null,japaneseReader=null,usingClassic=false;const toggle=$('live-toggle'),label=$('live-status'),results=$('live-results');if(!toggle)return;
  const valid=(g,game,lang)=>enabled&&g===generation&&document.body.dataset.view==='scanner'&&currentGame()===game&&selectedLanguage()===lang&&!document.hidden;
- function stop(){const wasRunning=enabled;enabled=false;generation++;toggle.textContent='◉ Włącz skan na żywo';classic=null;usingClassic=false;if(wasRunning)CardScanRuntime.cancel()}
+ function stop(){const wasRunning=enabled;enabled=false;generation++;toggle.textContent='◉ Włącz skan na żywo';classic=null;const previous=japaneseReader;japaneseReader=null;void previous?.close();usingClassic=false;if(wasRunning)CardScanRuntime.cancel()}
  async function fallback(canvas,game,lang,isValid){if(!classic){await loadOCR();if(!isValid())throw new DOMException('Anulowano','AbortError');const w=await Tesseract.createWorker(game==='weiss-jp'?'jpn+eng':catalogLanguages[lang]?.ocr||'eng',1);if(!isValid()){await w.terminate();throw new DOMException('Anulowano','AbortError')}classic=CardScanRuntime.track(w);await classic.setParameters({tessedit_pageseg_mode:'11'})}const {data}=await classic.recognize(canvas,{}, {text:true,blocks:true});return CardNeuralEvidence.fromTesseract(game,data,canvas.width,canvas.height)}
  async function find(game,lang,evidence,index){
   if(game==='pokemon')return rankScanCatalog(index.cards,index.sets,evidence).slice(0,4).map(x=>({...x.c,_pokemon:true,_set:x.set}));
@@ -13,9 +13,9 @@
  }
  async function start(){if(enabled)return;enabled=true;const g=++generation,game=currentGame(),lang=selectedLanguage();toggle.textContent='■ Zatrzymaj podgląd';results.replaceChildren();label.textContent='Przygotowuję katalog i lokalny odczyt…';
   try{const index=game==='pokemon'?await getCatalog(lang):await scanDictionary(game);if(!valid(g,game,lang))return;usingClassic=game==='weiss-jp'||game==='pokemon'&&lang!=='en';let misses=0;
-   while(valid(g,game,lang)){const canvas=captureCanvas(2000);if(!canvas){label.textContent='Najpierw uruchom aparat.';break}label.textContent='Odczytuję kartę — trzymaj ją w ramce.';let evidence;
+   while(valid(g,game,lang)){const canvas=captureCanvas(2000);if(!canvas){label.textContent='Najpierw uruchom aparat.';break}for(const button of results.querySelectorAll('button'))button.disabled=true;label.textContent='Odczytuję kartę — trzymaj ją w ramce.';let evidence;
     if(!usingClassic)try{const r=await CardScanRuntime.read(canvas,{onstage:s=>{if(valid(g,game,lang)&&s==='loading')label.textContent='Pierwszy odczyt: pobieram i uruchamiam modele…'}});evidence=CardNeuralEvidence.fromResult(game,r)}catch(e){if(!valid(g,game,lang))break;usingClassic=true;label.textContent='Uruchamiam zapasowy odczyt na urządzeniu…'}
-    if(!valid(g,game,lang))break;if(usingClassic)evidence=await fallback(canvas,game,lang,()=>valid(g,game,lang));if(!valid(g,game,lang))break;
+    if(!valid(g,game,lang))break;if(usingClassic){if(game==='pokemon'&&lang==='ja'){if(!japaneseReader)japaneseReader=await CardPokemonJP.createReader(()=>valid(g,game,lang));evidence=await japaneseReader.read(canvas,index,{onstage:kind=>{if(valid(g,game,lang))label.textContent=kind==='names'?'Odczytuję japońską nazwę…':'Sprawdzam numer i serię — trzymaj kartę nieruchomo.';}})}else evidence=await fallback(canvas,game,lang,()=>valid(g,game,lang));}if(!valid(g,game,lang))break;
     if(!usingClassic&&['pokemon','riftbound'].includes(game)&&!scanIsCertain(game,evidence,index)){
      const r=await CardScanRuntime.read(canvas,{region:[0,.78,1,.22],enhance:misses%2===1});if(!valid(g,game,lang))break;evidence.numbers.push(...CardNeuralEvidence.crop(r));
     }

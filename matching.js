@@ -45,6 +45,7 @@ function scanCandidatePool(catalog,evidence){
  return [...found.values()];
 }
 function rankScanCatalog(catalog,sets,evidence){
+ if(evidence.language==='ja')return CardPokemonJP.rank(catalog,sets,evidence);
  catalog=scanCandidatePool(catalog,evidence);
  let ranked=rankScanCatalogBase(catalog,sets,evidence);
  const names=readEvidence(evidence.names.filter(x=>x.confidence>=65).map(x=>x.text).join('\n')).lines;
