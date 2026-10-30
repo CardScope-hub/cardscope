@@ -12,6 +12,18 @@ globalThis.CardWeiss=(()=>{
   return [{source:'NovaTCG · JP',via:'Japońskie wydanie · cena sklepu, nie średnia rynku',amount:row.amount,currency:'USD',variant:r,rarity:r,metric:row.inStock?'retail':'retail-unavailable',name:c.name,set:c.set?.name,number:code,updated:observedAt,observedAt,productId:row.productId,url:url.href,match:'exact',inStock:row.inStock===true}];
  }
  function selectedVariant(card,c){const old=card.variant;if(is(c)&&(!old||['Nieustalony','Normal','Foil','Holo'].includes(old)))return rarity(c.rarity);return old}
- const sourceKey=o=>o?.source==='Cardmarket'?'cardmarket':o?.source==='TCGplayer'?'tcgplayer':o?.source==='NovaTCG · JP'?'novatcg-jp':'optcg-market';
- return Object.freeze({is,rarity,number,family,japaneseOffer,selectedVariant,sourceKey});
+ function republicSearchUrl(c){const game=c?.gameKey||c?.catalogGame,code=c?.localId||c?.number;if(game!=='weiss-jp'||!code)return null;return 'https://tcgrepublic.com/product/text_search.html?'+new URLSearchParams({category:'31',q:code}).toString();}
+ function republicOffer(c,data){
+  if((c?.gameKey||c?.catalogGame)!=='weiss-jp'||c.catalogLanguage&&c.catalogLanguage!=='ja'||c.priceIdentityAmbiguous)return [];
+  const source=data?.republic,code=number(c.localId),r=rarity(c.rarity),key=code+'|'+r.toUpperCase(),row=source?.rows?.[key];
+  if(/-(?:E|TE|PE)\d/.test(code)||code.includes('/EN-'))return [];
+  if(data?.schema!==1||source?.language!=='ja'||source?.currency!=='USD'||source?.kind!=='retail'||source?.ambiguous?.includes(key)||!row)return [];
+  if(row.catalogId&&row.catalogId!==String(c.id))return [];
+  if(number(row.number)!==code||rarity(row.rarity).toUpperCase()!==r.toUpperCase()||row.currency!=='USD'||row.inStock!==true||!Number.isFinite(row.amount)||row.amount<=0||row.amount>10000000||!/^\d+$/.test(String(row.productId)))return [];
+  let url;try{url=new URL(row.url);if(url.protocol!=='https:'||url.hostname!=='tcgrepublic.com'||url.pathname!=='/product/product_page_'+row.productId+'.html'||url.username||url.password)return []}catch{return []}
+  const date=String(row.observedAt||'').replace(/(\.\d{3})\d+(?=Z|[+-])/,'$1');if(!Number.isFinite(Date.parse(date)))return [];const observedAt=new Date(date).toISOString();
+  return [{source:'TCG Republic · JP',via:'Cena oferty sklepu dla tego numeru i rzadkości JP · nie średnia transakcji',amount:row.amount,currency:'USD',variant:r,rarity:r,metric:'retail',name:c.name,set:c.set?.name,number:code,updated:observedAt,observedAt,productId:String(row.productId),url:url.href,match:'exact',inStock:true}];
+ }
+ const sourceKey=o=>o?.source==='Cardmarket'?'cardmarket':o?.source==='TCGplayer'?'tcgplayer':o?.source==='NovaTCG · JP'?'novatcg-jp':o?.source==='TCG Republic · JP'?'tcgrepublic-jp':'optcg-market';
+ return Object.freeze({is,rarity,number,family,japaneseOffer,republicOffer,republicSearchUrl,selectedVariant,sourceKey});
 })();

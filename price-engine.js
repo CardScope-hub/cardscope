@@ -8,7 +8,7 @@ globalThis.CardPrices=(()=>{
  function variant(v){const k=norm(v);return ({normal:'Normal',nonfoil:'Normal',holo:'Holo',holofoil:'Holo',foil:'Foil',reverse:'Reverse Holo',reverseholo:'Reverse Holo',reverseholofoil:'Reverse Holo',etched:'Etched','1stedition':'1st Edition',firstedition:'1st Edition','1steditionholofoil':'1st Edition Holo','1steditionholo':'1st Edition Holo',unlimited:'Unlimited',unlimitedholofoil:'Unlimited Holo',unlimitedholo:'Unlimited Holo'})[k]||String(v||'Nieustalony')}
  const metricLabel=k=>({trend:'Trend',avg1:'Średnia 1 dnia',avg7:'Średnia 7 dni',avg30:'Średnia 30 dni',avg:'Średnia sprzedaży',market:'Cena rynkowa',mid:'Mediana ofert',retail:'Cena sklepu · odczyt','retail-unavailable':'Cena katalogowa · brak w sprzedaży'})[k]||'Wycena źródłowa';
  function chooseMetric(row,suffix=''){for(const key of ['trend','avg7','avg30','avg1','avg'])if(positive(row?.[key+suffix]))return {amount:row[key+suffix],metric:key};return null}
- const freshness=d=>Math.max(0,...[d?.japanese?.observedAt,d?.cardmarket?.updated,...Object.values(d?.tcgGroups||{}).map(g=>g.updated),...Object.values(d?.sections||{}).map(g=>g.retrievedAt)].map(x=>Date.parse(stamp(x))||0));
+ const freshness=d=>Math.max(0,...[d?.republic?.observedAt,d?.japanese?.observedAt,d?.cardmarket?.updated,...Object.values(d?.tcgGroups||{}).map(g=>g.updated),...Object.values(d?.sections||{}).map(g=>g.retrievedAt)].map(x=>Date.parse(stamp(x))||0));
  async function snapshot(game,force=false){const file='prices-'+game+'.json',now=Date.now(),hit=pending.get(file);if(hit&&(hit.loading||!force&&now-hit.at<300000))return hit.promise;
   const state={at:now,loading:true};state.promise=(async()=>{let cache,saved;const key=new URL(file,base).href;
    try{cache=await caches.open('cardscope-public-prices-v1');const r=await cache.match(key);if(r)saved=await r.json();if(!force&&saved?.schema===1&&(game!=='weiss'||saved.japanese)&&now-Number(r.headers.get('x-cardscope-saved'))<300000)return saved}catch{}
@@ -50,13 +50,18 @@ globalThis.CardPrices=(()=>{
   }return unique(out);
  }
  function sameFinish(a,b,game){a=variant(a);b=variant(b);return a===b||game!=='pokemon'&&['Holo','Foil'].includes(a)&&['Holo','Foil'].includes(b)}
- function best(offers,v,game){const rows=offers.filter(o=>o.match==='exact'&&positive(o.amount)&&sameFinish(o.variant,v,game));rows.sort((a,b)=>(a.source==='Cardmarket'?0:1)-(b.source==='Cardmarket'?0:1)||(Date.parse(b.updated||0)||0)-(Date.parse(a.updated||0)||0));return rows[0]||null}
+ function best(offers,v,game){const rows=offers.filter(o=>o.match==='exact'&&positive(o.amount)&&sameFinish(o.variant,v,game));rows.sort((a,b)=>(a.source==='Cardmarket'?0:1)-(b.source==='Cardmarket'?0:1)||(a.metric==='retail-unavailable'?1:0)-(b.metric==='retail-unavailable'?1:0)||(Date.parse(b.updated||0)||0)-(Date.parse(a.updated||0)||0));return rows[0]||null}
  function isStale(o){return !stamp(o?.updated)||Date.now()-Date.parse(o.updated)>3*86400000}
  async function offers(c,{force=false}={}){const game=c.gameKey||'pokemon';if(c.catalogLanguage==='ja'&&!['pokemon','weiss-jp'].includes(game))return {offers:[],note:'Brak potwierdzonej ceny japońskiego wydania.'};let out=native(c),warning='';
   try{
    if(game==='pokemon'){let d={};try{d=await snapshot('pokemon',force);out=native(c,d.cardmarket)}catch(e){warning=e.message}try{out.push(...await pokemonSupplementOffers(c,d.tcgGroups))}catch(e){if(!out.length)warning=e.message}}
    else if(game==='riftbound')out=riftOffers(c,await snapshot('riftbound',force));
-   else if(game==='weiss-jp'){out=CardWeiss.japaneseOffer(c,await snapshot('weiss',force));warning=out.length?'NovaTCG: cena konkretnego wydania JP w sklepie, przeliczana z USD. Brak w sprzedaży oznacza wyłącznie cenę katalogową.':'Brak ceny tej rzadkości i numeru JP w źródle. Sprawdź inne dostępne wydania lub wpisz cenę ręcznie.';}
+   else if(game==='weiss-jp'){
+    const results=await Promise.allSettled([snapshot('weiss',force),snapshot('weiss-republic',force)]);out=[];
+    if(results[0].status==='fulfilled')out.push(...CardWeiss.japaneseOffer(c,results[0].value));
+    if(results[1].status==='fulfilled')out.push(...CardWeiss.republicOffer(c,results[1].value));
+    warning=out.length?'Cena konkretnego wydania JP ze wskazanego sklepu, przeliczana z USD. To cena oferty, nie średnia transakcji. Data odczytu i link znajdują się przy wycenie.':'Brak potwierdzonej ceny tego numeru i rzadkości JP w dostępnych źródłach. Możesz otworzyć oferty sklepu lub wpisać cenę ręcznie.';
+   }
    else if(game==='weiss')out=tcgOffers(c,(await snapshot('weiss',force)).tcgGroups,c.tcgplayerId||c.id);
    else if(game==='onepiece'){
     const d=await snapshot('onepiece',force);for(const s of Object.values(d.sections||{})){const r=s.rows?.[c.id];if(!r||!positive(r.amount))continue;out.push({source:'OPTCG API',via:'Rynek angielski',amount:r.amount,currency:'USD',variant:'Wydanie z ilustracji',metric:'market',name:c.name,set:c.set?.name,number:c.localId,updated:stamp(r.updated),productId:c.id,url:'https://optcgapi.com/',match:'exact'})}

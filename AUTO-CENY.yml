@@ -20,7 +20,7 @@ jobs:
       - name: Zapisz tylko pliki cen
         shell: bash
         run: |
-          git add -- prices-pokemon.json prices-riftbound.json prices-weiss.json prices-onepiece.json prices-fx.json
+          git add -- prices-pokemon.json prices-riftbound.json prices-weiss.json prices-weiss-republic.json prices-onepiece.json prices-fx.json
           if git diff --cached --quiet; then exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'

@@ -94,6 +94,11 @@ def refresh_weiss_jp():
  spec=importlib.util.spec_from_file_location('weiss_jp_prices',BASE/'update-weiss-jp.py')
  module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);module.BASE=BASE;module.refresh()
 
+def refresh_weiss_republic():
+ import importlib.util
+ spec=importlib.util.spec_from_file_location('weiss_republic_prices',BASE/'update-weiss-republic.py')
+ module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);module.BASE=BASE;module.refresh()
+
 def refresh_onepiece():
  old=load(BASE/'prices-onepiece.json',{});sections=dict(old.get('sections',{}))
  for endpoint in ['allSetCards','allSTCards','allPromos','allDonCards']:
@@ -127,7 +132,7 @@ def refresh_fx(table=None):
  save('prices-fx.json',{'date':d['effectiveDate'],'source':'NBP · tabela A','rates':rates})
 
 def main():
- parser=argparse.ArgumentParser();parser.add_argument('--only',default='pokemon,riftbound,weiss,weiss-jp,onepiece,fx');parser.add_argument('--seed',type=Path);args=parser.parse_args();wanted=args.only.split(',')
+ parser=argparse.ArgumentParser();parser.add_argument('--only',default='pokemon,riftbound,weiss,weiss-jp,weiss-republic,onepiece,fx');parser.add_argument('--seed',type=Path);args=parser.parse_args();wanted=args.only.split(',')
  seed=lambda n:load(args.seed/n) if args.seed else None
  stamp=None
  if any(x in wanted for x in ['pokemon','riftbound','weiss']):
@@ -142,6 +147,7 @@ def main():
    elif name=='riftbound':refresh_rift(stamp,seed('cm22.json'),seed('dotgg-rift.json'))
    elif name=='weiss':refresh_weiss(stamp)
    elif name=='weiss-jp':refresh_weiss_jp()
+   elif name=='weiss-republic':refresh_weiss_republic()
    elif name=='onepiece':refresh_onepiece()
    elif name=='fx':refresh_fx(seed('nbp.json'))
    print('Updated',name,flush=True)
