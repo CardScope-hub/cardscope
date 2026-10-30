@@ -1,9 +1,10 @@
 // One local OCR worker at a time; retain loaded models between crops/frames.
 globalThis.CardScanRuntime=(()=>{
  const workerURL=new URL('./ocr-runtime/paddle-worker.js?v=14',document.currentScript?.src||location.href).href;
- let worker=null,pending=null,idle=null,warm=false;const classic=new Set();
+ const jpWorkerURL=new URL('./pokemon-jp-worker.js?v=pokemon-jp-name-2',document.currentScript?.src||location.href).href;
+ let worker=null,pending=null,idle=null,warm=false,workerLanguage=null;const classic=new Set();
  const abort=()=>new DOMException('Anulowano odczyt','AbortError');
- function shutdown(){clearTimeout(idle);const w=worker;worker=null;warm=false;if(w)w.terminate()}
+ function shutdown(){clearTimeout(idle);const w=worker;worker=null;warm=false;workerLanguage=null;if(w)w.terminate()}
  function cancel(){if(pending)pending.finish(abort());shutdown();for(const w of classic)try{Promise.resolve(w.terminate()).catch(()=>{})}catch{};classic.clear()}
  function canvasFor(image,{region,enhance=false,maxSide=1920}={}){
   if(region)return enhancedRegion(image,region,enhance,1800);
@@ -14,7 +15,8 @@ globalThis.CardScanRuntime=(()=>{
   if(typeof Worker==='undefined'||typeof OffscreenCanvas==='undefined')throw Error('Lokalny silnik WASM nie jest obsługiwany.');
   if(pending)throw Error('Odczyt już trwa.');clearTimeout(idle);
   const canvas=canvasFor(image,options),pixels=canvas.getContext('2d',{willReadFrequently:true}).getImageData(0,0,canvas.width,canvas.height).data;
-  if(!worker){worker=new Worker(workerURL,{type:'module'});warm=false}
+  const language=options.language==='ja'?'ja':'default';if(worker&&workerLanguage!==language)shutdown();
+  if(!worker){worker=new Worker(language==='ja'?jpWorkerURL:workerURL,{type:'module'});workerLanguage=language;warm=false}
   return new Promise((resolve,reject)=>{
    let done=false;const finish=(error,result)=>{if(done)return;done=true;clearTimeout(timer);pending=null;if(error){shutdown();reject(error)}else{warm=true;idle=setTimeout(shutdown,45000);resolve({...result,width:canvas.width,height:canvas.height})}};
    const timer=setTimeout(()=>finish(Error('Przekroczono czas odczytu.')),warm?45000:100000);pending={finish};
