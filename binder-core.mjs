@@ -62,7 +62,7 @@ function priceDate(value){
 export function quoteFromCard(card,now=new Date().toISOString()){
  if(!Number.isFinite(card?.price))return null;
  const at=priceDate(card.priceUpdated)||priceDate(card.createdAt)||(!card.priceUpdated&&!card.createdAt?now:null);
- return at?readQuote({amount:card.price,currency:card.priceCurrency||'EUR',at,source:card.priceSource==='manual'?'Cena ręczna':card.priceSource==='tcgrepublic-jp'?'TCG Republic · JP · cena sklepu':card.priceSource==='novatcg-jp'?'NovaTCG · JP · cena sklepu':'Zapisana wycena'}):null;
+ return at?readQuote({amount:card.price,currency:card.priceCurrency||'EUR',at,source:card.priceSource==='manual'?'Cena ręczna':card.priceSource==='tcgrepublic-jp'?'TCG Republic · JP · '+(card.priceMetric==='retail-unavailable'?'cena katalogowa · produkt niedostępny':'cena sklepu'):card.priceSource==='novatcg-jp'?'NovaTCG · JP · cena sklepu':'Zapisana wycena'}):null;
 }
 export function binderQuote(binder,id,card){return readQuote(binder.quotes?.[id])||quoteFromCard(card)}
 export function binderValue(binder,collection){const totals={},byId=new Map(collection.map(c=>[c.id,c]));let missing=0,compared=0;for(const [index,id] of binder.slots.entries()){if(!id)continue;const quote=binderQuote(binder,id,byId.get(id)),base=readQuote(binder.entries?.[index]?.baseline);if(!quote){missing++;continue}const row=totals[quote.currency]||={value:0,change:0,count:0};row.value+=quote.amount;row.count++;if(base&&base.currency===quote.currency){row.change+=quote.amount-base.amount;compared++;}}return {totals,missing,compared};}

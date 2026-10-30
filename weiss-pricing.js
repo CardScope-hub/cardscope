@@ -21,10 +21,10 @@ globalThis.CardWeiss=(()=>{
   if(/-(?:E|TE|PE)\d/.test(code)||code.includes('/EN-'))return [];
   if(data?.schema!==1||source?.language!=='ja'||source?.currency!=='USD'||source?.kind!=='retail'||source?.ambiguous?.includes(key)||!row)return [];
   if(row.catalogId&&row.catalogId!==String(c.id))return [];
-  if(number(row.number)!==code||rarityKey(row.rarity)!==rarityKey(r)||row.currency!=='USD'||row.inStock!==true||!Number.isFinite(row.amount)||row.amount<=0||row.amount>10000000||!/^\d+$/.test(String(row.productId)))return [];
+  if(number(row.number)!==code||rarityKey(row.rarity)!==rarityKey(r)||row.currency!=='USD'||typeof row.inStock!=='boolean'||!Number.isFinite(row.amount)||row.amount<=0||row.amount>10000000||!/^\d+$/.test(String(row.productId)))return [];
   let url;try{url=new URL(row.url);if(url.protocol!=='https:'||url.hostname!=='tcgrepublic.com'||url.pathname!=='/product/product_page_'+row.productId+'.html'||url.username||url.password)return []}catch{return []}
   const date=String(row.observedAt||'').replace(/(\.\d{3})\d+(?=Z|[+-])/,'$1');if(!Number.isFinite(Date.parse(date)))return [];const observedAt=new Date(date).toISOString();
-  return [{source:'TCG Republic · JP',via:'Cena oferty sklepu dla tego numeru i rzadkości JP · nie średnia transakcji',amount:row.amount,currency:'USD',variant:r,rarity:r,metric:'retail',name:c.name,set:c.set?.name,number:code,updated:observedAt,observedAt,productId:String(row.productId),url:url.href,match:'exact',inStock:true}];
+  return [{source:'TCG Republic · JP',via:row.inStock?'Cena oferty sklepu dla tego numeru i rzadkości JP · nie średnia transakcji':'Cena katalogowa sklepu dla tego numeru i rzadkości JP · produkt niedostępny',amount:row.amount,currency:'USD',variant:r,rarity:r,metric:row.inStock?'retail':'retail-unavailable',name:c.name,set:c.set?.name,number:code,updated:observedAt,observedAt,productId:String(row.productId),url:url.href,match:'exact',inStock:row.inStock}];
  }
  const sourceKey=o=>o?.source==='Cardmarket'?'cardmarket':o?.source==='TCGplayer'?'tcgplayer':o?.source==='NovaTCG · JP'?'novatcg-jp':o?.source==='TCG Republic · JP'?'tcgrepublic-jp':'optcg-market';
  return Object.freeze({is,rarity,number,family,japaneseOffer,republicOffer,republicSearchUrl,selectedVariant,sourceKey});
