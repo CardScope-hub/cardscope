@@ -146,6 +146,25 @@
     t.objectStore('outbox').put({key,kind,id,payload,deleted,baseVersion:version,mutationId:uuid()});
    }});await notify(ctx);await status(ctx,'Zapisano na urządzeniu · zmiany czekają na wysłanie');channel?.postMessage({owner:ctx.owner});if(active===ctx)void sync();return payload;
   }
+  async function changeQuantity(id,delta){
+   if(!/^[\w-]{1,100}$/.test(id)||![1,-1].includes(delta))throw Error('Nieprawidłowa zmiana liczby kopii.');
+   const ctx=active;ensure(ctx);const key=keyOf('card',id);let reason;
+   const payload=await tx(ctx.db,['records','outbox'],'readwrite',(t,set)=>{
+    t.objectStore('records').getAll().onsuccess=e=>{try{
+     ensure(ctx);const rows=e.target.result,current=rows.find(r=>r.key===key&&!r.deleted)?.payload;
+     if(!current)throw Error('Ta karta nie jest już dostępna w kolekcji.');
+     let minimum=1;
+     for(const row of rows)if(row.kind==='binder'&&!row.deleted)minimum=Math.max(minimum,(row.payload.slots||[]).filter(x=>x===id).length);
+     const qty=current.qty+delta;
+     if(qty<1||qty>999)throw Error('Liczba kopii musi mieścić się w zakresie 1–999.');
+     if(delta<0&&qty<minimum)throw Error('W jednym z binderów masz '+minimum+' kopii tej karty. Najpierw wyjmij odpowiednie kopie z bindera.');
+     const next=validate('card',{...current,qty}),version=rows.find(r=>r.key===key).version||0;
+     t.objectStore('records').put({key,kind:'card',id,payload:next,deleted:false,version});
+     t.objectStore('outbox').put({key,kind:'card',id,payload:next,deleted:false,baseVersion:version,mutationId:uuid()});set(next);
+    }catch(e){reason=e;t.abort()}};
+   }).catch(e=>{throw reason||e});
+   await notify(ctx);await status(ctx,'Zapisano liczbę kopii na urządzeniu · zmiany czekają na wysłanie');channel?.postMessage({owner:ctx.owner});if(active===ctx)void sync();return payload;
+  }
   async function legacySnapshot(){
    const oldCards=await open('cardscope-private-v1',true),oldBinders=await open('cardscope-binders-v1',true);let cards=[],binders=[];
    try{
@@ -209,7 +228,7 @@
   // Other tabs share this IndexedDB. Notify the view, without echoing a cloud sync
   // back to the sender (which would otherwise cause an endless broadcast loop).
   if(channel)channel.onmessage=e=>{if(active?.owner===e.data?.owner)void notify(active)};
-  return {get ready(){return ready()},get state(){return latest},subscribeState(f){subscribers.add(f);f(latest);return()=>subscribers.delete(f)},subscribe(kind,f){views[kind].add(f);f([]);if(active)void notify(active);return()=>views[kind].delete(f)},setValidator(kind,f){validators[kind]=f},write,remove:(kind,id)=>write(kind,id,true),sync,importLegacy,backup};
+  return {get ready(){return ready()},get state(){return latest},subscribeState(f){subscribers.add(f);f(latest);return()=>subscribers.delete(f)},subscribe(kind,f){views[kind].add(f);f([]);if(active)void notify(active);return()=>views[kind].delete(f)},setValidator(kind,f){validators[kind]=f},write,changeQuantity,remove:(kind,id)=>write(kind,id,true),sync,importLegacy,backup};
  }
  root.createCardCloud=createCardCloud;
  if(root.CardScopeAuth&&root.indexedDB)root.CardCloud=createCardCloud();

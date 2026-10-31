@@ -1,0 +1,17 @@
+.card-copies{box-sizing:border-box;width:100%;margin:20px 0;padding:17px 18px;border:1px solid #bd97ed40;border-radius:18px;background:linear-gradient(115deg,#b28bea13,#b28bea04);text-align:left}
+.card-copies .copies-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.card-copies .copies-label{display:block;font-size:14px;font-weight:650;color:#eadbff;line-height:1.5}
+.card-copies .copies-help{display:block;margin-top:3px;font-size:12px;line-height:1.5;color:#b5a6c5}
+.card-copies .copies-stepper{display:flex;align-items:center;gap:4px;padding:4px;border:1px solid #bc9ce633;border-radius:14px;background:#100d1880;flex-shrink:0}
+.card-copies .copies-stepper button{display:grid;place-items:center;width:44px;height:44px;min-height:44px;padding:0;border:0;border-radius:10px;background:#b48aee1a;color:#e6d3ff;font-size:25px;font-weight:500;line-height:1;touch-action:manipulation}
+.card-copies .copies-stepper button[data-copy-step="1"]{background:linear-gradient(135deg,#d6baff,#aa7ce9);color:#241335}
+.card-copies .copies-stepper button:disabled{opacity:.35;cursor:default}
+.card-copies .copies-stepper button:focus-visible{outline:2px solid #e6d3ff;outline-offset:2px}
+.card-copies .copies-stepper output{display:block;min-width:3ch;padding:0 6px;color:#faf5ff;font-size:21px;font-weight:650;font-variant-numeric:tabular-nums;text-align:center;line-height:1}
+.card-copies .copies-note,.card-copies .copies-status{margin:12px 0 0;max-width:none;font-size:12px;line-height:1.6;color:#bfb0cf;overflow-wrap:anywhere}
+.card-copies .copies-status{color:#decdff}.card-copies .copies-note:empty,.card-copies .copies-status:empty{display:none}
+.card-copies .copies-total{margin:12px 0 0;font-size:14px;line-height:1.5;color:#eadbff;font-weight:600}.card-copies .copies-total:empty{display:none}
+.card-copies .copies-existing{margin:8px 0 0;padding:6px 0;min-height:36px;color:#d3b5ff;font-size:12px;text-align:left}
+.card-copies .copies-existing[hidden]{display:none}
+@media(max-width:420px){.card-copies{padding:14px}.card-copies .copies-top{gap:12px}.card-copies .copies-label{font-size:13px}.card-copies .copies-help{font-size:11px}}
+@media(prefers-reduced-motion:no-preference){.card-copies .copies-stepper button{transition:background .15s,transform .12s}.card-copies .copies-stepper button:active:not(:disabled){transform:scale(.93)}}
