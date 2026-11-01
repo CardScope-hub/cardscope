@@ -105,13 +105,25 @@ globalThis.CardMTGScan=(()=>{
   if((!names||!names.length)&&getNames)try{names=await getNames()}catch{};
   if(!valid())return null;
   names=names||[];
+  let nameLookupFailed=false;
   const suggestions=CardScanIndex.suggest(names,evidence),queries=[...new Set(suggestions.map(x=>x.name))].slice(0,3);
   if(!queries.length)queries.push(...CardScanText.names({names:evidence.names||[],full:''}).slice(0,3));
-  for(const q of queries){if(!valid())return null;try{const data=await search({game:'mtg',q,ocr:'1'});if(!valid())return null;if(data.cards?.length)sources.push({q,ocr:'1',data});}catch(e){if(!valid())return null;failure=e}}
-  evidence.mtgLookup={mode:'name',reason};
+  for(const q of queries){if(!valid())return null;try{const data=await search({game:'mtg',q,ocr:'1'});if(!valid())return null;if(data.cards?.length)sources.push({q,ocr:'1',data});}catch(e){if(!valid())return null;failure=e;nameLookupFailed=true}}
+  evidence.mtgLookup={mode:'name',reason,incomplete:nameLookupFailed};
   return {sources,query:queries[0]||r.pairs[0]?.key||'',mode:'name',
    note:sources.length?'Propozycje po nazwie. Numer i seria nie zostały potwierdzone — wybierz właściwe wydanie.':failure?.message||'Nie udało się odczytać numeru ani nazwy. Zbliż dolną część karty lub wpisz dane ręcznie.'};
  }
+ // Count distinct editions across complete responses, before the live preview is capped.
+ // A failed query or a remaining page must not look like a unique result.
+ function singleResult(sources,evidence){
+  if(!sources?.length||evidence?.mtgLookup?.incomplete)return null;
+  const unique=new Map();
+  for(const source of sources){const data=source.data;
+   if(!Array.isArray(data?.cards)||data.nextPage||Number(data.total)>data.cards.length)return null;
+   for(const card of data.cards){if(!card?.id)return null;unique.set(card.id,card);if(unique.size>1)return null;}
+  }
+  return unique.size===1?unique.values().next().value:null;
+ }
  const footerPasses=[{kind:'numbers',region:[0,.84,.62,.16],enhance:false,psm:'11'},{kind:'numbers',region:[0,.84,.62,.16],enhance:true,psm:'6'},{kind:'numbers',region:[0,.82,1,.18],enhance:false,psm:'11'}];
- return Object.freeze({reads,observations,compare,rank,lookup,footerStatus,footerPasses,numberKey,hasReliable:e=>!!reads(e).reliable});
+ return Object.freeze({reads,observations,compare,rank,lookup,singleResult,footerStatus,footerPasses,numberKey,hasReliable:e=>!!reads(e).reliable});
 })();
