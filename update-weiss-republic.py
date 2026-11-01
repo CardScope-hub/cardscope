@@ -345,7 +345,10 @@ def align_catalog(data, catalog):
     rows, ambiguous = {}, set(data.get('ambiguous', []))
     for key, row in data['rows'].items():
         matches = by_number.get(norm(row['number']), [])
-        candidates = [c for c in matches if re.sub(r'[⁂⁑*]+$', '', norm(c[4])) == row['rarity']]
+        # Bushiroad also prints spaced marks (e.g. NIK/S135 "SR ⁑").
+        # Strip only the trailing decorative marks and surrounding whitespace;
+        # keep the unique full-code/foil checks below and the official rarity.
+        candidates = [c for c in matches if re.sub(r'[⁂⁑*]+$', '', norm(c[4])).rstrip() == row['rarity']]
         if candidates and any(norm(c[4]) != row['rarity'] for c in candidates):
             if len(matches) == 1 and len(candidates) == 1 and row.get('foil') is True:
                 card = candidates[0]
