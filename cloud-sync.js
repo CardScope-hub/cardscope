@@ -13,6 +13,13 @@
   const channel=deps.listeners===false?null:typeof root.BroadcastChannel==='function'?new root.BroadcastChannel('cardscope-sync:'+project):null;
   function publish(update){latest={...latest,...update};for(const f of subscribers){try{f(latest)}catch{}}}
   function emit(kind,items){for(const f of views[kind]){try{f(items)}catch{}}}
+  // JSONB may reorder object keys. Compare actual values, not transport order
+  // or server revision numbers, before asking the interface to repaint.
+  function sameData(a,b){
+   if(a===b)return true;
+   if(!a||!b||typeof a!=='object'||typeof b!=='object'||Array.isArray(a)!==Array.isArray(b))return false;
+   const keys=Object.keys(a);return keys.length===Object.keys(b).length&&keys.every(k=>Object.prototype.hasOwnProperty.call(b,k)&&sameData(a[k],b[k]));
+  }
   function open(name,existing=false){return new Promise((resolve,reject)=>{
    const r=database.open(name,1);let absent=false;
    r.onupgradeneeded=()=>{if(existing){absent=true;r.transaction.abort();return}for(const s of ['records','outbox','meta'])r.result.createObjectStore(s,{keyPath:'key'});};
@@ -43,7 +50,12 @@
   }
   async function notify(ctx){
    const rows=await all(ctx.db,'records');if(active!==ctx)return;
-   for(const kind of ['card','binder'])emit(kind,rows.filter(x=>x.kind===kind&&!x.deleted).map(x=>x.payload).sort((a,b)=>String(b.updatedAt||b.createdAt||'').localeCompare(String(a.updatedAt||a.createdAt||''))));
+   for(const kind of ['card','binder']){
+    const items=rows.filter(x=>x.kind===kind&&!x.deleted).map(x=>x.payload).sort((a,b)=>String(b.updatedAt||b.createdAt||'').localeCompare(String(a.updatedAt||a.createdAt||'')));
+    if(sameData(ctx.lastViews[kind],items))continue;
+    // Keep an independent snapshot: a view must not mutate the comparison copy.
+    ctx.lastViews[kind]=clone(items);emit(kind,items);
+   }
   }
   async function status(ctx,text,kind='pending'){
    const pending=(await all(ctx.db,'outbox')).length;
@@ -130,9 +142,11 @@
     await status(ctx,text,conflict?'conflict':pending?'pending':'saved');channel?.postMessage({owner:ctx.owner});
    }catch(e){if(active===ctx)await status(ctx,friendly(e),'error')}
   }
-  async function sync(){
+  async function sync(options){
    await ready();const ctx=active;if(!ctx)return;
    if(ctx.syncing)return ctx.syncing;
+   if(options?.background===true&&Date.now()-ctx.lastSyncAt<120000)return;
+   ctx.lastSyncAt=Date.now();
    const locks=deps.locks===false?null:(deps.locks||root.navigator?.locks);
    ctx.syncing=(locks?locks.request('cardscope-sync:'+project+':'+ctx.owner,{ifAvailable:true},lock=>lock?run(ctx):undefined):run(ctx));
    try{await ctx.syncing}finally{ctx.syncing=null}
@@ -214,7 +228,7 @@
     if(!owner)return;
     const db=await open('cardscope-cloud-v1:'+project+':'+owner);
     if(ticket!==epoch){db.close();return}
-    const ctx={owner,db,syncing:null};active=ctx;await notify(ctx);
+    const ctx={owner,db,syncing:null,lastViews:{},lastSyncAt:0};active=ctx;await notify(ctx);
     try{const legacy=await legacyInfo(ctx);if(active===ctx)publish({legacy})}catch(e){if(active===ctx)publish({text:'Nie udało się odczytać starej kopii. Zachowaj dane przeglądarki.',kind:'error'})}
     if(active===ctx)void Promise.resolve().then(sync);
    })().catch(e=>{if(ticket===epoch)publish({text:friendly(e),kind:'error'})});
@@ -222,13 +236,13 @@
   auth.subscribe(accountChanged);
   if(deps.listeners!==false){
    root.addEventListener?.('online',()=>{void auth.refresh().then(sync)});
-   root.document?.addEventListener('visibilitychange',()=>{if(root.document.visibilityState==='visible')void sync()});
-   root.setInterval(()=>{if(root.document.visibilityState==='visible')void sync()},30000);
+   root.document?.addEventListener('visibilitychange',()=>{if(root.document.visibilityState==='visible')void sync({background:true})});
+   root.setInterval(()=>{if(root.document.visibilityState==='visible')void sync({background:true})},120000);
   }
   // Other tabs share this IndexedDB. Notify the view, without echoing a cloud sync
   // back to the sender (which would otherwise cause an endless broadcast loop).
   if(channel)channel.onmessage=e=>{if(active?.owner===e.data?.owner)void notify(active)};
-  return {get ready(){return ready()},get state(){return latest},subscribeState(f){subscribers.add(f);f(latest);return()=>subscribers.delete(f)},subscribe(kind,f){views[kind].add(f);f([]);if(active)void notify(active);return()=>views[kind].delete(f)},setValidator(kind,f){validators[kind]=f},write,changeQuantity,remove:(kind,id)=>write(kind,id,true),sync,importLegacy,backup};
+  return {get ready(){return ready()},get state(){return latest},subscribeState(f){subscribers.add(f);f(latest);return()=>subscribers.delete(f)},subscribe(kind,f){views[kind].add(f);f(clone(active?.lastViews[kind]||[]));if(active)void notify(active);return()=>views[kind].delete(f)},setValidator(kind,f){validators[kind]=f},write,changeQuantity,remove:(kind,id)=>write(kind,id,true),sync,importLegacy,backup};
  }
  root.createCardCloud=createCardCloud;
  if(root.CardScopeAuth&&root.indexedDB)root.CardCloud=createCardCloud();
