@@ -15,6 +15,7 @@ globalThis.CardScanIndex=(()=>{
  const fix=s=>s.toUpperCase().replace(/O/g,'0').replace(/[IL]/g,'1');
  const numberKey=s=>String(s||'').toLowerCase().replace(/^0+(?=\d)/,'');
  function numbers(game,evidence){
+  if(game==='mtg'&&globalThis.CardMTGScan)return CardMTGScan.observations(evidence);
   if(game==='weiss'||game==='weiss-jp'){
    const unique=new Map();
    for(const block of [...evidence.numbers,...evidence.names,{text:evidence.full||'',confidence:0}])for(const read of T.weissReads(block.text)){
@@ -31,7 +32,7 @@ globalThis.CardScanIndex=(()=>{
    if(game==='mtg'&&block.confidence>=35){const m=line.trim().toUpperCase().match(/^(?:[CURMSL]\s+)?(\d{2,4}[A-Z]?)(?:\s+[CURMSL])?$/);if(m&&!/^19\d\d$|^20\d\d$/.test(m[1]))out.push({value:m[1],key:numberKey(m[1]),confidence:block.confidence})}
   }}const unique=new Map();for(const x of out){const key=(x.code?'code:':'num:')+x.key+(x.total?'/'+numberKey(x.total):'');const old=unique.get(key);if(!old||old.uncertain&&!x.uncertain)unique.set(key,x)}return [...unique.values()]
  }
- function compare(game,card,evidence){const title=evidence.names.map(x=>x.text).join('\n'),full=evidence.full||'',a=aliases(card.name),titleScore=Math.max(0,...a.map(x=>T.nameScore(x,title))),fullScore=Math.max(0,...a.map(x=>T.nameScore(x,full))),observed=numbers(game,evidence);const actual=game==='mtg'?[{key:numberKey(card.localId)}]:numbers(game,{names:[],numbers:[{text:card.localId,confidence:100}],full:''});
+ function compare(game,card,evidence){if(game==='mtg'&&globalThis.CardMTGScan)return CardMTGScan.compare(card,evidence);const title=evidence.names.map(x=>x.text).join('\n'),full=evidence.full||'',a=aliases(card.name),titleScore=Math.max(0,...a.map(x=>T.nameScore(x,title))),fullScore=Math.max(0,...a.map(x=>T.nameScore(x,full))),observed=numbers(game,evidence);const actual=game==='mtg'?[{key:numberKey(card.localId)}]:numbers(game,{names:[],numbers:[{text:card.localId,confidence:100}],full:''});
   if(game==='riftbound'){const m=String(card.localId).match(/-(\d+)([a-z*]?)(?:-\d+)?$/i);if(m)actual.push({key:numberKey(m[1]+m[2]),total:String(card.localId).split('-')[2]})}
   const same=(x,y)=>Boolean(x.code)===Boolean(y.code)&&x.key===y.key&&(!x.total||!y.total||numberKey(x.total)===numberKey(y.total));
   const isWeiss=game==='weiss'||game==='weiss-jp',near=(x,y)=>isWeiss&&Number.isFinite(T.weissDistance(x.value,y.value));

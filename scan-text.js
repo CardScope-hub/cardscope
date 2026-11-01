@@ -16,7 +16,7 @@ globalThis.CardScanText=(()=>{
  const p=(kind,region,enhance=false,psm='11')=>({kind,region,enhance,psm});
  const layouts={
  pokemon:[p('names',[.12,.02,.7,.095],false,'7'),p('numbers',[.005,.8,.99,.2]),p('names',[.01,.005,.98,.24]),p('names',[.12,.02,.7,.095],true,'7'),p('numbers',[.015,.93,.96,.065],true,'6'),p('numbers',[.005,.82,.99,.18],true,'6'),p('full',[0,0,1,1])],
- mtg:[p('names',[.055,.022,.79,.082],false,'7'),p('numbers',[0,.86,1,.14]),p('numbers',[0,.865,.45,.09],true,'6'),p('names',[.025,.01,.89,.15],true,'6'),p('names',[0,0,1,.24],false,'11'),p('names',[0,0,1,.24],true,'11'),p('full',[0,0,1,1])],
+ mtg:[p('numbers',[0,.84,.62,.16],false,'11'),p('numbers',[0,.84,.62,.16],true,'6'),p('numbers',[0,.82,1,.18],false,'11'),p('names',[.055,.022,.79,.082],false,'7'),p('names',[.025,.01,.89,.15],true,'6'),p('names',[0,0,1,.24],false,'11'),p('full',[0,0,1,1])],
  onepiece:[p('names',[.015,.82,.97,.15]),p('numbers',[.35,.88,.65,.12]),p('numbers',[.5,.88,.5,.12],true,'11'),p('names',[.015,.76,.97,.22],true,'6'),p('names',[0,.76,1,.24],false,'11'),p('names',[0,.76,1,.24],true,'11'),p('full',[0,0,1,1]),p('numbers',[0,.86,1,.14],true,'6')],
  weiss:[p('names',[0,.64,1,.23],false,'6'),p('names',[0,.6,1,.4],true,'11'),p('full',[0,0,1,1])],
  riftbound:[p('names',[.035,.54,.9,.1],false,'6'),p('names',[0,.4,1,.25],true,'11'),p('numbers',[0,.86,1,.14]),p('names',[.01,.37,.98,.35],true,'6'),p('full',[0,0,1,1])]
