@@ -10,7 +10,7 @@ async function refineScan(image,game,evidence,index,valid,onstage=()=>{}){
  for(const pass of passes){if(!valid())throw new DOMException('Anulowano','AbortError');onstage(pass.kind);const r=await CardScanRuntime.read(image,pass);if(!valid())throw new DOMException('Anulowano','AbortError');evidence[pass.kind].push(...CardNeuralEvidence.crop(r));if(scanIsCertain(game,evidence,index))break}
  return evidence;
 }
-async function recognizeNeural(){if(!photo)return;CardScanner.cancel();prepareLookup();const token=++scanId,game=currentGame(),lang=selectedLanguage();for(const id of ['retry','catalog-submit','scan-classic'])$(id).disabled=true;$('processing').setAttribute('aria-busy','true');status('1 / 3 · Przygotowuję odczyt…');
+async function recognizeNeural(){if(CardWeissScan.is(currentGame()))return recognizeWeiss();if(!photo)return;CardScanner.cancel();prepareLookup();const token=++scanId,game=currentGame(),lang=selectedLanguage();for(const id of ['retry','catalog-submit','scan-classic'])$(id).disabled=true;$('processing').setAttribute('aria-busy','true');status('1 / 3 · Przygotowuję odczyt…');
  const catalog=(game==='pokemon'?getCatalog(lang):game==='mtg'?Promise.resolve([]):scanDictionary(game)).then(value=>({value}),error=>({error}));let fallback=false;
  try{const image=new Image();image.src=photo;await image.decode();if(token!==scanId)return;let result;try{result=await detectCardText(image,token)}catch(e){if(e.name==='AbortError')throw e;fallback=true;throw e}if(token!==scanId)return;
   const evidence=CardNeuralEvidence.fromResult(game,result);$('scan-readout').textContent=evidence.full||'Nie odczytano tekstu.';const index=await catalog;if(token!==scanId)return;if(index.error)throw index.error;

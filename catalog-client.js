@@ -29,8 +29,9 @@ globalThis.CardCatalog=(()=>{
   if(game==='weiss-jp'){const provenance=d.cardSources?.[c[0]];return {...baseCard(game,'Weiß Schwarz','jp-'+c[0],c[1],c[3],d.sets[c[5]],c[6]?new URL(c[6],d.imageBase).href:null,provenance?.source||d.source),aliases:[c[2],...(d.aliases?.[c[0]]||[])].filter(Boolean),searchTerms:d.searchTerms?.[c[0]]||[],catalogLanguage:'ja',rarity:c[4],priceIdentityAmbiguous:d.wsAmbiguous?.has(CardWeiss.number(c[3])+'|'+CardWeiss.rarity(c[4]))||false,variantsList:[CardWeiss.rarity(c[4])],sourceUrl:provenance?.url||d.sourceUrl,marketUrl:'https://www.cardmarket.com/en/WeissSchwarz/Products/Search?searchString='+encodeURIComponent(c[3]),catalogDate:d.snapshotDate};}
   return {...baseCard(game,'Weiß Schwarz',c.id,c.name,c.number,c.set,c.image,c.source||d.source),aliases:c.aliases||[],searchTerms:c.searchTerms||[],rarity:c.rarity,variantsList:[CardWeiss.rarity(c.rarity)],backArtwork:c.back||null,sourceUrl:c.sourceUrl||'https://www.tcgplayer.com/product/'+c.id,marketUrl:'https://www.cardmarket.com/en/WeissSchwarz/Products/Search?searchString='+encodeURIComponent(c.number)};
  }
- function score(c,q,ocr){const T=CardScanText,read=T.weissReads(q)[0],actual=T.weissReads(c.localId)[0];
+ function score(c,q,ocr){const T=CardScanText,read=T.weissReads(globalThis.CardWeissScan?.is(c.gameKey)?CardWeissScan.numberText(q):q)[0],actual=T.weissReads(globalThis.CardWeissScan?.is(c.gameKey)?CardWeissScan.numberText(c.localId):c.localId)[0];
   if(read&&actual&&(read.value.includes('-')||/\d+[A-Z]+\d/.test(read.value.split('/')[1]))){const distance=T.weissDistance(read.value,actual.value);return distance===0?200:ocr&&Number.isFinite(distance)?180-distance*10:0}
+  if(ocr&&globalThis.CardWeissScan?.is(c.gameKey)){const score=Math.max(...[c.name,...(c.aliases||[])].map(n=>CardWeissScan.nameScore(n,q)));return score>=.98?160:CardWeissScan.nameKey(q).length>=5&&score>=.8?Math.round(score*100):0;}
   const key=T.norm(q),name=T.norm(c.name),number=T.norm(c.localId),aliases=[number,...(c.aliases||[]).map(T.norm)];
   if(aliases.some(x=>x.replace(/ /g,'')===key.replace(/ /g,'')))return 200;
   if(name===key)return 160;if(name.includes(key))return 120;if(key.split(' ').every(x=>name.includes(x)))return 100;
@@ -42,6 +43,7 @@ globalThis.CardCatalog=(()=>{
   if(!['mtg','riftbound','onepiece','weiss','weiss-jp'].includes(game))throw Error('Wybierz obsługiwaną grę.');
   if(game==='mtg')return CardMTG.search(params,{json,snapshot,mtgCard});
   const d=await snapshot(game),date=(d.snapshotDate||d.retrievedAt||'').slice(0,10);
+  if(params.index==='1'&&['weiss','weiss-jp'].includes(game))return {names:[...new Set(d.cards.flatMap(c=>game==='weiss-jp'?[c[1],c[2],...(d.aliases?.[c[0]]||[])]:[c.name,...(c.aliases||[])]).filter(Boolean))],retrievedAt:date};
   if(params.index==='1')return {names:[...new Set(d.cards.map(c=>game==='weiss-jp'?c[1]:game==='onepiece'?c.card_name:c.name))],retrievedAt:date};
   let rows=d.cards.map(c=>entry(game,c,d));
   // The bundled catalog works without a login or an external proxy. Network refresh is optional.
