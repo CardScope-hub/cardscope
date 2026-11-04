@@ -6,9 +6,10 @@ function scanIsCertain(game,evidence,index){
  return CardScanIndex.suggest(index,evidence).length>0&&CardScanIndex.numbers(game,evidence).some(x=>x.code&&!x.uncertain);
 }
 async function refineScan(image,game,evidence,index,valid,onstage=()=>{}){
+ if(game==='swu')evidence.swuPortrait=CardSWUScan.isPortrait(image);
  if(!['pokemon','riftbound','mtg','swu'].includes(game)||scanIsCertain(game,evidence,index))return evidence;
- const passes=game==='swu'?CardSWUScan.footerPasses:game==='mtg'?CardMTGScan.footerPasses:[{kind:'numbers',region:[0,.78,1,.22],enhance:false},{kind:'names',region:game==='pokemon'?[0,0,1,.25]:[0,.34,1,.4],enhance:false},{kind:'numbers',region:[0,.84,1,.16],enhance:true}];
- for(const pass of passes){if(!valid())throw new DOMException('Anulowano','AbortError');onstage(pass.kind);const r=await CardScanRuntime.read(image,pass);if(!valid())throw new DOMException('Anulowano','AbortError');evidence[pass.kind].push(...CardNeuralEvidence.crop(r));if(scanIsCertain(game,evidence,index))break}
+ const passes=game==='swu'?CardSWUScan.getFooterPasses(image):game==='mtg'?CardMTGScan.footerPasses:[{kind:'numbers',region:[0,.78,1,.22],enhance:false},{kind:'names',region:game==='pokemon'?[0,0,1,.25]:[0,.34,1,.4],enhance:false},{kind:'numbers',region:[0,.84,1,.16],enhance:true}];
+ for(const pass of passes){if(!valid())throw new DOMException('Anulowano','AbortError');onstage(pass.kind);const r=await CardScanRuntime.read(image,pass);if(!valid())throw new DOMException('Anulowano','AbortError');evidence[pass.kind].push(...(game==='swu'?CardSWUScan.markFooter(evidence,CardNeuralEvidence.crop(r)):CardNeuralEvidence.crop(r)));if(scanIsCertain(game,evidence,index))break}
  return evidence;
 }
 async function recognizeNeural(){if(CardWeissScan.is(currentGame()))return recognizeWeiss();if(!photo)return;CardScanner.cancel();prepareLookup();const token=++scanId,game=currentGame(),lang=selectedLanguage();for(const id of ['retry','catalog-submit','scan-classic'])$(id).disabled=true;$('processing').setAttribute('aria-busy','true');status('1 / 3 · Przygotowuję odczyt…');
