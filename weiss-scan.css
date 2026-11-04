@@ -1,0 +1,7 @@
+.weiss-scan-options{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 12px;padding:12px 14px;margin:0 0 12px;border:1px solid #ae89ec40;border-radius:14px;background:#ae89ec0c}
+.weiss-scan-options[hidden]{display:none}
+.weiss-scan-options label{font-size:13px;color:var(--muted,#b9b0c5)}
+.weiss-scan-options select{min-height:44px;min-width:150px;max-width:100%;font-size:16px}
+.weiss-scan-options p{flex-basis:100%;margin:0;font-size:12px;line-height:1.5;color:var(--muted,#b9b0c5)}
+.scan-guide[data-game="weiss"][data-orientation="landscape"],.scan-guide[data-game="weiss-jp"][data-orientation="landscape"]{width:min(calc(100% - 30px),calc(40svh * 88 / 63),680px);height:auto;max-height:none;aspect-ratio:88/63}
+@media(max-width:420px){.weiss-scan-options label{flex-basis:100%}.weiss-scan-options select{width:100%}}

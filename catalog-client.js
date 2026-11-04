@@ -47,6 +47,10 @@ globalThis.CardCatalog=(()=>{
   if(params.index==='1'&&['weiss','weiss-jp'].includes(game))return {names:[...new Set(d.cards.flatMap(c=>game==='weiss-jp'?[c[1],c[2],...(d.aliases?.[c[0]]||[])]:[c.name,...(c.aliases||[])]).filter(Boolean))],retrievedAt:date};
   if(params.index==='1')return {names:[...new Set(d.cards.map(c=>game==='weiss-jp'?c[1]:game==='onepiece'?c.card_name:c.name))],retrievedAt:date};
   let rows=d.cards.map(c=>entry(game,c,d));
+  // Apply the scanned series before pagination, so name fallback cannot mix
+  // another release into later pages of the same title.
+  let weissSeriesApplied;
+  if(params.weissSeries&&globalThis.CardWeissScan?.is(game)){const matches=rows.filter(c=>CardWeissScan.seriesKey(c.localId)===params.weissSeries);weissSeriesApplied=matches.length>0;if(weissSeriesApplied)rows=matches;}
   // The bundled catalog works without a login or an external proxy. Network refresh is optional.
   if(game==='riftbound'&&params.fresh==='1')try{const url=/^[a-z]{2,6}-\d+/i.test(q)?'https://api.riftcodex.com/cards/riftbound/'+encodeURIComponent(q):'https://api.riftcodex.com/cards/name?'+new URLSearchParams({fuzzy:q,size:'100'});const fresh=await json(url,{timeout:7000});const map=new Map(rows.map(c=>[c.id,c]));for(const c of Array.isArray(fresh)?fresh:fresh.items||[])map.set(c.id,riftCard(c));rows=[...map.values()]}catch{}
   if(id)return {card:rows.find(c=>c.id===id)||null};
@@ -54,7 +58,7 @@ globalThis.CardCatalog=(()=>{
   const number=game==='riftbound'&&q.match(/^(\d{1,4})([a-z*]?)\s*\/\s*(\d{2,4})$/i);
   const found=rows.map(c=>{let s=score(c,q,ocr);if(code){const key=(code[1]+'-'+code[2]).toLowerCase().replace(/-0+(?=\d)/,'-'),actual=c.localId.toLowerCase().replace(/-0+(?=\d)/,'-');s=(actual===key||actual.startsWith(key+'-'))&&(!code[3]||c.localId.endsWith('-'+code[3]))?200:0}if(number){const m=c.localId.match(/-(\d+)([a-z*]?)-(\d+)$/i);s=m&&Number(m[1])===Number(number[1])&&m[2].toLowerCase()===number[2].toLowerCase()&&Number(m[3])===Number(number[3])?200:0}return {c,s}}).filter(x=>x.s>0).sort((a,b)=>b.s-a.s||a.c.name.localeCompare(b.c.name));
   if(game==='riftbound'&&!found.length&&params.fresh!=='1')return search({...params,fresh:'1'});
-  return {cards:found.slice((page-1)*36,page*36).map(x=>x.c),total:found.length,catalogCount:rows.length,nextPage:found.length>page*36?page+1:null,source:game==='riftbound'?(d.displaySource||'Riftcodex'):game==='onepiece'?'OPTCG API':d.source,note:'Kopia katalogu: '+date+'. Porównaj numer i ilustrację. Nowsze wydania mogą nie być dostępne.'};
+  return {cards:found.slice((page-1)*36,page*36).map(x=>x.c),total:found.length,catalogCount:rows.length,nextPage:found.length>page*36?page+1:null,weissSeriesApplied,source:game==='riftbound'?(d.displaySource||'Riftcodex'):game==='onepiece'?'OPTCG API':d.source,note:'Kopia katalogu: '+date+'. Porównaj numer i ilustrację. Nowsze wydania mogą nie być dostępne.'};
  }
  async function weissVariants(c){
   const game=c.gameKey||c.catalogGame;if(!['weiss','weiss-jp'].includes(game))return [c];
