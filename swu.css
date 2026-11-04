@@ -1,0 +1,5 @@
+.swu-scan-options{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;margin:0 0 12px;border:1px solid #ae89ec40;border-radius:14px;background:#ae89ec0c}
+.swu-scan-options label{font-size:13px;color:var(--muted,#b9b0c5)}
+.swu-scan-options select{min-height:42px;max-width:70%;font-size:16px}
+.swu-scan-options[hidden]{display:none}
+.scan-guide[data-game="swu"][data-orientation="landscape"]{width:min(calc(100% - 30px),calc(40svh * 88 / 63),680px);height:auto;max-height:none;aspect-ratio:88/63}

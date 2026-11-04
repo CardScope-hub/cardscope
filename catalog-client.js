@@ -18,7 +18,7 @@ globalThis.CardCatalog=(()=>{
    throw Error(last?.name==='AbortError'?'Katalog odpowiada zbyt długo. Sprawdź połączenie i spróbuj ponownie.':'Nie udało się pobrać katalogu. Sprawdź połączenie z internetem.');
   })();memory.set(url,{at:Date.now(),promise});promise.catch(()=>memory.delete(url));return promise;
  }
- async function snapshot(game){if(!snapshots.has(game))snapshots.set(game,json('catalog-'+game+'.json'+(['weiss','weiss-jp'].includes(game)?'?v=weiss-nikke2-1':game==='riftbound'?'?v=expansions-1':['mtg-names','mtg-expanded'].includes(game)?'?v=mtg-expansions-1':''),{ttl:86400000}).then(d=>{if(game==='weiss-jp'){const editions=new Map();for(const r of d.cards){const key=CardWeiss.number(r[3])+'|'+CardWeiss.rarity(r[4]);if(!editions.has(key))editions.set(key,new Set());editions.get(key).add(r[6]);}d.wsAmbiguous=new Set([...editions].filter(([,images])=>images.size>1).map(([key])=>key));}return d;}).catch(e=>{snapshots.delete(game);throw e}));return snapshots.get(game)}
+ async function snapshot(game){if(!snapshots.has(game))snapshots.set(game,json('catalog-'+game+'.json'+(['weiss','weiss-jp'].includes(game)?'?v=weiss-nikke2-1':game==='swu'?'?v=swu-1':game==='riftbound'?'?v=expansions-1':['mtg-names','mtg-expanded'].includes(game)?'?v=mtg-expansions-1':''),{ttl:86400000}).then(d=>{if(game==='weiss-jp'){const editions=new Map();for(const r of d.cards){const key=CardWeiss.number(r[3])+'|'+CardWeiss.rarity(r[4]);if(!editions.has(key))editions.set(key,new Set());editions.get(key).add(r[6]);}d.wsAmbiguous=new Set([...editions].filter(([,images])=>images.size>1).map(([key])=>key));}return d;}).catch(e=>{snapshots.delete(game);throw e}));return snapshots.get(game)}
  const num=n=>n!=null&&Number.isFinite(Number(n))&&Number(n)>0?Number(n):null;
  const baseCard=(key,game,id,name,number,set,image,source)=>({gameKey:key,game,id:String(id),name,localId:String(number||''),set:{name:set||'',cardCount:{}},artworkUrl:image||null,catalogLanguage:'en',variantsList:['Nieustalony'],variants:{},source});
  function riftCard(c){const x=baseCard('riftbound','Riftbound',c.id,c.name,c.riftbound_id,c.set?.label,c.media?.image_url,c.source||'Riftcodex');x.tcgplayerId=c.tcgplayer_id;x.sourceUrl=c.sourceUrl||'https://riftcodex.com/';x.aliases=c.aliases||[];x.rarity=c.rarity||'';x.rulesText=c.rulesText;x.marketUrl='https://www.cardmarket.com/en/Riftbound/Products/Search?searchString='+encodeURIComponent(c.name+' '+c.riftbound_id);return x}
@@ -40,7 +40,8 @@ globalThis.CardCatalog=(()=>{
   return key.split(' ').every(x=>T.norm([c.name,c.localId,c.set.name,c.rarity,...(c.aliases||[]),...(c.searchTerms||[])].join(' ')).includes(x))?45:0;
  }
  async function search(params){const {game,id}=params,q=String(params.q||'').trim(),page=Math.max(1,Number(params.page)||1),ocr=params.ocr==='1';
-  if(!['mtg','riftbound','onepiece','weiss','weiss-jp'].includes(game))throw Error('Wybierz obsługiwaną grę.');
+  if(!['mtg','swu','riftbound','onepiece','weiss','weiss-jp'].includes(game))throw Error('Wybierz obsługiwaną grę.');
+  if(game==='swu')return CardSWU.search(params,{snapshot});
   if(game==='mtg')return CardMTG.search(params,{json,snapshot,mtgCard});
   const d=await snapshot(game),date=(d.snapshotDate||d.retrievedAt||'').slice(0,10);
   if(params.index==='1'&&['weiss','weiss-jp'].includes(game))return {names:[...new Set(d.cards.flatMap(c=>game==='weiss-jp'?[c[1],c[2],...(d.aliases?.[c[0]]||[])]:[c.name,...(c.aliases||[])]).filter(Boolean))],retrievedAt:date};
