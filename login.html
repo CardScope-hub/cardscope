@@ -10,17 +10,17 @@
   <title>Twój profil · CardScope</title>
   <link rel="icon" href="./icon.svg">
   <link rel="stylesheet" href="./auth.css?v=1">
-  <link rel="stylesheet" href="./profile.css?v=friends-2">
-  <link rel="stylesheet" href="./friends.css?v=friends-2">
+  <link rel="stylesheet" href="./profile.css?v=friends-3">
+  <link rel="stylesheet" href="./friends.css?v=friends-3">
   <script src="./supabase-config.js?v=1" defer></script>
   <script src="./vendor/supabase-2.118.0.js" defer></script>
-  <script src="./profile-core.js?v=friends-2" defer></script>
-  <script src="./auth-client.js?v=friends-2" defer></script>
-  <script src="./social-client.js?v=friends-2" defer></script>
-  <script src="./profile-media.js?v=friends-2" defer></script>
-  <script src="./auth-page.js?v=friends-2" defer></script>
-  <script src="./friend-view.js?v=friends-2" defer></script>
-  <script src="./social-page.js?v=friends-2" defer></script>
+  <script src="./profile-core.js?v=friends-3" defer></script>
+  <script src="./auth-client.js?v=friends-3" defer></script>
+  <script src="./social-client.js?v=friends-3" defer></script>
+  <script src="./profile-media.js?v=friends-3" defer></script>
+  <script src="./auth-page.js?v=friends-3" defer></script>
+  <script src="./friend-view.js?v=friends-3" defer></script>
+  <script src="./social-page.js?v=friends-3" defer></script>
 </head>
 <body>
 <div class="cs-login">
@@ -94,19 +94,16 @@
         </form>
       </section>
       <section id="friends-pane" role="tabpanel" aria-labelledby="account-tab-friends" hidden>
-        <div class="profile-heading"><span class="profile-eyebrow">KOLEKCJONUJ W DOBRYM TOWARZYSTWIE</span><h2>Twoi ludzie.<br><em>Wspólna pasja.</em></h2><p>Znajdź kolekcjonerów po nazwie lub wyślij im swój link.</p></div>
+        <header class="friends-heading"><div><span class="profile-eyebrow">KOLEKCJONUJ W DOBRYM TOWARZYSTWIE</span><h2>Znajomi<span aria-hidden="true">.</span></h2><p>Twoi ludzie. Wspólna pasja.</p></div><button id="friends-add" class="friends-add-icon" type="button" aria-label="Dodaj znajomego" aria-haspopup="dialog" aria-controls="friends-add-dialog" title="Dodaj znajomego"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="7" r="3.5"></circle><path d="M2.5 21v-2.5a6.5 6.5 0 0 1 13 0V21M19 8v8m-4-4h8"></path></svg></button></header>
         <div id="friends-guest" class="social-empty" hidden><span aria-hidden="true">✧</span><h3>Dołącz do znajomych</h3><p>Zaloguj się lub utwórz konto. Zaproszenie z linku będzie tu na Ciebie czekać.</p><button type="button" id="friends-login" class="cs-login-primary">Zaloguj się / załóż konto ↗</button></div>
         <div id="friends-message" class="auth-notice" role="status" aria-live="polite" hidden></div>
         <div id="friends-content" hidden>
           <div id="friend-invite-card" class="social-invite-target" hidden></div>
-          <div id="friends-needs-profile" class="social-empty" hidden><p>Najpierw zapisz swój profil, aby inni mogli Cię rozpoznać.</p><button id="friends-edit-profile" type="button" class="social-button">Uzupełnij profil →</button></div>
-          <div class="social-invite-box"><span class="profile-eyebrow">TWÓJ LINK DO ZNAJOMYCH</span><h3>Jedno kliknięcie bliżej.</h3><p>Wyślij swój link. Druga osoba wybierze „Wyślij zaproszenie”, a Ty je zaakceptujesz.</p><input id="friend-link" type="text" readonly aria-label="Twój link do zaproszenia" placeholder="Najpierw utwórz link" hidden><div class="social-actions"><button type="button" id="friend-link-create" class="social-button">Utwórz link</button><button type="button" id="friend-link-copy" class="social-button" hidden>Kopiuj link</button><button type="button" id="friend-link-share" class="social-button" hidden>Udostępnij</button></div><div class="social-actions"><button type="button" id="friend-link-rotate" class="auth-link" hidden>Wygeneruj nowy link</button><button type="button" id="friend-link-revoke" class="auth-link" hidden>Wyłącz link</button></div></div>
-          <label class="social-search-label" for="friends-search">Znajdź kolekcjonera</label><input id="friends-search" class="social-search" type="search" maxlength="50" autocomplete="off" placeholder="Wpisz nazwę profilu lub kod…" aria-describedby="friends-search-help"><p id="friends-search-help" class="profile-field-help">Minimum 2 znaki. Wyniki obejmują profile z włączoną widocznością.</p>
-          <div id="friends-results" aria-live="polite"></div>
-          <div class="social-list-heading"><h3>Twoje kontakty</h3><button type="button" id="friends-refresh" class="auth-link">↻ Odśwież</button></div>
-          <section aria-labelledby="friends-incoming-title"><h4 id="friends-incoming-title">Otrzymane zaproszenia</h4><div id="friends-incoming"></div></section>
-          <section aria-labelledby="friends-accepted-title"><h4 id="friends-accepted-title">Znajomi</h4><div id="friends-accepted"></div></section>
-          <details class="social-outgoing"><summary>Wysłane zaproszenia <span id="friends-outgoing-count">0</span></summary><div id="friends-outgoing"></div></details>
+          <div id="friends-needs-profile" class="friends-profile-hint" hidden><p>Zapisz profil, aby inni mogli Cię rozpoznać.</p><button id="friends-edit-profile" type="button" class="social-button">Uzupełnij profil →</button></div>
+          <div class="friends-list-bar"><div><span class="friends-count-pill">Znajomi <b id="friends-count">0</b></span><span id="friends-pending-badge" hidden></span></div><button type="button" id="friends-refresh" class="friends-refresh-icon" aria-label="Odśwież listę znajomych" title="Odśwież listę"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5M6.3 6.3A8 8 0 0 1 20 12M4 12a8 8 0 0 0 13.7 5.7"></path></svg></button></div>
+          <section class="friends-main-list" aria-label="Twoi znajomi"><div id="friends-accepted"></div></section>
+          <section id="friends-incoming-section" class="friends-requests" aria-labelledby="friends-incoming-title" hidden><h3 id="friends-incoming-title">Otrzymane zaproszenia <span id="friends-incoming-count">0</span></h3><div id="friends-incoming"></div></section>
+          <details id="friends-outgoing-section" class="social-outgoing" hidden><summary>Wysłane zaproszenia <span id="friends-outgoing-count">0</span></summary><div id="friends-outgoing"></div></details>
           <p class="social-private-note">Otwórz profil znajomego, aby obejrzeć jego karty i bindery. Podgląd nie pozwala niczego zmieniać. Prywatne bindery widzi tylko ich właściciel.</p>
         </div>
       </section>
@@ -143,6 +140,10 @@
   </main>
   <footer class="cs-login-footer"><span>CARDSCOPE <i>·</i> COLLECT SOMETHING GREAT.</span><span>Twoje karty. Twój świat.</span></footer>
 </div>
+<dialog id="friends-add-dialog" class="profile-dialog friends-add-dialog" aria-labelledby="friends-add-title"><div class="profile-dialog-inner"><div class="friends-add-top"><span class="profile-eyebrow">POSZERZ SWOJĄ EKIPĘ</span><button type="button" id="friends-add-close" class="social-button" aria-label="Zamknij dodawanie znajomego">✕</button></div><h2 id="friends-add-title">Dodaj znajomego</h2><p class="friends-add-intro">Znajdź kolekcjonera lub wyślij mu swój link.</p><div class="friends-add-tabs" role="tablist" aria-label="Sposób dodania znajomego"><button id="friends-add-name-tab" type="button" role="tab" aria-selected="true" aria-controls="friends-add-name">Po nazwie</button><button id="friends-add-link-tab" type="button" role="tab" aria-selected="false" aria-controls="friends-add-link" tabindex="-1">Przez link</button></div><div id="friends-add-message" class="auth-notice" role="status" aria-live="polite" hidden></div><section id="friends-add-name" role="tabpanel" aria-labelledby="friends-add-name-tab">          <label class="social-search-label" for="friends-search">Znajdź kolekcjonera</label><input id="friends-search" class="social-search" type="search" maxlength="50" autocomplete="off" placeholder="Wpisz nazwę profilu lub kod…" aria-describedby="friends-search-help"><p id="friends-search-help" class="profile-field-help">Minimum 2 znaki. Wyniki obejmują profile z włączoną widocznością.</p>
+          <div id="friends-results" aria-live="polite"></div>
+</section><section id="friends-add-link" role="tabpanel" aria-labelledby="friends-add-link-tab" hidden>          <div class="social-invite-box"><span class="profile-eyebrow">TWÓJ LINK DO ZNAJOMYCH</span><h3>Jedno kliknięcie bliżej.</h3><p>Wyślij swój link. Druga osoba wybierze „Wyślij zaproszenie”, a Ty je zaakceptujesz.</p><input id="friend-link" type="text" readonly aria-label="Twój link do zaproszenia" placeholder="Najpierw utwórz link" hidden><div class="social-actions"><button type="button" id="friend-link-create" class="social-button">Utwórz link</button><button type="button" id="friend-link-copy" class="social-button" hidden>Kopiuj link</button><button type="button" id="friend-link-share" class="social-button" hidden>Udostępnij</button></div><div class="social-actions"><button type="button" id="friend-link-rotate" class="auth-link" hidden>Wygeneruj nowy link</button><button type="button" id="friend-link-revoke" class="auth-link" hidden>Wyłącz link</button></div></div>
+</section></div></dialog>
 <dialog id="profile-crop-dialog" class="profile-dialog" aria-labelledby="profile-crop-title"><div class="profile-dialog-inner"><span class="profile-eyebrow">DOBRY KADR ROBI RÓŻNICĘ</span><h2 id="profile-crop-title">Twoje zdjęcie</h2><canvas id="profile-crop-canvas" aria-label="Podgląd kadru zdjęcia"></canvas><p>Przeciągnij zdjęcie lub ustaw kadr suwakami.</p><label>Przybliżenie<input id="profile-crop-zoom" type="range" min="1" max="3" step="0.01" value="1"></label><div class="crop-position"><label>Lewo / prawo<input id="profile-crop-x" type="range" min="0" max="100" step="0.1" value="50"></label><label>Góra / dół<input id="profile-crop-y" type="range" min="0" max="100" step="0.1" value="50"></label></div><div class="social-actions"><button id="profile-crop-cancel" type="button" class="social-button">Anuluj</button><button id="profile-crop-use" type="button" class="cs-login-primary">Użyj tego kadru ↗</button></div></div></dialog>
 <dialog id="friend-profile-dialog" class="profile-dialog" aria-labelledby="friend-profile-title"><div class="profile-dialog-inner"><button type="button" id="friend-profile-close" class="social-button social-close" aria-label="Zamknij profil">✕</button><div id="friend-profile-view"></div></div></dialog>
 </body>

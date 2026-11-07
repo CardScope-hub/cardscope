@@ -6,13 +6,20 @@
  try{const fromUrl=new URLSearchParams(location.search).get('invite');if(fromUrl&&uuid.test(fromUrl)){invite=fromUrl;const saved=JSON.stringify({token:invite,at:Date.now()});sessionStorage.setItem(key,saved);try{localStorage.setItem(key,saved)}catch{}}else{const saved=JSON.parse(sessionStorage.getItem(key)||localStorage.getItem(key)||'null');if(saved&&uuid.test(saved.token)&&Date.now()-saved.at<86400000)invite=saved.token;}}catch{}
  window.CardInvite=Object.freeze({get pending(){return invite}});
  let owner=null,version=0,searchRun=0,timer=null,homeRun=0,home=null,token=null,inviteProfile=null,visible=false,loaded=false,working=false,modalProfile=null,modalOpener=null;
- const message=(value='',kind='info')=>{const n=$('friends-message');n.textContent=value;n.hidden=!value;n.dataset.kind=kind;};
+ const addDialog=$('friends-add-dialog');let addOpener=null,lastMessage={value:'',kind:'info'};
+ const message=(value='',kind='info')=>{lastMessage={value,kind};for(const id of ['friends-message','friends-add-message']){const n=$(id);n.textContent=value;n.hidden=!value||(id==='friends-message'?addDialog.open:!addDialog.open);n.dataset.kind=kind;}};
+ function addTab(mode,focus=false){for(const k of ['name','link']){const on=k===mode;const tab=$('friends-add-'+k+'-tab');tab.setAttribute('aria-selected',String(on));tab.tabIndex=on?0:-1;$('friends-add-'+k).hidden=!on;}if(focus)$(mode==='name'?'friends-search':'friend-link-create').focus();}
+ function closeAdd(){searchRun++;clearTimeout(timer);addDialog.close();$('friends-search').value='';$('friends-results').replaceChildren();message(lastMessage.value,lastMessage.kind);addOpener?.focus();}
+ function openAdd(){if(!owner){ui.changeMode('login');return;}addOpener=document.activeElement;message();addTab('name');addDialog.showModal();$('friends-search').focus();}
+ $('friends-add').onclick=openAdd;$('friends-add-close').onclick=closeAdd;addDialog.addEventListener('cancel',e=>{e.preventDefault();closeAdd()});
+ for(const k of ['name','link']){$('friends-add-'+k+'-tab').onclick=()=>addTab(k);$('friends-add-'+k+'-tab').onkeydown=e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();const to=e.key==='Home'?'name':e.key==='End'?'link':k==='name'?'link':'name';addTab(to);$('friends-add-'+to+'-tab').focus()}}}
+
  const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n;};
  const button=(text,action,cls='social-button')=>{const b=el('button',cls,text);b.type='button';b.onclick=action;return b;};
  function same(id,run){return owner===id&&version===run&&auth.state.user?.id===id}
  function link(value){const url=new URL(auth.loginUrl);url.searchParams.set('view','friends');url.searchParams.set('invite',value);return url.href;}
  function paintLink(){const has=!!token;$('friend-link').hidden=!has;$('friend-link').value=has?link(token):'';$('friend-link-create').hidden=has;for(const n of ['copy','rotate','revoke'])$('friend-link-'+n).hidden=!has;$('friend-link-share').hidden=!has||!navigator.share;}
- function busy(value){working=value;for(const b of $('friends-content').querySelectorAll('button'))b.disabled=value;}
+ function busy(value){working=value;for(const root of [$('friends-content'),addDialog])for(const b of root.querySelectorAll('button'))if(b.id!=='friends-add-close')b.disabled=value;}
  async function act(action,target){if(working||!owner)return;const id=owner,run=version;busy(true);message();try{await social.rpc(action,{p_target:target});if(!same(id,run))return;message(({request:'Zaproszenie wysłane.',accept:'Dodano do znajomych.',decline:'Zaproszenie odrzucone.',cancel:'Zaproszenie anulowane.',remove:'Usunięto ze znajomych.'})[action],'success');await refresh();if(modalProfile?.id===target){try{modalProfile=await social.rpc('profile',{p_target:target});paintModal()}catch{closeModal()}}if($('friends-search').value.trim().length>=2)void search();}catch(e){if(same(id,run))message(social.errorText(e),'error')}finally{if(same(id,run))busy(false)}}
  function actions(p){const box=el('div','social-person-actions');if(p.id===owner){box.append(el('small','','To Twój profil'));return box;}
   if(p.relationship==='accepted'){box.append(el('span','social-tag','✓ Znajomy'),button('Usuń',()=>{if(confirm('Usunąć '+p.displayName+' ze znajomych?'))void act('remove',p.id)},'auth-link'));}
@@ -21,8 +28,12 @@
   else{box.append(button('Wyślij zaproszenie',()=>void act('request',p.id)));}
   for(const b of box.querySelectorAll('button'))b.disabled=working;return box;
  }
- function row(p){const item=el('article','social-person'),face=el('span','profile-avatar social-face');social.paintAvatar(face,p);const title=button('',()=>void openProfile(p),'social-person-title'),name=el('strong','',p.displayName),code=el('small','',p.friendCode?'#'+p.friendCode:CardProfile.games[p.game]);title.append(name,code);item.append(face,title,actions(p));if(p.relationship==='accepted')item.append(button('Zobacz kolekcję →',()=>window.CardFriendView.open(p,'cards'),'friend-browse-link'));return item;}
- function paintLists(){const people=(home?.people||[]).filter(Boolean);for(const relation of ['incoming','accepted','outgoing']){const list=people.filter(p=>p.relationship===relation),node=$('friends-'+relation);node.replaceChildren(...list.map(row));if(!list.length)node.append(el('p','social-list-empty',relation==='incoming'?'Brak nowych zaproszeń.':relation==='accepted'?'Pierwsza wspólna pasja czeka. Znajdź kogoś po nazwie lub wyślij swój link.':'Brak oczekujących zaproszeń.'));if(relation==='outgoing')$('friends-outgoing-count').textContent=String(list.length);}
+ function row(p){const accepted=p.relationship==='accepted',item=el('article','social-person'+(accepted?' friend-person':' ')),face=el('span','profile-avatar social-face');social.paintAvatar(face,p);const title=button('',()=>void openProfile(p),'social-person-title'),name=el('strong','',p.displayName),code=el('small','',p.friendCode?'#'+p.friendCode:CardProfile.games[p.game]);title.append(name,code);item.append(face,title);
+  if(accepted){const more=button('⋯',()=>void openProfile(p),'friend-person-more');more.setAttribute('aria-label','Profil i opcje: '+p.displayName);item.append(more,button('Zobacz kolekcję ↗',()=>{if(addDialog.open)closeAdd();window.CardFriendView.open(p,'cards')},'friend-browse-link'));}
+  else item.append(actions(p));return item;}
+ function paintLists(){const people=(home?.people||[]).filter(Boolean);for(const relation of ['incoming','accepted','outgoing']){const list=people.filter(p=>p.relationship===relation),node=$('friends-'+relation);node.replaceChildren(...list.map(row));if(!list.length&&relation==='accepted'){const empty=el('div','friends-empty-state');empty.append(el('span','friends-empty-symbol','✧'),el('h3','','Miejsce na Twoją ekipę.'),el('p','','Dodaj znajomego ikoną w prawym górnym rogu. Tutaj zobaczysz jego kolekcję i bindery.'));node.append(empty);}if(relation==='outgoing')$('friends-outgoing-count').textContent=String(list.length);}
+  const accepted=people.filter(p=>p.relationship==='accepted').length,incoming=people.filter(p=>p.relationship==='incoming').length,outgoing=people.filter(p=>p.relationship==='outgoing').length;
+  $('friends-count').textContent=String(accepted);$('friends-incoming-count').textContent=String(incoming);$('friends-incoming-section').hidden=!incoming;$('friends-outgoing-section').hidden=!outgoing;$('friends-pending-badge').hidden=!incoming;$('friends-pending-badge').textContent='Zaproszenia: '+incoming;
   $('friends-needs-profile').hidden=!!home?.profile;paintLink();
  }
  function paintInvite(){const n=$('friend-invite-card');n.replaceChildren();n.hidden=!inviteProfile;if(inviteProfile){n.append(el('span','profile-eyebrow','ZAPROSZENIE Z LINKU'),row(inviteProfile),button('Zamknij zaproszenie',()=>{invite=null;inviteProfile=null;try{sessionStorage.removeItem(key);localStorage.removeItem(key)}catch{}const url=new URL(location.href);url.searchParams.delete('invite');history.replaceState(null,'',url.href);paintInvite()},'auth-link'));}}
@@ -46,12 +57,13 @@
  $('friend-link-share').onclick=async()=>{if(!token)return;try{await navigator.share({title:'Znajdź mnie w CardScope',text:'Dodaj mnie do znajomych w CardScope.',url:link(token)})}catch(e){if(e.name!=='AbortError')message('Użyj przycisku „Kopiuj link”.')}};
  $('friends-search').oninput=()=>{clearTimeout(timer);searchRun++;timer=setTimeout(()=>void search(),450)};
  $('friends-refresh').onclick=()=>{message();void refresh()};$('friends-login').onclick=()=>ui.changeMode('login');$('friends-edit-profile').onclick=()=>ui.switchPane('profile');
- function render(){const s=auth.state,id=s.status==='signed-in'&&!s.recovery?s.user?.id:null;if(id!==owner){owner=id||null;version++;searchRun++;homeRun++;clearTimeout(timer);home=null;token=null;loaded=false;working=false;inviteProfile=null;closeModal();$('friends-results').replaceChildren();$('friends-search').value='';for(const k of ['incoming','accepted','outgoing'])$('friends-'+k).replaceChildren();paintInvite();paintLink();message();}
+ function render(){const s=auth.state,id=s.status==='signed-in'&&!s.recovery?s.user?.id:null;if(id!==owner){owner=id||null;version++;searchRun++;homeRun++;clearTimeout(timer);home=null;token=null;loaded=false;busy(false);inviteProfile=null;closeAdd();closeModal();$('friends-count').textContent='0';$('friends-incoming-section').hidden=$('friends-outgoing-section').hidden=$('friends-pending-badge').hidden=true;$('friends-results').replaceChildren();$('friends-search').value='';for(const k of ['incoming','accepted','outgoing'])$('friends-'+k).replaceChildren();paintInvite();paintLink();message();}
   $('friends-guest').hidden=!!owner||s.recovery;$('friends-content').hidden=!owner;
   if(owner&&visible&&!loaded&&social.state.status==='ready'){loaded=true;void refresh()}
   if(owner&&visible&&social.state.status==='error')message(social.state.error,'error');
  }
- window.addEventListener('cardscope-pane',e=>{const was=visible;visible=e.detail==='friends';if(visible&&!was)loaded=false;render()});
+ window.addEventListener('cardscope-pane',e=>{const was=visible;visible=e.detail==='friends';if(visible&&!was)loaded=false;if(!visible&&addDialog.open)closeAdd();render()});
  auth.subscribe(render);social.subscribe(render);visible=ui.pane==='friends';
+ window.addEventListener('pagehide',()=>{if(addDialog.open)closeAdd()});
  if(invite&&!auth.state.recovery)ui.switchPane('friends');render();
 })();
