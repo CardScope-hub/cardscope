@@ -104,10 +104,11 @@
     status.textContent=profileSaving?'Zapisuję profil na Twoim koncie…':profileDirty?'Masz niezapisane zmiany.':baseline?.version?'Profil zapisany na Twoim koncie.':'Wybierz swój styl i utwórz profil.';
   }
   function renderProfile(state){
+    document.querySelector('.cs-login-layout').dataset.accountView=pane;
     const user=state.status==='signed-in'&&!state.recovery?state.user:null,owner=user?.id||null;
     if(owner!==profileOwner){profileGeneration++;profileOwner=owner;profileSaving=false;loadProfile(user);}
     else if(!profileDirty&&!profileSaving&&comparable(CardProfile.read(user))!==comparable(baseline||{}))loadProfile(user);
-    if(state.recovery||(state.status==='guest'&&state.error))pane='login';
+    if(state.recovery||(state.status==='guest'&&state.error))pane='login';document.querySelector('.cs-login-layout').dataset.accountView=pane;
     for(const name of ['profile','friends','login']){const selected=name===pane,tab=$('account-tab-'+name);tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1;tab.disabled=busy||profileSaving||(name!=='login'&&state.recovery);$(name+'-pane').hidden=!selected;}
     $('profile-loading').hidden=state.status!=='loading';$('profile-guest').hidden=state.status!=='guest';$('profile-form').hidden=!user;
     $('profile-error').hidden=!['error','unconfigured'].includes(state.status);$('profile-error-text').textContent=state.error||'Nie udało się wczytać konta.';$('profile-retry').hidden=state.status==='unconfigured';
