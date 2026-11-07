@@ -7,7 +7,7 @@
  const fail=code=>Object.assign(Error(code),{code});
  const check=id=>{if(!id||auth.state.user?.id!==id||auth.state.status!=='signed-in'||auth.state.recovery)throw fail('ACCOUNT_CHANGED');};
  const emit=next=>{state=Object.freeze({...state,...next});for(const cb of listeners)try{cb(state)}catch{console.error('CardScope: nie udało się odświeżyć profilu.')}};
- function errorText(e){const code=e?.code||'',messages={ACCOUNT_CHANGED:'Konto się zmieniło. Zaloguj się ponownie.',PROFILE_CONFLICT:'Profil zmienił się na innym urządzeniu. Skopiuj swój opis, kliknij „Wczytaj zapisany profil” i ponów zmiany.',PROFILE_REQUIRED:'Najpierw zapisz swój profil w zakładce Profil.',PROFILE_UNAVAILABLE:'Ten profil jest niedostępny. Poproś o nowy link.',INVITE_INVALID:'Ten link wygasł lub został wyłączony. Poproś o nowy link.',REQUEST_UNAVAILABLE:'To zaproszenie zostało już zmienione. Odśwież listę.',REQUEST_COOLDOWN:'Zaproszenie zostało odrzucone. Następne możesz wysłać po 24 godzinach.',REQUEST_LIMIT:'Masz już 50 oczekujących zaproszeń. Anuluj nieaktualne.',INVALID_IMAGE:'Nie udało się zapisać zdjęcia. Wybierz je ponownie.',AUTH_REQUIRED:'Zaloguj się, aby korzystać ze znajomych.',BUSY:'Trwa zapisywanie. Poczekaj chwilę.',UNCONFIGURED:'Moduł profili nie jest jeszcze uruchomiony. Właściciel strony musi wykonać skrypt 03-PROFILE-ZNAJOMI.sql w Supabase.'};
+ function errorText(e){const code=e?.code||'',messages={ACCOUNT_CHANGED:'Konto się zmieniło. Zaloguj się ponownie.',PROFILE_CONFLICT:'Profil zmienił się na innym urządzeniu. Skopiuj swój opis, kliknij „Wczytaj zapisany profil” i ponów zmiany.',PROFILE_REQUIRED:'Najpierw zapisz swój profil w zakładce Profil.',PROFILE_UNAVAILABLE:'Ten profil jest niedostępny. Poproś o nowy link.',INVITE_INVALID:'Ten link wygasł lub został wyłączony. Poproś o nowy link.',REQUEST_UNAVAILABLE:'To zaproszenie zostało już zmienione. Odśwież listę.',REQUEST_COOLDOWN:'Zaproszenie zostało odrzucone. Następne możesz wysłać po 24 godzinach.',REQUEST_LIMIT:'Masz już 50 oczekujących zaproszeń. Anuluj nieaktualne.',INVALID_IMAGE:'Nie udało się zapisać zdjęcia. Wybierz je ponownie.',AUTH_REQUIRED:'Zaloguj się, aby korzystać ze znajomych.',BUSY:'Trwa zapisywanie. Poczekaj chwilę.',COLLECTION_PRIVATE:'Ta kolekcja jest dostępna tylko dla zaakceptowanych znajomych.',BINDER_UNAVAILABLE:'Ten binder jest prywatny, usunięty albo niedostępny.',SYNC_BINDER_FIRST:'Najpierw zsynchronizuj binder z kontem.',PRIVACY_CONFLICT:'Widoczność zmieniła się na innym urządzeniu. Otwórz ustawienia ponownie.',BINDER_PRIVATE:'Ten binder jest prywatny. Zmień jego widoczność, aby utworzyć link.',UNCONFIGURED:'Moduł profili nie jest jeszcze uruchomiony. Właściciel strony musi wykonać skrypt 04-ZNAJOMI-PRYWATNOSC.sql w Supabase.'};
   if(messages[code])return messages[code];if(['PGRST202','42P01','3F000'].includes(code))return messages.UNCONFIGURED;
   if(e?.name==='AbortError')return 'Serwer nie odpowiedział na czas. Sprawdź zapisany profil przed ponowną próbą.';
   if(e?.status===401)return 'Sesja wygasła. Zaloguj się ponownie.';
@@ -22,7 +22,7 @@
   if(url.protocol!=='https:'||url.username||url.password||!['','/'].includes(url.pathname))throw fail('UNCONFIGURED');
   try{const response=await fetch(url.origin+route,{method,body:body===undefined?undefined:raw?body:JSON.stringify(body),headers:{apikey:config.publishableKey.trim(),Authorization:'Bearer '+accessToken,'Content-Type':raw?'image/jpeg':'application/json',...(raw?{'x-upsert':'false'}:{})},credentials:'omit',cache:'no-store',referrerPolicy:'no-referrer',signal:controller.signal});
    let data;try{data=await response.json()}catch{data=null}check(id);
-   if(!response.ok){const msg=data?.message||data?.error||'';const code=/^(PROFILE_|INVITE_|REQUEST_|INVALID_|AUTH_)/.test(msg)?msg:data?.code||data?.error_code||'REQUEST_FAILED';throw Object.assign(Error('Request failed'),{code,status:response.status});}
+   if(!response.ok){const msg=data?.message||data?.error||'';const code=/^(PROFILE_|INVITE_|REQUEST_|INVALID_|AUTH_|COLLECTION_|BINDER_|SYNC_|PRIVACY_)/.test(msg)?msg:data?.code||data?.error_code||'REQUEST_FAILED';throw Object.assign(Error('Request failed'),{code,status:response.status});}
    return data;
   }finally{clearTimeout(timer)}
  }
@@ -46,7 +46,7 @@
  async function removeFiles(paths,id){if(paths.length)await request('/storage/v1/object/'+bucket,{prefixes:paths},id,'DELETE');}
  async function save(input,media={},id=owner){check(id);if(savingOwner===id)throw fail('BUSY');if(state.status!=='ready')throw fail('UNCONFIGURED');savingOwner=id;
   const previous=state.profile,uploaded=[];let result;
-  try{const value={...CardProfile.validate(input),discoverable:!!input.discoverable,avatarPath:input.avatarPath||null,bannerPath:input.bannerPath||null,expectedVersion:input.version||0};
+  try{const value={...CardProfile.validate(input),discoverable:!!input.discoverable,accountPrivate:input.accountPrivate!==false,avatarPath:input.avatarPath||null,bannerPath:input.bannerPath||null,expectedVersion:input.version||0};
    for(const kind of ['avatar','banner']){if(media[kind] instanceof Blob){if(media[kind].type!=='image/jpeg'||media[kind].size>1500000)throw fail('INVALID_IMAGE');const path=id+'/'+kind+'/'+crypto.randomUUID()+'.jpg';await request('/storage/v1/object/'+bucket+'/'+path,media[kind],id,'POST',true);uploaded.push(path);value[kind+'Path']=path;}}
    result=await rpc('save',{p_profile:value},id);adopt(result,id);
    const obsolete=['avatarPath','bannerPath'].map(k=>previous?.[k]&&previous[k]!==result[k]?previous[k]:null).filter(Boolean);
@@ -56,6 +56,6 @@
   }catch(e){if(uploaded.length&&auth.state.user?.id===id)try{const actual=await rpc('mine',{},id);await removeFiles(uploaded.filter(p=>p!==actual?.avatarPath&&p!==actual?.bannerPath),id)}catch{/* An uncertain save must never delete a possibly referenced image. */}throw e;
   }finally{if(savingOwner===id)savingOwner=null}
  }
- window.CardSocial=Object.freeze({get state(){return state},subscribe(cb){listeners.add(cb);cb(state);return()=>listeners.delete(cb)},load,rpc,save,imageUrl,paintAvatar,paintBanner,errorText});
+ window.CardSocial=Object.freeze({get state(){return state},subscribe(cb){listeners.add(cb);cb(state);return()=>listeners.delete(cb)},load,rpc,visit(target,args={}){return request('/rest/v1/rpc/cardscope_visit_v1',{p_owner:target,...args})},privacy(id,value=null,version=null){return request('/rest/v1/rpc/cardscope_binder_privacy_v1',{p_binder_id:id,p_private:value,p_version:version})},save,imageUrl,paintAvatar,paintBanner,errorText});
  auth.subscribe(s=>{const id=s.status==='signed-in'&&!s.recovery?s.user?.id:null;if(id===owner)return;owner=id||null;generation++;pending=null;signed.clear();emit({status:owner?'loading':'guest',profile:null,error:''});if(owner)void load().catch(()=>{});});
 })();

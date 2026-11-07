@@ -10,15 +10,17 @@
   <title>Twój profil · CardScope</title>
   <link rel="icon" href="./icon.svg">
   <link rel="stylesheet" href="./auth.css?v=1">
-  <link rel="stylesheet" href="./profile.css?v=social-1">
+  <link rel="stylesheet" href="./profile.css?v=friends-2">
+  <link rel="stylesheet" href="./friends.css?v=friends-2">
   <script src="./supabase-config.js?v=1" defer></script>
   <script src="./vendor/supabase-2.118.0.js" defer></script>
-  <script src="./profile-core.js?v=social-1" defer></script>
-  <script src="./auth-client.js?v=social-1" defer></script>
-  <script src="./social-client.js?v=social-1" defer></script>
-  <script src="./profile-media.js?v=social-1" defer></script>
-  <script src="./auth-page.js?v=social-1" defer></script>
-  <script src="./social-page.js?v=social-1" defer></script>
+  <script src="./profile-core.js?v=friends-2" defer></script>
+  <script src="./auth-client.js?v=friends-2" defer></script>
+  <script src="./social-client.js?v=friends-2" defer></script>
+  <script src="./profile-media.js?v=friends-2" defer></script>
+  <script src="./auth-page.js?v=friends-2" defer></script>
+  <script src="./friend-view.js?v=friends-2" defer></script>
+  <script src="./social-page.js?v=friends-2" defer></script>
 </head>
 <body>
 <div class="cs-login">
@@ -79,6 +81,7 @@
             <label for="profile-name">Nick<input id="profile-name" name="displayName" type="text" autocomplete="nickname" minlength="2" maxlength="50" required placeholder="Jak się do Ciebie zwracać?" aria-describedby="profile-name-help"></label><p id="profile-name-help" class="profile-field-help">Nazwa wyświetlana na Twoim profilu.</p>
             <label for="profile-bio">O mnie <span class="profile-optional">opcjonalnie</span><textarea id="profile-bio" name="bio" rows="3" maxlength="160" placeholder="Kolekcjonuję od pierwszego boostera…" aria-describedby="profile-bio-count"></textarea></label><span id="profile-bio-count" class="profile-char-count">0 / 160</span>
             <label for="profile-game">Ulubiona karcianka<select id="profile-game" name="game"></select></label>
+            <label class="profile-discovery"><input type="checkbox" id="profile-private" checked><span>Konto prywatne<small>Włączone: karty i bindery widzą tylko zaakceptowani znajomi. Wyłączone: mogą je oglądać inni zalogowani kolekcjonerzy. Prywatne bindery zawsze widzisz tylko Ty. Zmiana na prywatne wyłącza dotychczasowe linki do binderów.</small></span></label>
             <label class="profile-discovery"><input type="checkbox" id="profile-discoverable"><span>Pozwól znaleźć mnie po nazwie<small>Inni zalogowani kolekcjonerzy zobaczą Twój nick, zdjęcie, baner i opis. E-mail pozostaje prywatny. Przy wyłączonej opcji możesz zapraszać przez link.</small></span></label>
             <p id="profile-service-status" class="profile-field-help" role="status"></p>
             <button type="button" id="profile-reload" class="auth-link">Wczytaj zapisany profil</button>
@@ -104,7 +107,7 @@
           <section aria-labelledby="friends-incoming-title"><h4 id="friends-incoming-title">Otrzymane zaproszenia</h4><div id="friends-incoming"></div></section>
           <section aria-labelledby="friends-accepted-title"><h4 id="friends-accepted-title">Znajomi</h4><div id="friends-accepted"></div></section>
           <details class="social-outgoing"><summary>Wysłane zaproszenia <span id="friends-outgoing-count">0</span></summary><div id="friends-outgoing"></div></details>
-          <p class="social-private-note">Znajomi widzą profil. Twoja kolekcja i bindery pozostają prywatne, dopóki samodzielnie nie udostępnisz bindera.</p>
+          <p class="social-private-note">Otwórz profil znajomego, aby obejrzeć jego karty i bindery. Podgląd nie pozwala niczego zmieniać. Prywatne bindery widzi tylko ich właściciel.</p>
         </div>
       </section>
       <section id="login-pane" role="tabpanel" aria-labelledby="account-tab-login" hidden>

@@ -1,7 +1,8 @@
-// A separate read-only viewer: no auth client, private storage, writes or edit handlers.
+// Read-only shared viewer. Auth identifies friends; collection stores/editors are never loaded.
 (() => {
  'use strict';
  const $=id=>document.getElementById(id),el=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n;};
+ const viewer=()=>globalThis.CardScopeAuth?.state.status==='signed-in'&&!globalThis.CardScopeAuth.state.recovery?globalThis.CardScopeAuth.state.user?.id||null:null;
  const token=new URLSearchParams(location.search).get('share');
  let data=null,page=0,selectedCard=null,back=false,requestId=0,fx=null,currency='PLN';
  const layouts=['2x2','3x3','4x3','4x4','4x5','5x4','5x5','6x6'];
@@ -63,19 +64,26 @@
   const link=linkURL(c.priceUrl);$('public-card-market').hidden=!link;if(link)$('public-card-market').href=link;else $('public-card-market').removeAttribute('href');
   $('public-card-flip').hidden=!imageURL(c.backArtwork);$('public-card-flip').textContent=back?'Pokaż przód ↻':'Pokaż drugą stronę ↻';
  }
+ function clearPublicData(){
+  data=null;selectedCard=null;back=false;$('public-card-dialog').close();$('public-page').replaceChildren();$('public-content').hidden=true;
+  $('public-card-image').removeAttribute('src');$('public-card-image').alt='';$('public-card-market').removeAttribute('href');$('public-card-market').hidden=true;$('public-card-flip').hidden=true;
+  for(const id of ['public-title','public-subtitle','public-owner','owner-avatar','public-total','public-missing','public-count','public-layout','public-updated','public-card-name','public-card-meta','public-card-value','public-card-source','public-card-date','public-card-owner'])$(id).textContent='';
+  $('public-page-select').replaceChildren();$('public-page-title').textContent='Binder';document.title='Udostępniony binder · CardScope';
+ }
  async function load(){
-  const run=++requestId;$('public-refresh').disabled=true;$('public-retry').hidden=true;
+  const run=++requestId,who=viewer();$('public-sign-in').hidden=true;$('public-refresh').disabled=true;$('public-retry').hidden=true;
   if(!data){$('public-status').hidden=false;$('public-status-title').textContent='Otwieramy binder…';$('public-status-note').textContent='Za chwilę poznasz tę kolekcję.';}
   try{
    if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(token||''))throw Error('Ten link jest niepełny. Poproś właściciela o nowy link z aplikacji.');
    const config=globalThis.CARDSCOPE_SUPABASE;if(!config?.url||!config?.publishableKey)throw Error('Nie wczytano konfiguracji strony. Spróbuj ponownie.');
-   const response=await fetch(new URL('/rest/v1/rpc/cardscope_binder_public_v1',config.url),{method:'POST',credentials:'omit',cache:'no-store',redirect:'error',signal:AbortSignal.timeout(25000),headers:{apikey:config.publishableKey,'Content-Type':'application/json'},body:JSON.stringify({p_token:token})});
-   const d=await response.json().catch(()=>null);if(run!==requestId)return;
+   const session=who?await globalThis.CardScopeAuth.syncSession(who):null;if(who!==viewer()||run!==requestId)return;
+   const response=await fetch(new URL('/rest/v1/rpc/cardscope_binder_public_v1',config.url),{method:'POST',credentials:'omit',cache:'no-store',redirect:'error',signal:AbortSignal.timeout(25000),headers:{apikey:config.publishableKey,...(session?{Authorization:'Bearer '+session.accessToken}:{}),'Content-Type':'application/json'},body:JSON.stringify({p_token:token})});
+   const d=await response.json().catch(()=>null);if(run!==requestId||who!==viewer())return;
    if(!response.ok)throw Error(response.status===404?'Udostępnianie binderów nie zostało jeszcze włączone na tej stronie.':'Nie udało się pobrać bindera. Sprawdź internet i spróbuj ponownie.');
-   if(!d)throw Error('Ten binder nie jest już udostępniany albo link jest nieprawidłowy.');
+   if(!d)throw Error('Ten binder jest prywatny, link został wyłączony albo konto wymaga zaakceptowania Cię jako znajomego.');
    data=validate(d);if(selectedCard){selectedCard=data.byId.get(selectedCard.id)||null;if(!selectedCard)$('public-card-dialog').close();}
    $('public-content').hidden=false;$('public-status').hidden=true;render();
-  }catch(e){if(run!==requestId)return;data=null;selectedCard=null;$('public-card-dialog').close();$('public-page').replaceChildren();$('public-content').hidden=true;$('public-status').hidden=false;$('public-status-title').textContent='Nie możemy otworzyć bindera.';$('public-status-note').textContent=e.name==='TimeoutError'?'Połączenie trwa zbyt długo. Spróbuj ponownie.':e.message||'Sprawdź połączenie z internetem.';$('public-retry').hidden=false;}
+  }catch(e){if(run!==requestId||who!==viewer())return;clearPublicData();$('public-sign-in').hidden=!!who;$('public-status').hidden=false;$('public-status-title').textContent='Nie możemy otworzyć bindera.';$('public-status-note').textContent=e.name==='TimeoutError'?'Połączenie trwa zbyt długo. Spróbuj ponownie.':e.message||'Sprawdź połączenie z internetem.';$('public-retry').hidden=false;}
   finally{if(run===requestId)$('public-refresh').disabled=false;}
  }
  async function rates(){
@@ -88,5 +96,8 @@
  $('public-card-close').onclick=()=>$('public-card-dialog').close();$('public-card-dialog').addEventListener('close',()=>{selectedCard=null;});$('public-card-flip').onclick=()=>{back=!back;renderCard();};
  $('public-refresh').onclick=$('public-retry').onclick=()=>void load();
  document.addEventListener('keydown',e=>{if($('public-card-dialog').open||e.target.closest('input,select,textarea'))return;if(e.key==='ArrowRight')turn(page+1);if(e.key==='ArrowLeft')turn(page-1);});
- void load();void rates();
+ let lastViewer;globalThis.CardScopeAuth?.subscribe(s=>{
+  if(s.status==='loading'){requestId++;lastViewer=undefined;clearPublicData();return;}
+  const id=viewer();if(id!==lastViewer){lastViewer=id;requestId++;clearPublicData();void load()}
+ });if(!globalThis.CardScopeAuth)void load();window.addEventListener('pagehide',()=>{requestId++;clearPublicData()});window.addEventListener('pageshow',async e=>{if(!e.persisted)return;const run=++requestId;clearPublicData();await globalThis.CardScopeAuth?.refresh();if(run===requestId)void load()});void rates();
 })();

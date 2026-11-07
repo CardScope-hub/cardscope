@@ -89,10 +89,10 @@
   // Profile and login share the existing callback URL; URL fragments remain with Auth.
   let pane=['login','friends'].includes(new URLSearchParams(window.location.search).get('view'))?new URLSearchParams(window.location.search).get('view'):'profile';
   let profileOwner=null,profileGeneration=0,profileSaving=false,profileDirty=false,baseline=null,draft=CardProfile.read(null);
-  const profileValue=()=>({displayName:$('profile-name').value,bio:$('profile-bio').value,game:$('profile-game').value,avatar:draft.avatar,theme:draft.theme,discoverable:$('profile-discoverable').checked,version:baseline?.version||0,...window.CardMedia.get()});
-  const comparable=p=>JSON.stringify([p.displayName,p.bio,p.game,p.avatar,p.theme,p.avatarPath||null,p.bannerPath||null,!!p.discoverable,p.version||0]);
+  const profileValue=()=>({displayName:$('profile-name').value,bio:$('profile-bio').value,game:$('profile-game').value,avatar:draft.avatar,theme:draft.theme,discoverable:$('profile-discoverable').checked,accountPrivate:$('profile-private').checked,version:baseline?.version||0,...window.CardMedia.get()});
+  const comparable=p=>JSON.stringify([p.displayName,p.bio,p.game,p.avatar,p.theme,p.avatarPath||null,p.bannerPath||null,!!p.discoverable,p.accountPrivate!==false,p.version||0]);
   function profileMessage(value='',kind='info'){$('profile-message').textContent=value;$('profile-message').dataset.kind=kind;$('profile-message').hidden=!value;}
-  function loadProfile(user){draft=CardProfile.read(user);baseline={...draft};window.CardMedia.reset(draft);$('profile-discoverable').checked=!!draft.discoverable;$('profile-name').value=draft.displayName;$('profile-bio').value=draft.bio;$('profile-game').value=draft.game;profileDirty=false;profileMessage();}
+  function loadProfile(user){draft=CardProfile.read(user);baseline={...draft};window.CardMedia.reset(draft);$('profile-discoverable').checked=!!draft.discoverable;$('profile-private').checked=draft.accountPrivate!==false;$('profile-name').value=draft.displayName;$('profile-bio').value=draft.bio;$('profile-game').value=draft.game;profileDirty=false;profileMessage();}
   function previewProfile(){
     const p=profileOwner?profileValue():CardProfile.read(null);window.CardMedia.preview(p);$('profile-cover').dataset.theme=p.theme;
     $('profile-preview-name').textContent=p.displayName.trim()||'Twój nick';$('profile-preview-game').textContent=CardProfile.games[p.game]||CardProfile.games[''];$('profile-preview-bio').textContent=p.bio.trim();$('profile-preview-bio').hidden=!p.bio.trim();$('profile-bio-count').textContent=Array.from(p.bio).length+' / 160';
@@ -123,7 +123,7 @@
   for(const [key,label]of Object.entries(CardProfile.themes)){const button=document.createElement('button');button.type='button';button.className='profile-theme-choice';button.dataset.value=key;button.dataset.theme=key;button.title=label;button.setAttribute('aria-label',label);button.setAttribute('aria-pressed','false');button.onclick=()=>{draft.theme=key;profileEdited()};$('profile-theme-options').append(button);}
   for(const [key,label]of Object.entries(CardProfile.games)){const option=document.createElement('option');option.value=key;option.textContent=label;$('profile-game').append(option);}
   function profileEdited(){if(!profileOwner||profileSaving)return;profileDirty=window.CardMedia.dirty||comparable(profileValue())!==comparable(baseline);profileMessage();previewProfile();}
-  $('profile-name').oninput=$('profile-bio').oninput=$('profile-game').onchange=$('profile-discoverable').onchange=profileEdited;document.addEventListener('profile-media-change',profileEdited);
+  $('profile-name').oninput=$('profile-bio').oninput=$('profile-game').onchange=$('profile-discoverable').onchange=$('profile-private').onchange=profileEdited;document.addEventListener('profile-media-change',profileEdited);
   $('profile-login').onclick=()=>changeMode('login');$('profile-register').onclick=()=>changeMode('register');$('profile-account-settings').onclick=()=>switchPane('login');$('auth-edit-profile').onclick=()=>switchPane('profile');
   $('profile-discard').onclick=()=>{if(profileSaving)return;loadProfile(auth.state.user);previewProfile();};
   $('profile-retry').onclick=()=>{if(auth.state.status!=='loading')void auth.refresh();};
