@@ -1,0 +1,2588 @@
+{
+  "verifiedAt": "2026-11-07",
+  "languages": {
+    "en": {
+      "cardsBefore": 21256,
+      "cardsAfter": 21256,
+      "addedCards": 0,
+      "updatedExistingCards": 0,
+      "setsBefore": 205,
+      "setsAfter": 205,
+      "addedSets": 0,
+      "tcgdexUnchanged": true,
+      "sourceUrl": "https://api.tcgdex.net/v2/en/cards"
+    },
+    "ja": {
+      "cardsBefore": 15923,
+      "cardsAfter": 22735,
+      "addedCards": 6812,
+      "updatedExistingCards": 2202,
+      "setsBefore": 184,
+      "setsAfter": 321,
+      "addedSets": 137,
+      "tcgdexUnchanged": true,
+      "sourceUrl": "https://api.tcgdex.net/v2/ja/cards"
+    },
+    "de": {
+      "cardsBefore": 18995,
+      "cardsAfter": 18995,
+      "addedCards": 0,
+      "updatedExistingCards": 0,
+      "setsBefore": 144,
+      "setsAfter": 144,
+      "addedSets": 0,
+      "tcgdexUnchanged": true,
+      "sourceUrl": "https://api.tcgdex.net/v2/de/cards"
+    },
+    "fr": {
+      "cardsBefore": 20045,
+      "cardsAfter": 20045,
+      "addedCards": 0,
+      "updatedExistingCards": 0,
+      "setsBefore": 187,
+      "setsAfter": 187,
+      "addedSets": 0,
+      "tcgdexUnchanged": true,
+      "sourceUrl": "https://api.tcgdex.net/v2/fr/cards"
+    },
+    "es": {
+      "cardsBefore": 14264,
+      "cardsAfter": 14264,
+      "addedCards": 0,
+      "updatedExistingCards": 0,
+      "setsBefore": 145,
+      "setsAfter": 145,
+      "addedSets": 0,
+      "tcgdexUnchanged": true,
+      "sourceUrl": "https://api.tcgdex.net/v2/es/cards"
+    },
+    "it": {
+      "cardsBefore": 14514,
+      "cardsAfter": 14514,
+      "addedCards": 0,
+      "updatedExistingCards": 0,
+      "setsBefore": 182,
+      "setsAfter": 182,
+      "addedSets": 0,
+      "tcgdexUnchanged": true,
+      "sourceUrl": "https://api.tcgdex.net/v2/it/cards"
+    },
+    "pt": {
+      "cardsBefore": 13907,
+      "cardsAfter": 13907,
+      "addedCards": 0,
+      "updatedExistingCards": 0,
+      "setsBefore": 114,
+      "setsAfter": 114,
+      "addedSets": 0,
+      "tcgdexUnchanged": true,
+      "sourceUrl": "https://api.tcgdex.net/v2/pt/cards"
+    }
+  },
+  "limits": [
+    "TCGdex briefs for EN/DE/FR/ES/IT/PT had no added cards or changes versus the existing snapshot; they were rechecked, not represented as new releases.",
+    "No speculative cards or names were added. New Japanese supplemental records use exact Limitless JP set + collector number + Japanese printed name; unofficial English set-name aliases are labeled as aliases.",
+    "Official printed denominator for newly added supplemental Japanese sets is intentionally unknown (0), rather than inferred from list length.",
+    "Existing conflicting Japanese names were retained; corresponding new image joins were skipped and reported."
+  ],
+  "files": [
+    "catalog-pokemon-en.json",
+    "catalog-pokemon-ja.json",
+    "catalog-pokemon-de.json",
+    "catalog-pokemon-fr.json",
+    "catalog-pokemon-es.json",
+    "catalog-pokemon-it.json",
+    "catalog-pokemon-pt.json",
+    "catalog-pokemon-latest.json",
+    "pokemon-artwork.json"
+  ],
+  "latestEnglishAdditions": {
+    "before": 191,
+    "after": 191,
+    "added": 0,
+    "verifiedAt": "2026-11-07",
+    "sources": [
+      "https://api.tcgdex.net/v2/en/sets/30th",
+      "https://tcgcsv.com/tcgplayer/3/24722/products",
+      "https://api.tcgdex.net/v2/en/sets/30th-c",
+      "https://tcgcsv.com/tcgplayer/3/24837/products"
+    ]
+  },
+  "artwork": {
+    "japaneseBefore": 13333,
+    "japaneseAfter": 20145,
+    "addedJapaneseMappings": 6812,
+    "englishBefore": 19666,
+    "englishAfter": 19666
+  },
+  "addedSeries": [
+    {
+      "language": "ja",
+      "id": "20th",
+      "name": "ポケットモンスターカードゲーム スターターパック",
+      "englishName": "Pokemon Card Game Starter Pack",
+      "newSet": true,
+      "addedCards": 84,
+      "cardsBefore": 0,
+      "cardsAfter": 84,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/20th?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BGS",
+      "name": "バトルギフトセット「ボルトロスVSトルネロス」",
+      "englishName": "Thundurus VS Tornadus Battle Gift Set",
+      "newSet": true,
+      "addedCards": 32,
+      "cardsBefore": 0,
+      "cardsAfter": 32,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BGS?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BKB",
+      "name": "バトル強化デッキ60「ブラックキュレムEX」",
+      "englishName": "Black Kyurem-EX Deck",
+      "newSet": true,
+      "addedCards": 20,
+      "cardsBefore": 0,
+      "cardsAfter": 20,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BKB?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BKR",
+      "name": "バトル強化デッキ60「レシラムEX」",
+      "englishName": "Reshiram-EX Deck",
+      "newSet": true,
+      "addedCards": 20,
+      "cardsBefore": 0,
+      "cardsAfter": 20,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BKR?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BKW",
+      "name": "バトル強化デッキ60「ホワイトキュレムEX」",
+      "englishName": "White Kyurem-EX Deck",
+      "newSet": true,
+      "addedCards": 20,
+      "cardsBefore": 0,
+      "cardsAfter": 20,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BKW?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BKZ",
+      "name": "バトル強化デッキ60「ゼクロムEX」",
+      "englishName": "Zekrom-EX Deck",
+      "newSet": true,
+      "addedCards": 20,
+      "cardsBefore": 0,
+      "cardsAfter": 20,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BKZ?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BKc",
+      "name": "バトル強化デッキ コバルオン",
+      "englishName": "Cobalion Deck",
+      "newSet": true,
+      "addedCards": 14,
+      "cardsBefore": 0,
+      "cardsAfter": 14,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BKc?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BKt",
+      "name": "バトル強化デッキ テラキオン",
+      "englishName": "Terrakion Deck",
+      "newSet": true,
+      "addedCards": 14,
+      "cardsBefore": 0,
+      "cardsAfter": 14,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BKt?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BKv",
+      "name": "バトル強化デッキ ビリジオン",
+      "englishName": "Virizion Deck",
+      "newSet": true,
+      "addedCards": 14,
+      "cardsBefore": 0,
+      "cardsAfter": 14,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BKv?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BTV",
+      "name": "バトルテーマデッキ 「ビクティニ」",
+      "englishName": "Victini Deck",
+      "newSet": true,
+      "addedCards": 26,
+      "cardsBefore": 0,
+      "cardsAfter": 26,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BTV?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BW1b",
+      "name": "拡張パック「ブラックコレクション」",
+      "englishName": "Black Collection",
+      "newSet": true,
+      "addedCards": 53,
+      "cardsBefore": 0,
+      "cardsAfter": 53,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BW1b?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BW1w",
+      "name": "拡張パック「ホワイトコレクション」",
+      "englishName": "White Collection",
+      "newSet": true,
+      "addedCards": 54,
+      "cardsBefore": 0,
+      "cardsAfter": 54,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BW1w?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BW2",
+      "name": "拡張パック「レッドコレクション」",
+      "englishName": "Red Collection",
+      "newSet": true,
+      "addedCards": 67,
+      "cardsBefore": 0,
+      "cardsAfter": 67,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BW2?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BW3h",
+      "name": "拡張パック「ヘイルブリザード」",
+      "englishName": "Hail Blizzard",
+      "newSet": true,
+      "addedCards": 52,
+      "cardsBefore": 0,
+      "cardsAfter": 52,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BW3h?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BW3p",
+      "name": "拡張パック「サイコドライブ」",
+      "englishName": "Psycho Drive",
+      "newSet": true,
+      "addedCards": 52,
+      "cardsBefore": 0,
+      "cardsAfter": 52,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BW3p?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BW4",
+      "name": "拡張パック「ダークラッシュ」",
+      "englishName": "Dark Rush",
+      "newSet": true,
+      "addedCards": 69,
+      "cardsBefore": 0,
+      "cardsAfter": 69,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BW4?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BW5n",
+      "name": "拡張パック「リューノブレード」",
+      "englishName": "Dragon Blade",
+      "newSet": true,
+      "addedCards": 50,
+      "cardsBefore": 0,
+      "cardsAfter": 50,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BW5n?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BW5z",
+      "name": "拡張パック「リューズブラスト」",
+      "englishName": "Dragon Blast",
+      "newSet": true,
+      "addedCards": 50,
+      "cardsBefore": 0,
+      "cardsAfter": 50,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BW5z?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BW6c",
+      "name": "拡張パック「コールドフレア」",
+      "englishName": "Cold Flare",
+      "newSet": true,
+      "addedCards": 59,
+      "cardsBefore": 0,
+      "cardsAfter": 59,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BW6c?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BW6f",
+      "name": "拡張パック「フリーズボルト」",
+      "englishName": "Freeze Bolt",
+      "newSet": true,
+      "addedCards": 59,
+      "cardsBefore": 0,
+      "cardsAfter": 59,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BW6f?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BW7",
+      "name": "拡張パック「プラズマゲイル」",
+      "englishName": "Plasma Gale",
+      "newSet": true,
+      "addedCards": 70,
+      "cardsBefore": 0,
+      "cardsAfter": 70,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BW7?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BW8f",
+      "name": "拡張パック「ラセンフォース」",
+      "englishName": "Spiral Force",
+      "newSet": true,
+      "addedCards": 51,
+      "cardsBefore": 0,
+      "cardsAfter": 51,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BW8f?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BW8n",
+      "name": "拡張パック「ライデンナックル」",
+      "englishName": "Raiden Knuckle",
+      "newSet": true,
+      "addedCards": 51,
+      "cardsBefore": 0,
+      "cardsAfter": 51,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BW8n?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BW9",
+      "name": "拡張パック「メガロキャノン」",
+      "englishName": "Megalo Cannon",
+      "newSet": true,
+      "addedCards": 76,
+      "cardsBefore": 0,
+      "cardsAfter": 76,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BW9?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "BWP",
+      "name": "BWプロモカード",
+      "englishName": "Black & White Promotional Cards",
+      "newSet": true,
+      "addedCards": 246,
+      "cardsBefore": 0,
+      "cardsAfter": 246,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/BWP?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "CP4",
+      "name": "プレミアムチャンピオンパック EX×M×BREAK",
+      "englishName": "EX x MEGA x BREAK Champion Pack",
+      "newSet": false,
+      "addedCards": 9,
+      "cardsBefore": 131,
+      "cardsAfter": 140,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/CP4?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "CS1",
+      "name": "BW コレクションシート 旅立ちの仲間 ツタージャ・ポカブ・ミジュマル",
+      "englishName": "Snivy - Tepig - Oshawott Collection Sheet",
+      "newSet": true,
+      "addedCards": 9,
+      "cardsBefore": 0,
+      "cardsAfter": 9,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/CS1?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "DS",
+      "name": "拡張パック「ドラゴンセレクション」",
+      "englishName": "Dragon Selection",
+      "newSet": true,
+      "addedCards": 20,
+      "cardsBefore": 0,
+      "cardsAfter": 20,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/DS?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "EBB",
+      "name": "コンセプトパック「EXバトルブースト」",
+      "englishName": "EX Battle Boost",
+      "newSet": true,
+      "addedCards": 97,
+      "cardsBefore": 0,
+      "cardsAfter": 97,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/EBB?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "GBR",
+      "name": "ガブリアスデッキ３０",
+      "englishName": "Garchomp Half Deck",
+      "newSet": true,
+      "addedCards": 18,
+      "cardsBefore": 0,
+      "cardsAfter": 18,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/GBR?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "HS",
+      "name": "BW「はじめてセット」",
+      "englishName": "Starting Set BW",
+      "newSet": true,
+      "addedCards": 57,
+      "cardsBefore": 0,
+      "cardsAfter": 57,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/HS?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "HSP",
+      "name": "はじめてセットDX ピカチュウver.",
+      "englishName": "Starting Set BW Pikachu Edition",
+      "newSet": true,
+      "addedCards": 48,
+      "cardsBefore": 0,
+      "cardsAfter": 48,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/HSP?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "HSZ",
+      "name": "BW「はじめてセット 全国図鑑版」",
+      "englishName": "Starting Set BW Pokedex Edition",
+      "newSet": true,
+      "addedCards": 48,
+      "cardsBefore": 0,
+      "cardsAfter": 48,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/HSZ?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "HXY",
+      "name": "XY 「はじめてセットDX」",
+      "englishName": "Starting Set XY",
+      "newSet": true,
+      "addedCards": 51,
+      "cardsBefore": 0,
+      "cardsAfter": 51,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/HXY?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "KK",
+      "name": "最強爆流コンボデッキ60 カメックス＋キュレムEX",
+      "englishName": "Blastoise & Kyurem-EX Deck",
+      "newSet": true,
+      "addedCards": 19,
+      "cardsBefore": 0,
+      "cardsAfter": 19,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/KK?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "KLD",
+      "name": "BW バトル強化デッキ30「ケルディオ」",
+      "englishName": "Keldeo Half Deck",
+      "newSet": true,
+      "addedCards": 18,
+      "cardsBefore": 0,
+      "cardsAfter": 18,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/KLD?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "M6a",
+      "name": "30th セレブレーション",
+      "englishName": "30th Celebration",
+      "newSet": true,
+      "addedCards": 111,
+      "cardsBefore": 0,
+      "cardsAfter": 111,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/M6a?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "MA",
+      "name": "プレミアムトレーナーボックス MEGA",
+      "englishName": "Premium Trainer Box MEGA",
+      "newSet": true,
+      "addedCards": 43,
+      "cardsBefore": 0,
+      "cardsAfter": 43,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/MA?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "MBD",
+      "name": "スターターセットMEGA メガディアンシーex",
+      "englishName": "MEGA Starter Set Mega Diancie ex",
+      "newSet": true,
+      "addedCards": 22,
+      "cardsBefore": 0,
+      "cardsAfter": 22,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/MBD?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "MBG",
+      "name": "スターターセットMEGA メガゲンガーex",
+      "englishName": "MEGA Starter Set Mega Gengar ex",
+      "newSet": true,
+      "addedCards": 22,
+      "cardsBefore": 0,
+      "cardsAfter": 22,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/MBG?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "MC",
+      "name": "スタートデッキ100 バトルコレクション",
+      "englishName": "Starter Decks 100 Battle Collection",
+      "newSet": false,
+      "addedCards": 8,
+      "cardsBefore": 774,
+      "cardsAfter": 782,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/MC?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "MDB",
+      "name": "トッププレイヤーが選ぶ100＋40枚 マスターデッキビルドBOX EX",
+      "englishName": "Master Deck Build Box EX",
+      "newSet": true,
+      "addedCards": 51,
+      "cardsBefore": 0,
+      "cardsAfter": 51,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/MDB?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "MEE",
+      "name": "スターターセットex イーブイex",
+      "englishName": "ex Starter Set Eevee ex",
+      "newSet": true,
+      "addedCards": 20,
+      "cardsBefore": 0,
+      "cardsAfter": 20,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/MEE?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "MEM",
+      "name": "スターターセットex ニャオハ＆マスカーニャex",
+      "englishName": "ex Starter Set Sprigatito & Meowscarada ex",
+      "newSet": true,
+      "addedCards": 18,
+      "cardsBefore": 0,
+      "cardsAfter": 18,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/MEM?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "MEZ",
+      "name": "スターターセットex ゾロア＆ゾロアークex",
+      "englishName": "ex Starter Set Zorua & Zoroark ex",
+      "newSet": true,
+      "addedCards": 20,
+      "cardsBefore": 0,
+      "cardsAfter": 20,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/MEZ?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "MF",
+      "name": "30th CELEBRATION プレミアムデッキセット エーフィ・ブラッキー",
+      "englishName": "30th Celebration Premium Deck Set Espeon & Umbreon",
+      "newSet": true,
+      "addedCards": 49,
+      "cardsBefore": 0,
+      "cardsAfter": 49,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/MF?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "MGg",
+      "name": "30枚デッキ対戦set「ミュウツーVSゲノセクト」ゲノセクト",
+      "englishName": "Genesect Half Deck",
+      "newSet": true,
+      "addedCards": 17,
+      "cardsBefore": 0,
+      "cardsAfter": 17,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/MGg?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "MGm",
+      "name": "30枚デッキ対戦set「ミュウツーVSゲノセクト」ミュウツー",
+      "englishName": "Mewtwo Half Deck",
+      "newSet": true,
+      "addedCards": 17,
+      "cardsBefore": 0,
+      "cardsAfter": 17,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/MGm?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "MMBp",
+      "name": "MマスターデッキビルドBOX パワースタイル",
+      "englishName": "Master Deck Build Box MEGA Power Style",
+      "newSet": true,
+      "addedCards": 58,
+      "cardsBefore": 0,
+      "cardsAfter": 58,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/MMBp?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "MMBs",
+      "name": "MマスターデッキビルドBOX スピードスタイル",
+      "englishName": "Master Deck Build Box MEGA Speed Style",
+      "newSet": true,
+      "addedCards": 58,
+      "cardsBefore": 0,
+      "cardsAfter": 58,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/MMBs?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "M-P",
+      "name": "メガ プロモカード",
+      "englishName": "Mega Promotional Cards",
+      "newSet": false,
+      "addedCards": 6,
+      "cardsBefore": 160,
+      "cardsAfter": 166,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/MP?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "MP1",
+      "name": "スタートデッキ100 バトルコレクション コロちゃおVer.",
+      "englishName": "Starter Decks 100 Battle Collection CoroCiao ver.",
+      "newSet": true,
+      "addedCards": 23,
+      "cardsBefore": 0,
+      "cardsAfter": 23,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/MP1?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "PBG",
+      "name": "プラズマ団バトルギフトセット",
+      "englishName": "Team Plasma Battle Gift Set",
+      "newSet": true,
+      "addedCards": 18,
+      "cardsBefore": 0,
+      "cardsAfter": 18,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/PBG?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "PPD",
+      "name": "プラズマ団パワードデッキ30",
+      "englishName": "Team Plasma Powered Deck",
+      "newSet": true,
+      "addedCards": 19,
+      "cardsBefore": 0,
+      "cardsAfter": 19,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/PPD?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "S10b",
+      "name": "Pokémon GO",
+      "englishName": "Pokémon GO",
+      "newSet": false,
+      "addedCards": 8,
+      "cardsBefore": 93,
+      "cardsAfter": 101,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/S10b?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "S8a",
+      "name": "25th アニバーサリーコレクション",
+      "englishName": "25th Anniversary Collection",
+      "newSet": false,
+      "addedCards": 8,
+      "cardsBefore": 29,
+      "cardsAfter": 37,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/S8a?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SAf",
+      "name": "スターターセットV　闘",
+      "englishName": "Starter Set V Fighting",
+      "newSet": true,
+      "addedCards": 25,
+      "cardsBefore": 0,
+      "cardsAfter": 25,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SAf?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SAg",
+      "name": "スターターセットV　草",
+      "englishName": "Starter Set V Grass",
+      "newSet": true,
+      "addedCards": 24,
+      "cardsBefore": 0,
+      "cardsAfter": 24,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SAg?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SAl",
+      "name": "スターターセットV　雷",
+      "englishName": "Starter Set V Lightning",
+      "newSet": true,
+      "addedCards": 25,
+      "cardsBefore": 0,
+      "cardsAfter": 25,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SAl?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SAr",
+      "name": "スターターセットV　炎",
+      "englishName": "Starter Set V Fire",
+      "newSet": true,
+      "addedCards": 24,
+      "cardsBefore": 0,
+      "cardsAfter": 24,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SAr?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SAw",
+      "name": "スターターセットV　水",
+      "englishName": "Starter Set V Water",
+      "newSet": true,
+      "addedCards": 24,
+      "cardsBefore": 0,
+      "cardsAfter": 24,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SAw?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SB",
+      "name": "プレミアムトレーナーボックス ソード＆シールド",
+      "englishName": "Premium Trainer Box Sword & Shield",
+      "newSet": true,
+      "addedCards": 24,
+      "cardsBefore": 0,
+      "cardsAfter": 24,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SB?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SC",
+      "name": "コンセプトパック「シャイニーコレクション」",
+      "englishName": "Shiny Collection",
+      "newSet": true,
+      "addedCards": 20,
+      "cardsBefore": 0,
+      "cardsAfter": 20,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SC?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SC2",
+      "name": "スターターセットVMAX リザードン",
+      "englishName": "Charizard VMAX Starter Set 2",
+      "newSet": true,
+      "addedCards": 21,
+      "cardsBefore": 0,
+      "cardsAfter": 21,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SC2?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SCd",
+      "name": "スターターセットVMAX　オーロンゲ",
+      "englishName": "Grimmsnarl VMAX Starter Set",
+      "newSet": true,
+      "addedCards": 20,
+      "cardsBefore": 0,
+      "cardsAfter": 20,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SCd?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SCr",
+      "name": "スターターセットVMAX　リザードン",
+      "englishName": "Charizard VMAX Starter Set",
+      "newSet": true,
+      "addedCards": 21,
+      "cardsBefore": 0,
+      "cardsAfter": 21,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SCr?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SD",
+      "name": "Vスタートデッキ",
+      "englishName": "V Starter Decks",
+      "newSet": true,
+      "addedCards": 127,
+      "cardsBefore": 0,
+      "cardsAfter": 127,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SD?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SEF",
+      "name": "スターターセットVMAX フシギバナ",
+      "englishName": "Venusaur VMAX Starter Set",
+      "newSet": true,
+      "addedCards": 21,
+      "cardsBefore": 0,
+      "cardsAfter": 21,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SEF?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SEK",
+      "name": "スターターセットVMAX カメックス",
+      "englishName": "Blastoise VMAX Starter Set",
+      "newSet": true,
+      "addedCards": 20,
+      "cardsBefore": 0,
+      "cardsAfter": 20,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SEK?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SF",
+      "name": "プレミアムトレーナーボックス ICHIGEKI & RENGEKI",
+      "englishName": "Premium Trainer Box Single Strike & Rapid Strike",
+      "newSet": true,
+      "addedCards": 33,
+      "cardsBefore": 0,
+      "cardsAfter": 33,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SF?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SGG",
+      "name": "ハイクラスデッキ ゲンガーVMAX",
+      "englishName": "High-Class Deck Gengar VMAX",
+      "newSet": true,
+      "addedCards": 21,
+      "cardsBefore": 0,
+      "cardsAfter": 21,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SGG?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SGI",
+      "name": "ハイクラスデッキ インテレオンVMAX",
+      "englishName": "High-Class Deck Inteleon VMAX",
+      "newSet": true,
+      "addedCards": 24,
+      "cardsBefore": 0,
+      "cardsAfter": 24,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SGI?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SH",
+      "name": "ファミリーポケモンカードゲーム",
+      "englishName": "Family Pokémon Card Game",
+      "newSet": true,
+      "addedCards": 59,
+      "cardsBefore": 0,
+      "cardsAfter": 59,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SH?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SI",
+      "name": "スタートデッキ100",
+      "englishName": "Starter Decks 100",
+      "newSet": true,
+      "addedCards": 427,
+      "cardsBefore": 0,
+      "cardsAfter": 427,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SI?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SJ",
+      "name": "スペシャルデッキセットザシアン・ザマゼンタvsムゲンダイナ",
+      "englishName": "Special Deck Set: Zacian & Zamazenta vs Eternatus",
+      "newSet": true,
+      "addedCards": 30,
+      "cardsBefore": 0,
+      "cardsAfter": 30,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SJ?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SK",
+      "name": "プレミアムトレーナーボックス VSTAR",
+      "englishName": "VSTAR Premium Trainer Box",
+      "newSet": true,
+      "addedCards": 30,
+      "cardsBefore": 0,
+      "cardsAfter": 30,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SK?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SLD",
+      "name": "スターターセットVSTAR「ダークライ」",
+      "englishName": "Starter Set Darkrai VSTAR",
+      "newSet": true,
+      "addedCards": 20,
+      "cardsBefore": 0,
+      "cardsAfter": 20,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SLD?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SLL",
+      "name": "スターターセットVSTAR「ルカリオ」",
+      "englishName": "Starter Set Lucario VSTAR",
+      "newSet": true,
+      "addedCards": 21,
+      "cardsBefore": 0,
+      "cardsAfter": 21,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SLL?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SMA",
+      "name": "スターターセット",
+      "englishName": "Starter Set SM",
+      "newSet": true,
+      "addedCards": 68,
+      "cardsBefore": 0,
+      "cardsAfter": 68,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SMA?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SMB",
+      "name": "「プレミアムトレーナーボックス」",
+      "englishName": "Premium Trainer Box",
+      "newSet": true,
+      "addedCards": 15,
+      "cardsBefore": 0,
+      "cardsAfter": 15,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SMB?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SMC",
+      "name": "スターターセット改造「カプ・ブルルGX」",
+      "englishName": "Starter Set Tapu Bulu-GX",
+      "newSet": true,
+      "addedCards": 21,
+      "cardsBefore": 0,
+      "cardsAfter": 21,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SMC?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SMD",
+      "name": "サン＆ムーン 30枚デッキ対戦セット「サトシVSロケット団」",
+      "englishName": "Ash VS Team Rocket Half Decks",
+      "newSet": true,
+      "addedCards": 32,
+      "cardsBefore": 0,
+      "cardsAfter": 32,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SMD?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SME",
+      "name": "スターターセット伝説 ソルガレオGX ルナアーラGX",
+      "englishName": "Starter Set Solgaleo-GX & Lunala-GX",
+      "newSet": true,
+      "addedCards": 21,
+      "cardsBefore": 0,
+      "cardsAfter": 21,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SME?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SMF",
+      "name": "プレミアムトレーナーボックス ウルトラサン・ウルトラムーン",
+      "englishName": "Premium Trainer Box Ultra Sun & Ultra Moon",
+      "newSet": true,
+      "addedCards": 12,
+      "cardsBefore": 0,
+      "cardsAfter": 12,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SMF?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SMG",
+      "name": "デッキビルドBOX「ウルトラムーン」「ウルトラサン」",
+      "englishName": "Ultra Sun & Ultra Moon Deck Battle Box",
+      "newSet": true,
+      "addedCards": 12,
+      "cardsBefore": 0,
+      "cardsAfter": 12,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SMG?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SMH",
+      "name": "GXスタートデッキ",
+      "englishName": "GX Starter Decks",
+      "newSet": true,
+      "addedCards": 131,
+      "cardsBefore": 0,
+      "cardsAfter": 131,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SMH?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SMI",
+      "name": "スターターセット「炎のブースターGX」「水のシャワーズGX」「雷のサンダースGX」",
+      "englishName": "Starter Sets Flareon & Jolteon & Vaporeon",
+      "newSet": true,
+      "addedCards": 38,
+      "cardsBefore": 0,
+      "cardsAfter": 38,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SMI?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SMJ",
+      "name": "プレミアムトレーナーボックス TAG TEAM GX",
+      "englishName": "Tag Team GX Premium Trainer Box",
+      "newSet": true,
+      "addedCards": 35,
+      "cardsBefore": 0,
+      "cardsAfter": 35,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SMJ?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SMK",
+      "name": "トレーナーバトルデッキ：ニビシティジムのタケシ・ハナダシティジムのカスミ",
+      "englishName": "Brock & Misty Trainer Battle Decks",
+      "newSet": true,
+      "addedCards": 31,
+      "cardsBefore": 0,
+      "cardsAfter": 31,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SMK?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SML",
+      "name": "ファミリーポケモンカードゲーム",
+      "englishName": "Family Pokémon Card Game",
+      "newSet": true,
+      "addedCards": 51,
+      "cardsBefore": 0,
+      "cardsAfter": 51,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SML?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SMM",
+      "name": "スターターセット TAG TEAM GX",
+      "englishName": "Tag Team GX Starter Sets",
+      "newSet": true,
+      "addedCards": 31,
+      "cardsBefore": 0,
+      "cardsAfter": 31,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SMM?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SMN",
+      "name": "デッキビルドBOX TAG TEAM GX",
+      "englishName": "Tag Team GX Deck Build Box",
+      "newSet": true,
+      "addedCards": 29,
+      "cardsBefore": 0,
+      "cardsAfter": 29,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SMN?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SMP",
+      "name": "SMプロモカード",
+      "englishName": "Sun and Moon Promotional Cards",
+      "newSet": true,
+      "addedCards": 440,
+      "cardsBefore": 0,
+      "cardsAfter": 440,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SMP?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SMP1",
+      "name": "月刊コロコロコミック　2017年1月号付録「イワンコ全力デッキ」",
+      "englishName": "Rockruff Full Strength Deck",
+      "newSet": true,
+      "addedCards": 13,
+      "cardsBefore": 0,
+      "cardsAfter": 13,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SMP1?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SN",
+      "name": "スタートデッキ100 コロコロコミックver.",
+      "englishName": "Starter Deck 100 CoroCoro ver.",
+      "newSet": true,
+      "addedCards": 25,
+      "cardsBefore": 0,
+      "cardsAfter": 25,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SN?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SNPo",
+      "name": "XY BREAK進化パック「オンバーンBREAK」",
+      "englishName": "Noivern BREAK Evolution Pack",
+      "newSet": true,
+      "addedCards": 10,
+      "cardsBefore": 0,
+      "cardsAfter": 10,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SNPo?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SNPr",
+      "name": "XY BREAK進化パック「ライチュウBREAK」",
+      "englishName": "Raichu BREAK Evolution Pack",
+      "newSet": true,
+      "addedCards": 10,
+      "cardsBefore": 0,
+      "cardsAfter": 10,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SNPr?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SO",
+      "name": "スペシャルデッキセット リザードンVSTAR vs レックウザVMAX",
+      "englishName": "Special Deck Set: Charizard VSTAR vs Rayquaza VMAX",
+      "newSet": true,
+      "addedCards": 32,
+      "cardsBefore": 0,
+      "cardsAfter": 32,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SO?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SP",
+      "name": "ソード&シールド プロモカード",
+      "englishName": "Sword & Shield Promotional Cards",
+      "newSet": true,
+      "addedCards": 300,
+      "cardsBefore": 0,
+      "cardsAfter": 300,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SP?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SP1",
+      "name": "ザシアン＋ザマゼンタBOX",
+      "englishName": "Zacian & Zamazenta Box",
+      "newSet": true,
+      "addedCards": 7,
+      "cardsBefore": 0,
+      "cardsAfter": 7,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SP1?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SP2",
+      "name": "VMAXスペシャルセット",
+      "englishName": "VMAX Special Set",
+      "newSet": true,
+      "addedCards": 8,
+      "cardsBefore": 0,
+      "cardsAfter": 8,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SP2?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SP3",
+      "name": "ジャンボパックセット 白銀のランス＆漆黒のガイスト",
+      "englishName": "Jumbo-Pack Set Silver Lance & Jet-Black Spirit",
+      "newSet": true,
+      "addedCards": 6,
+      "cardsBefore": 0,
+      "cardsAfter": 6,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SP3?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SP4",
+      "name": "VMAXスペシャルセット イーブイヒーローズ",
+      "englishName": "VMAX Special Set Eevee Heroes",
+      "newSet": true,
+      "addedCards": 8,
+      "cardsBefore": 0,
+      "cardsAfter": 8,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SP4?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SP5",
+      "name": "スペシャルカードセット",
+      "englishName": "V-UNION Special Card Sets",
+      "newSet": true,
+      "addedCards": 13,
+      "cardsBefore": 0,
+      "cardsAfter": 13,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SP5?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SP6",
+      "name": "VSTARスペシャルセット",
+      "englishName": "VSTAR Special Set",
+      "newSet": true,
+      "addedCards": 6,
+      "cardsBefore": 0,
+      "cardsAfter": 6,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SP6?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SPD",
+      "name": "VSTAR&VMAX ハイクラスデッキ デオキシス",
+      "englishName": "VSTAR&VMAX High-Class Deck Deoxys",
+      "newSet": true,
+      "addedCards": 21,
+      "cardsBefore": 0,
+      "cardsAfter": 21,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SPD?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SPZ",
+      "name": "VSTAR&VMAX ハイクラスデッキ ゼラオラ",
+      "englishName": "VSTAR&VMAX High-Class Deck Zeraora",
+      "newSet": true,
+      "addedCards": 21,
+      "cardsBefore": 0,
+      "cardsAfter": 21,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SPZ?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SVAL",
+      "name": "スターターセットex ホゲータ＆デンリュウex",
+      "englishName": "ex Starter Set Fuecoco & Ampharos ex",
+      "newSet": true,
+      "addedCards": 21,
+      "cardsBefore": 0,
+      "cardsAfter": 21,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SVAL?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SVAM",
+      "name": "スターターセットex ニャオハ＆ルカリオex",
+      "englishName": "ex Starter Set Sprigatito & Lucario ex",
+      "newSet": true,
+      "addedCards": 23,
+      "cardsBefore": 0,
+      "cardsAfter": 23,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SVAM?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SVAW",
+      "name": "スターターセットex クワッス＆ミミッキュex",
+      "englishName": "ex Starter Set Quaxly & Mimikyu ex",
+      "newSet": true,
+      "addedCards": 23,
+      "cardsBefore": 0,
+      "cardsAfter": 23,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SVAW?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SVB",
+      "name": "プレミアムトレーナーボックスex",
+      "englishName": "Premium Trainer Box ex",
+      "newSet": true,
+      "addedCards": 28,
+      "cardsBefore": 0,
+      "cardsAfter": 28,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SVB?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SVC",
+      "name": "スターターセットex ピカチュウex&パーモット",
+      "englishName": "ex Starter Set Pikachu ex & Pawmot",
+      "newSet": true,
+      "addedCards": 21,
+      "cardsBefore": 0,
+      "cardsAfter": 21,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SVC?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SVD",
+      "name": "exスタートデッキ",
+      "englishName": "ex Starter Decks",
+      "newSet": true,
+      "addedCards": 139,
+      "cardsBefore": 0,
+      "cardsAfter": 139,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SVD?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SVEL",
+      "name": "スターターセットテラスタルラウドボーンex",
+      "englishName": "Terastal Starter Set Skeledirge ex",
+      "newSet": true,
+      "addedCards": 20,
+      "cardsBefore": 0,
+      "cardsAfter": 20,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SVEL?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SVEM",
+      "name": "スターターセットテラスタルミュウツーex",
+      "englishName": "Terastal Starter Set Mewtwo ex",
+      "newSet": true,
+      "addedCards": 20,
+      "cardsBefore": 0,
+      "cardsAfter": 20,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SVEM?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SVF",
+      "name": "デッキビルドBOX 黒炎の支配者",
+      "englishName": "Deck Build Box Ruler of the Black Flame",
+      "newSet": true,
+      "addedCards": 38,
+      "cardsBefore": 0,
+      "cardsAfter": 38,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SVF?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SVG",
+      "name": "スペシャルデッキセットex フシギバナ・リザードン・カメックス",
+      "englishName": "Special Deck Set ex Venusaur & Charizard & Blastoise",
+      "newSet": true,
+      "addedCards": 52,
+      "cardsBefore": 0,
+      "cardsAfter": 52,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SVG?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SVHK",
+      "name": "スターターデッキ＆ビルドセット「古代のコライドンex」",
+      "englishName": "Ancient Koraidon ex Starter Deck & Build Set",
+      "newSet": true,
+      "addedCards": 53,
+      "cardsBefore": 0,
+      "cardsAfter": 53,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SVHK?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SVHM",
+      "name": "スターターデッキ＆ビルドセット「未来のミライドンex」",
+      "englishName": "Future Miradon ex Starter Deck & Build Set",
+      "newSet": true,
+      "addedCards": 53,
+      "cardsBefore": 0,
+      "cardsAfter": 53,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SVHM?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SVI",
+      "name": "スカーレット&バイオレット バトルアカデミー",
+      "englishName": "Scarlet & Violet: Battle Academy",
+      "newSet": true,
+      "addedCards": 74,
+      "cardsBefore": 0,
+      "cardsAfter": 74,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SVI?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SVJL",
+      "name": "バトルマスターデッキ テラスタル リザードンex",
+      "englishName": "Battle Master Deck Charizard ex",
+      "newSet": true,
+      "addedCards": 21,
+      "cardsBefore": 0,
+      "cardsAfter": 21,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SVJL?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SVJP",
+      "name": "バトルマスターデッキ パオジアンex",
+      "englishName": "Battle Master Deck Chien-Pao ex",
+      "newSet": true,
+      "addedCards": 19,
+      "cardsBefore": 0,
+      "cardsAfter": 19,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SVJP?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SVM",
+      "name": "スタートデッキGenerations",
+      "englishName": "Starter Decks Generations",
+      "newSet": true,
+      "addedCards": 175,
+      "cardsBefore": 0,
+      "cardsAfter": 175,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SVM?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SVN",
+      "name": "デッキビルドBOX「バトルパートナーズ」",
+      "englishName": "Battle Partners Deck Build Box",
+      "newSet": true,
+      "addedCards": 45,
+      "cardsBefore": 0,
+      "cardsAfter": 45,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SVN?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SVOD",
+      "name": "スターターセットex ダイゴのダンバル&メタグロスex",
+      "englishName": "ex Starter Set Steven's Beldum & Metagross ex",
+      "newSet": true,
+      "addedCards": 19,
+      "cardsBefore": 0,
+      "cardsAfter": 19,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SVOD?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SVOM",
+      "name": "スターターセットex マリィのモルペコ&オーロンゲex",
+      "englishName": "ex Starter Set Marnie's Morpeko & Grimmsnarl ex",
+      "newSet": true,
+      "addedCards": 20,
+      "cardsBefore": 0,
+      "cardsAfter": 20,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SVOM?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SV-P",
+      "name": "スカーレット&バイオレット プロモカード",
+      "englishName": "Scarlet & Violet Promotional Cards",
+      "newSet": false,
+      "addedCards": 12,
+      "cardsBefore": 288,
+      "cardsAfter": 300,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SVP?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SVP1",
+      "name": "exスペシャルセット",
+      "englishName": "ex Special Set",
+      "newSet": true,
+      "addedCards": 7,
+      "cardsBefore": 0,
+      "cardsAfter": 7,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SVP1?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "SZD",
+      "name": "サザンドラデッキ３０",
+      "englishName": "Hydreigon Half Deck",
+      "newSet": true,
+      "addedCards": 18,
+      "cardsBefore": 0,
+      "cardsAfter": 18,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/SZD?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "WAK",
+      "name": "みんなのWAKUWAKUバトル",
+      "englishName": "Everyone's Exciting Battle",
+      "newSet": true,
+      "addedCards": 72,
+      "cardsBefore": 0,
+      "cardsAfter": 72,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/WAK?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "WCS23",
+      "name": "ポケモンワールドチャンピオンシップス2023横浜 記念デッキ「ピカチュウ」",
+      "englishName": "World Championships 2023 Yokohama Deck –Pikachu–",
+      "newSet": true,
+      "addedCards": 32,
+      "cardsBefore": 0,
+      "cardsAfter": 32,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/WCS23?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "X30",
+      "name": "XY「ゼルネアスデッキ30」",
+      "englishName": "Xerneas Half Deck",
+      "newSet": true,
+      "addedCards": 15,
+      "cardsBefore": 0,
+      "cardsAfter": 15,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/X30?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "XY",
+      "name": "ハイクラスパック「THE BEST OF XY」",
+      "englishName": "Best of XY",
+      "newSet": true,
+      "addedCards": 314,
+      "cardsBefore": 0,
+      "cardsAfter": 314,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/XY?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "XYA",
+      "name": "XY メガバトルデッキ60「MリザードンEX」",
+      "englishName": "MEGA Charizard Deck",
+      "newSet": true,
+      "addedCards": 23,
+      "cardsBefore": 0,
+      "cardsAfter": 23,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/XYA?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "XYB",
+      "name": "ハイパーメタルチェーンデッキ60「ディアルガEX+ギルガルドEX」",
+      "englishName": "Dialga-EX and Aegislash-EX Deck",
+      "newSet": true,
+      "addedCards": 19,
+      "cardsBefore": 0,
+      "cardsAfter": 19,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/XYB?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "XYC",
+      "name": "スーパーレジェンドセット60「ゼルネアスEX・イベルタルEX」",
+      "englishName": "Xerneas-EX and Yveltal-EX Deck",
+      "newSet": true,
+      "addedCards": 25,
+      "cardsBefore": 0,
+      "cardsAfter": 25,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/XYC?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "XYD",
+      "name": "メガバトルデッキ60「MレックウザEX」",
+      "englishName": "MEGA Rayquaza-EX Deck",
+      "newSet": true,
+      "addedCards": 20,
+      "cardsBefore": 0,
+      "cardsAfter": 20,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/XYD?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "XYE",
+      "name": "対戦スタートセット30「エンブオーEX VS トゲキッスEX」",
+      "englishName": "Emboar-EX VS Togekiss-EX Half Decks",
+      "newSet": true,
+      "addedCards": 32,
+      "cardsBefore": 0,
+      "cardsAfter": 32,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/XYE?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "XYF",
+      "name": "XY BREAKコンボデッキ60「ゴルダックBREAK+パルキアEX」",
+      "englishName": "Golduck BREAK and Palkia-EX Deck",
+      "newSet": true,
+      "addedCards": 17,
+      "cardsBefore": 0,
+      "cardsAfter": 17,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/XYF?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "XYG",
+      "name": "パーフェクトバトルデッキ60「ジガルデEX」",
+      "englishName": "Perfect Battle Deck Zygarde-EX",
+      "newSet": true,
+      "addedCards": 20,
+      "cardsBefore": 0,
+      "cardsAfter": 20,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/XYG?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "XYH",
+      "name": "メガバトルデッキ60「タブンネEX」",
+      "englishName": "Mega Battle Deck Audino-EX",
+      "newSet": true,
+      "addedCards": 27,
+      "cardsBefore": 0,
+      "cardsAfter": 27,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/XYH?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "XYP",
+      "name": "XYプロモカード",
+      "englishName": "XY Promotional Cards",
+      "newSet": true,
+      "addedCards": 459,
+      "cardsBefore": 0,
+      "cardsAfter": 459,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/XYP?display=list"
+    },
+    {
+      "language": "ja",
+      "id": "Y30",
+      "name": "XY「イベルタルデッキ30」",
+      "englishName": "Yveltal Half Deck",
+      "newSet": true,
+      "addedCards": 15,
+      "cardsBefore": 0,
+      "cardsAfter": 15,
+      "sourceUrl": "https://limitlesstcg.com/cards/jp/Y30?display=list"
+    }
+  ],
+  "nameConflictsSkipped": [
+    {
+      "set": "M6",
+      "number": "98",
+      "sourceName": "ポケモンキャッチャー",
+      "catalogNames": [
+        "とくちゅうチョッキ"
+      ]
+    },
+    {
+      "set": "M6",
+      "number": "99",
+      "sourceName": "とくちゅうチョッキ",
+      "catalogNames": [
+        "ポケモンキャッチャー"
+      ]
+    }
+  ],
+  "jpSourceChecks": [
+    {
+      "set": "20th",
+      "added": 84,
+      "updatedArtMappings": 84
+    },
+    {
+      "set": "BGS",
+      "added": 32,
+      "updatedArtMappings": 32
+    },
+    {
+      "set": "BKB",
+      "added": 20,
+      "updatedArtMappings": 20
+    },
+    {
+      "set": "BKR",
+      "added": 20,
+      "updatedArtMappings": 20
+    },
+    {
+      "set": "BKW",
+      "added": 20,
+      "updatedArtMappings": 20
+    },
+    {
+      "set": "BKZ",
+      "added": 20,
+      "updatedArtMappings": 20
+    },
+    {
+      "set": "BKc",
+      "added": 14,
+      "updatedArtMappings": 14
+    },
+    {
+      "set": "BKt",
+      "added": 14,
+      "updatedArtMappings": 14
+    },
+    {
+      "set": "BKv",
+      "added": 14,
+      "updatedArtMappings": 14
+    },
+    {
+      "set": "BTV",
+      "added": 26,
+      "updatedArtMappings": 26
+    },
+    {
+      "set": "BW1b",
+      "added": 53,
+      "updatedArtMappings": 53
+    },
+    {
+      "set": "BW1w",
+      "added": 54,
+      "updatedArtMappings": 54
+    },
+    {
+      "set": "BW2",
+      "added": 67,
+      "updatedArtMappings": 67
+    },
+    {
+      "set": "BW3h",
+      "added": 52,
+      "updatedArtMappings": 52
+    },
+    {
+      "set": "BW3p",
+      "added": 52,
+      "updatedArtMappings": 52
+    },
+    {
+      "set": "BW4",
+      "added": 69,
+      "updatedArtMappings": 69
+    },
+    {
+      "set": "BW5n",
+      "added": 50,
+      "updatedArtMappings": 50
+    },
+    {
+      "set": "BW5z",
+      "added": 50,
+      "updatedArtMappings": 50
+    },
+    {
+      "set": "BW6c",
+      "added": 59,
+      "updatedArtMappings": 59
+    },
+    {
+      "set": "BW6f",
+      "added": 59,
+      "updatedArtMappings": 59
+    },
+    {
+      "set": "BW7",
+      "added": 70,
+      "updatedArtMappings": 70
+    },
+    {
+      "set": "BW8f",
+      "added": 51,
+      "updatedArtMappings": 51
+    },
+    {
+      "set": "BW8n",
+      "added": 51,
+      "updatedArtMappings": 51
+    },
+    {
+      "set": "BW9",
+      "added": 76,
+      "updatedArtMappings": 76
+    },
+    {
+      "set": "BWP",
+      "added": 246,
+      "updatedArtMappings": 246
+    },
+    {
+      "set": "CP4",
+      "added": 9,
+      "updatedArtMappings": 9
+    },
+    {
+      "set": "CS1",
+      "added": 9,
+      "updatedArtMappings": 9
+    },
+    {
+      "set": "DS",
+      "added": 20,
+      "updatedArtMappings": 20
+    },
+    {
+      "set": "EBB",
+      "added": 97,
+      "updatedArtMappings": 97
+    },
+    {
+      "set": "GBR",
+      "added": 18,
+      "updatedArtMappings": 18
+    },
+    {
+      "set": "HS",
+      "added": 57,
+      "updatedArtMappings": 57
+    },
+    {
+      "set": "HSP",
+      "added": 48,
+      "updatedArtMappings": 48
+    },
+    {
+      "set": "HSZ",
+      "added": 48,
+      "updatedArtMappings": 48
+    },
+    {
+      "set": "HXY",
+      "added": 51,
+      "updatedArtMappings": 51
+    },
+    {
+      "set": "KK",
+      "added": 19,
+      "updatedArtMappings": 19
+    },
+    {
+      "set": "KLD",
+      "added": 18,
+      "updatedArtMappings": 18
+    },
+    {
+      "set": "M1L",
+      "added": 0,
+      "updatedArtMappings": 0
+    },
+    {
+      "set": "M1S",
+      "added": 0,
+      "updatedArtMappings": 0
+    },
+    {
+      "set": "M2",
+      "added": 0,
+      "updatedArtMappings": 0
+    },
+    {
+      "set": "M2a",
+      "added": 0,
+      "updatedArtMappings": 0
+    },
+    {
+      "set": "M3",
+      "added": 0,
+      "updatedArtMappings": 0
+    },
+    {
+      "set": "M4",
+      "added": 0,
+      "updatedArtMappings": 0
+    },
+    {
+      "set": "M5",
+      "added": 0,
+      "updatedArtMappings": 0
+    },
+    {
+      "set": "M6",
+      "added": 0,
+      "updatedArtMappings": 0
+    },
+    {
+      "set": "M6a",
+      "added": 111,
+      "updatedArtMappings": 111
+    },
+    {
+      "set": "MA",
+      "added": 43,
+      "updatedArtMappings": 43
+    },
+    {
+      "set": "MBD",
+      "added": 22,
+      "updatedArtMappings": 22
+    },
+    {
+      "set": "MBG",
+      "added": 22,
+      "updatedArtMappings": 22
+    },
+    {
+      "set": "MC",
+      "added": 8,
+      "updatedArtMappings": 8
+    },
+    {
+      "set": "MDB",
+      "added": 51,
+      "updatedArtMappings": 51
+    },
+    {
+      "set": "MEE",
+      "added": 20,
+      "updatedArtMappings": 20
+    },
+    {
+      "set": "MEM",
+      "added": 18,
+      "updatedArtMappings": 18
+    },
+    {
+      "set": "MEZ",
+      "added": 20,
+      "updatedArtMappings": 20
+    },
+    {
+      "set": "MF",
+      "added": 49,
+      "updatedArtMappings": 49
+    },
+    {
+      "set": "MGg",
+      "added": 17,
+      "updatedArtMappings": 17
+    },
+    {
+      "set": "MGm",
+      "added": 17,
+      "updatedArtMappings": 17
+    },
+    {
+      "set": "MMBp",
+      "added": 58,
+      "updatedArtMappings": 58
+    },
+    {
+      "set": "MMBs",
+      "added": 58,
+      "updatedArtMappings": 58
+    },
+    {
+      "set": "MP",
+      "added": 6,
+      "updatedArtMappings": 6
+    },
+    {
+      "set": "MP1",
+      "added": 23,
+      "updatedArtMappings": 23
+    },
+    {
+      "set": "PBG",
+      "added": 18,
+      "updatedArtMappings": 18
+    },
+    {
+      "set": "PPD",
+      "added": 19,
+      "updatedArtMappings": 19
+    },
+    {
+      "set": "S10b",
+      "added": 8,
+      "updatedArtMappings": 8
+    },
+    {
+      "set": "S8a",
+      "added": 8,
+      "updatedArtMappings": 8
+    },
+    {
+      "set": "SAf",
+      "added": 25,
+      "updatedArtMappings": 25
+    },
+    {
+      "set": "SAg",
+      "added": 24,
+      "updatedArtMappings": 24
+    },
+    {
+      "set": "SAl",
+      "added": 25,
+      "updatedArtMappings": 25
+    },
+    {
+      "set": "SAr",
+      "added": 24,
+      "updatedArtMappings": 24
+    },
+    {
+      "set": "SAw",
+      "added": 24,
+      "updatedArtMappings": 24
+    },
+    {
+      "set": "SB",
+      "added": 24,
+      "updatedArtMappings": 24
+    },
+    {
+      "set": "SC",
+      "added": 20,
+      "updatedArtMappings": 20
+    },
+    {
+      "set": "SC2",
+      "added": 21,
+      "updatedArtMappings": 21
+    },
+    {
+      "set": "SCd",
+      "added": 20,
+      "updatedArtMappings": 20
+    },
+    {
+      "set": "SCr",
+      "added": 21,
+      "updatedArtMappings": 21
+    },
+    {
+      "set": "SD",
+      "added": 127,
+      "updatedArtMappings": 127
+    },
+    {
+      "set": "SEF",
+      "added": 21,
+      "updatedArtMappings": 21
+    },
+    {
+      "set": "SEK",
+      "added": 20,
+      "updatedArtMappings": 20
+    },
+    {
+      "set": "SF",
+      "added": 33,
+      "updatedArtMappings": 33
+    },
+    {
+      "set": "SGG",
+      "added": 21,
+      "updatedArtMappings": 21
+    },
+    {
+      "set": "SGI",
+      "added": 24,
+      "updatedArtMappings": 24
+    },
+    {
+      "set": "SH",
+      "added": 59,
+      "updatedArtMappings": 59
+    },
+    {
+      "set": "SI",
+      "added": 427,
+      "updatedArtMappings": 427
+    },
+    {
+      "set": "SJ",
+      "added": 30,
+      "updatedArtMappings": 30
+    },
+    {
+      "set": "SK",
+      "added": 30,
+      "updatedArtMappings": 30
+    },
+    {
+      "set": "SLD",
+      "added": 20,
+      "updatedArtMappings": 20
+    },
+    {
+      "set": "SLL",
+      "added": 21,
+      "updatedArtMappings": 21
+    },
+    {
+      "set": "SMA",
+      "added": 68,
+      "updatedArtMappings": 68
+    },
+    {
+      "set": "SMB",
+      "added": 15,
+      "updatedArtMappings": 15
+    },
+    {
+      "set": "SMC",
+      "added": 21,
+      "updatedArtMappings": 21
+    },
+    {
+      "set": "SMD",
+      "added": 32,
+      "updatedArtMappings": 32
+    },
+    {
+      "set": "SME",
+      "added": 21,
+      "updatedArtMappings": 21
+    },
+    {
+      "set": "SMF",
+      "added": 12,
+      "updatedArtMappings": 12
+    },
+    {
+      "set": "SMG",
+      "added": 12,
+      "updatedArtMappings": 12
+    },
+    {
+      "set": "SMH",
+      "added": 131,
+      "updatedArtMappings": 131
+    },
+    {
+      "set": "SMI",
+      "added": 38,
+      "updatedArtMappings": 38
+    },
+    {
+      "set": "SMJ",
+      "added": 35,
+      "updatedArtMappings": 35
+    },
+    {
+      "set": "SMK",
+      "added": 31,
+      "updatedArtMappings": 31
+    },
+    {
+      "set": "SML",
+      "added": 51,
+      "updatedArtMappings": 51
+    },
+    {
+      "set": "SMM",
+      "added": 31,
+      "updatedArtMappings": 31
+    },
+    {
+      "set": "SMN",
+      "added": 29,
+      "updatedArtMappings": 29
+    },
+    {
+      "set": "SMP",
+      "added": 440,
+      "updatedArtMappings": 440
+    },
+    {
+      "set": "SMP1",
+      "added": 13,
+      "updatedArtMappings": 13
+    },
+    {
+      "set": "SN",
+      "added": 25,
+      "updatedArtMappings": 25
+    },
+    {
+      "set": "SNPo",
+      "added": 10,
+      "updatedArtMappings": 10
+    },
+    {
+      "set": "SNPr",
+      "added": 10,
+      "updatedArtMappings": 10
+    },
+    {
+      "set": "SO",
+      "added": 32,
+      "updatedArtMappings": 32
+    },
+    {
+      "set": "SP",
+      "added": 300,
+      "updatedArtMappings": 300
+    },
+    {
+      "set": "SP1",
+      "added": 7,
+      "updatedArtMappings": 7
+    },
+    {
+      "set": "SP2",
+      "added": 8,
+      "updatedArtMappings": 8
+    },
+    {
+      "set": "SP3",
+      "added": 6,
+      "updatedArtMappings": 6
+    },
+    {
+      "set": "SP4",
+      "added": 8,
+      "updatedArtMappings": 8
+    },
+    {
+      "set": "SP5",
+      "added": 13,
+      "updatedArtMappings": 13
+    },
+    {
+      "set": "SP6",
+      "added": 6,
+      "updatedArtMappings": 6
+    },
+    {
+      "set": "SPD",
+      "added": 21,
+      "updatedArtMappings": 21
+    },
+    {
+      "set": "SPZ",
+      "added": 21,
+      "updatedArtMappings": 21
+    },
+    {
+      "set": "SVAL",
+      "added": 21,
+      "updatedArtMappings": 21
+    },
+    {
+      "set": "SVAM",
+      "added": 23,
+      "updatedArtMappings": 23
+    },
+    {
+      "set": "SVAW",
+      "added": 23,
+      "updatedArtMappings": 23
+    },
+    {
+      "set": "SVB",
+      "added": 28,
+      "updatedArtMappings": 28
+    },
+    {
+      "set": "SVC",
+      "added": 21,
+      "updatedArtMappings": 21
+    },
+    {
+      "set": "SVD",
+      "added": 139,
+      "updatedArtMappings": 139
+    },
+    {
+      "set": "SVEL",
+      "added": 20,
+      "updatedArtMappings": 20
+    },
+    {
+      "set": "SVEM",
+      "added": 20,
+      "updatedArtMappings": 20
+    },
+    {
+      "set": "SVF",
+      "added": 38,
+      "updatedArtMappings": 38
+    },
+    {
+      "set": "SVG",
+      "added": 52,
+      "updatedArtMappings": 52
+    },
+    {
+      "set": "SVHK",
+      "added": 53,
+      "updatedArtMappings": 53
+    },
+    {
+      "set": "SVHM",
+      "added": 53,
+      "updatedArtMappings": 53
+    },
+    {
+      "set": "SVI",
+      "added": 74,
+      "updatedArtMappings": 74
+    },
+    {
+      "set": "SVJL",
+      "added": 21,
+      "updatedArtMappings": 21
+    },
+    {
+      "set": "SVJP",
+      "added": 19,
+      "updatedArtMappings": 19
+    },
+    {
+      "set": "SVM",
+      "added": 175,
+      "updatedArtMappings": 175
+    },
+    {
+      "set": "SVN",
+      "added": 45,
+      "updatedArtMappings": 45
+    },
+    {
+      "set": "SVOD",
+      "added": 19,
+      "updatedArtMappings": 19
+    },
+    {
+      "set": "SVOM",
+      "added": 20,
+      "updatedArtMappings": 20
+    },
+    {
+      "set": "SVP",
+      "added": 12,
+      "updatedArtMappings": 12
+    },
+    {
+      "set": "SVP1",
+      "added": 7,
+      "updatedArtMappings": 7
+    },
+    {
+      "set": "SZD",
+      "added": 18,
+      "updatedArtMappings": 18
+    },
+    {
+      "set": "WAK",
+      "added": 72,
+      "updatedArtMappings": 72
+    },
+    {
+      "set": "WCS23",
+      "added": 32,
+      "updatedArtMappings": 32
+    },
+    {
+      "set": "X30",
+      "added": 15,
+      "updatedArtMappings": 15
+    },
+    {
+      "set": "XY",
+      "added": 314,
+      "updatedArtMappings": 314
+    },
+    {
+      "set": "XYA",
+      "added": 23,
+      "updatedArtMappings": 23
+    },
+    {
+      "set": "XYB",
+      "added": 19,
+      "updatedArtMappings": 19
+    },
+    {
+      "set": "XYC",
+      "added": 25,
+      "updatedArtMappings": 25
+    },
+    {
+      "set": "XYD",
+      "added": 20,
+      "updatedArtMappings": 20
+    },
+    {
+      "set": "XYE",
+      "added": 32,
+      "updatedArtMappings": 32
+    },
+    {
+      "set": "XYF",
+      "added": 17,
+      "updatedArtMappings": 17
+    },
+    {
+      "set": "XYG",
+      "added": 20,
+      "updatedArtMappings": 20
+    },
+    {
+      "set": "XYH",
+      "added": 27,
+      "updatedArtMappings": 27
+    },
+    {
+      "set": "XYP",
+      "added": 459,
+      "updatedArtMappings": 459
+    },
+    {
+      "set": "Y30",
+      "added": 15,
+      "updatedArtMappings": 15
+    }
+  ],
+  "validation": {
+    "verifiedAt": "2026-11-07",
+    "preservedOldRecords": 118904,
+    "newIdentifiersChecked": 6812,
+    "augmentedSetDetailArtworkChecks": 143,
+    "checks": [
+      {
+        "language": "en",
+        "cards": 21256,
+        "sets": 205,
+        "addedCards": 0,
+        "offlineIndex": true
+      },
+      {
+        "language": "ja",
+        "cards": 22735,
+        "sets": 321,
+        "addedCards": 6812,
+        "offlineIndex": true
+      },
+      {
+        "language": "de",
+        "cards": 18995,
+        "sets": 144,
+        "addedCards": 0,
+        "offlineIndex": true
+      },
+      {
+        "language": "fr",
+        "cards": 20045,
+        "sets": 187,
+        "addedCards": 0,
+        "offlineIndex": true
+      },
+      {
+        "language": "es",
+        "cards": 14264,
+        "sets": 145,
+        "addedCards": 0,
+        "offlineIndex": true
+      },
+      {
+        "language": "it",
+        "cards": 14514,
+        "sets": 182,
+        "addedCards": 0,
+        "offlineIndex": true
+      },
+      {
+        "language": "pt",
+        "cards": 13907,
+        "sets": 114,
+        "addedCards": 0,
+        "offlineIndex": true
+      }
+    ]
+  },
+  "imageChecks": {
+    "checked": 32,
+    "passed": 32,
+    "failed": []
+  },
+  "cacheUrlsToBump": [
+    "catalog-pokemon-en.json",
+    "catalog-pokemon-ja.json",
+    "catalog-pokemon-de.json",
+    "catalog-pokemon-fr.json",
+    "catalog-pokemon-es.json",
+    "catalog-pokemon-it.json",
+    "catalog-pokemon-pt.json",
+    "catalog-pokemon-latest.json",
+    "pokemon-artwork.json"
+  ],
+  "filesMetadata": [
+    {
+      "file": "catalog-pokemon-en.json",
+      "bytes": 2168259,
+      "sha256": "5dbd943cc1602f54cec59e460df06fd64ca4d0630997b7439a2c3db1a969aefd"
+    },
+    {
+      "file": "catalog-pokemon-ja.json",
+      "bytes": 4184102,
+      "sha256": "d1b4ba379791c3961bf65576ca547302031171fe2add4355cccb4c83c64ac2d0"
+    },
+    {
+      "file": "catalog-pokemon-de.json",
+      "bytes": 1737086,
+      "sha256": "f97e7dc45784f5d09ab8645c1be8942c00ffb22c0935a4dc7e84136d7c2f90f7"
+    },
+    {
+      "file": "catalog-pokemon-fr.json",
+      "bytes": 1995504,
+      "sha256": "3cff9f7335ebc089acd329c44d97d4765dc5d862ea68cf0d520494e9d75331e0"
+    },
+    {
+      "file": "catalog-pokemon-es.json",
+      "bytes": 1477328,
+      "sha256": "c9236e0f5589db5f6e6f2f32a67d225976f36d626941e3b7616a391ae4e670e6"
+    },
+    {
+      "file": "catalog-pokemon-it.json",
+      "bytes": 1504486,
+      "sha256": "8ae7950a213363699e8097d803d6fe3da2d166fb36ef81791765d9b8233ea0f7"
+    },
+    {
+      "file": "catalog-pokemon-pt.json",
+      "bytes": 1426315,
+      "sha256": "b5572bc5b3490255ac690ffb5c0273818a475515fe7fd202d6a7d7a43bde1c5d"
+    },
+    {
+      "file": "catalog-pokemon-latest.json",
+      "bytes": 173125,
+      "sha256": "5880df92a3aaaa71077fa0b0f6b82d3f31f4d2efc4634cb5efa3a332a9e8e875"
+    },
+    {
+      "file": "pokemon-artwork.json",
+      "bytes": 2949165,
+      "sha256": "218d16148d8778bd9a2c194738d1071285826dbf70d1b4a1a4045081c26acd60"
+    }
+  ]
+}

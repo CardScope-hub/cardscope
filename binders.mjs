@@ -4,6 +4,7 @@ const themes=[['amethyst','Ametyst','#8555cf'],['lavender','Lawenda','#b59ae1'],
 const patterns=[['aurora','Zorza'],['linen','Płótno'],['stars','Konstelacja']],emblems=[['diamond','✧','Diament'],['star','✦','Gwiazda'],['moon','☾','Księżyc'],['pokeball','◉','Poké Ball'],['dragon','♜','Smok'],['bolt','ϟ','Błyskawica'],['flower','❀','Kwiat']];
 const store=createBinderStore(),$b=id=>document.getElementById(id),el=(tag,text,cls)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n};
 let binders=[],currentId=null,page=0,moveFrom=null,zoom=false,busy=false,ready=false,configEdit=null,config={},slotIndex=0,selection=new Map(),pickerOptions={},pickerLimit=60,returnCard=null,rendered='',dragFrom=null,dragBinder=null,moveCardId=null,dragCardId=null;
+let shelfSignature='';
 let pageTurning=false,pageTurnToken=0,pageAnimation=null;
 let saveStatus='Wczytuję bindery…';const dialogIDs=['b-config-dialog','b-picker-dialog','b-slot-dialog','b-choose-dialog'];
 const current=()=>binders.find(b=>b.id===currentId),collection=()=>cards,art=card=>card?.artwork||card?.photo;
@@ -14,7 +15,9 @@ function showError(id,error){$b(id).textContent=error.message||String(error);$b(
 function animatePage(direction=1){const p=$b('b-page');if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;p.getAnimations?.().forEach(a=>a.cancel());p.animate?.([{opacity:.2,transform:`perspective(1000px) rotateY(${direction*7}deg) translateX(${direction*8}px)`},{opacity:1,transform:'perspective(1000px) rotateY(0) translateX(0)'}],{duration:360,easing:'cubic-bezier(.2,.8,.2,1)'})}
 function makeCover(binder){const cover=el('div',undefined,'binder-cover');cover.dataset.theme=binder.theme;cover.dataset.pattern=binder.pattern;cover.dataset.emblem=binder.emblem;cover.append(el('span','CARDSCOPE / PERSONAL ARCHIVE','b-cover-brand'),el('span',emblems.find(x=>x[0]===binder.emblem)?.[1]||'✧','b-cover-emblem'),el('b',binder.name),el('span','','b-cover-line'),el('small',binder.subtitle||'TWOJA KOLEKCJA. TWOJA HISTORIA.'));return cover}
 function renderShelf(){
- const shelf=$b('b-shelf');shelf.replaceChildren();$b('b-empty').hidden=!!binders.length;
+ const shelf=$b('b-shelf');$b('b-empty').hidden=!!binders.length;
+ const signature=JSON.stringify(binders.map(b=>[b.id,b.name,b.subtitle,b.theme,b.pattern,b.emblem,b.pages,b.columns,b.rows,used(b)]));
+ if(signature===shelfSignature)return;shelfSignature=signature;shelf.replaceChildren();
  for(const binder of binders){const button=el('button',undefined,'b-shelf-item');button.setAttribute('aria-label','Otwórz binder '+binder.name);button.append(makeCover(binder));const info=el('div',undefined,'b-shelf-info'),line=el('div',undefined,'b-shelf-title');line.append(el('h2',binder.name),el('span','↗'));info.append(line,el('p',`${binder.pages} stron · ${binder.columns} × ${binder.rows} · ${used(binder)} / ${capacity(binder)} kart`));const progress=el('div',undefined,'b-progress-track'),fill=el('span');fill.style.width=(used(binder)/capacity(binder)*100)+'%';progress.append(fill);info.append(progress);button.append(info);button.onclick=()=>openBinder(binder.id);shelf.append(button)}
 }
 function openBinder(id){if(!binders.some(b=>b.id===id))return;stopPageTurn();currentId=id;page=0;moveFrom=null;rendered='';show('binder');renderCurrent()}
@@ -30,9 +33,10 @@ function renderCurrent(){
  $b('b-page-window').style.setProperty('--b-cols',binder.columns);$b('b-page-window').style.setProperty('--b-rows',binder.rows);$b('b-page-window').dataset.theme=binder.theme;
  const pager=$b('b-page-select');if(pager.options.length!==binder.pages){pager.replaceChildren();for(let i=0;i<binder.pages;i++){const option=el('option','Strona '+(i+1)+' z '+binder.pages);option.value=i;pager.append(option)}}pager.value=String(page);
  $b('b-reader-status').textContent=saveStatus;
- const signature=JSON.stringify([binder.id,binder.updatedAt,binder.slots,page,moveFrom]);if(signature===rendered)return;rendered=signature;
- const grid=$b('b-page');grid.style.setProperty('--b-cols',binder.columns);grid.setAttribute('aria-label',`Strona ${page+1}, ${per} kieszonek`);grid.replaceChildren();
  const byId=new Map(collection().map(c=>[c.id,c]));
+ const visible=binder.slots.slice(page*per,(page+1)*per).map(id=>{const c=byId.get(id);return [id,c?.name,c?.artwork,c?.photo,c?.catalogId,c?.catalogLanguage,c?.catalogGame,c?.gameKey,c?.language,c?.game]});
+ const signature=JSON.stringify([binder.id,binder.columns,binder.rows,visible,page,moveFrom]);if(signature===rendered)return;rendered=signature;
+ const grid=$b('b-page');grid.style.setProperty('--b-cols',binder.columns);grid.setAttribute('aria-label',`Strona ${page+1}, ${per} kieszonek`);grid.replaceChildren();
  for(let local=0;local<per;local++){
   const index=page*per+local,id=binder.slots[index],card=byId.get(id),pocket=el('button',undefined,'b-pocket');pocket.type='button';pocket.dataset.index=index;pocket.dataset.filled=String(!!id);pocket.dataset.moving=String(moveFrom===index);
   pocket.setAttribute('aria-label',`Kieszonka ${local+1}: ${id?card?.name||'karta niedostępna':'dodaj kartę'}`);
@@ -45,7 +49,7 @@ function renderCurrent(){
   pocket.addEventListener('drop',e=>{if(dragFrom===null||dragBinder!==currentId)return;e.preventDefault();const from=dragFrom;dragFrom=null;dragBinder=null;if(current()?.slots[from]!==dragCardId){message('Karta zmieniła miejsce. Wybierz ją ponownie.');return}void persist(swapSlots(current(),from,index),'Karta przeniesiona.');});grid.append(pocket);
  }
 }
-async function persist(binder,text){if(busy)return false;busy=true;try{await store.write(binder);rendered='';renderCurrent();if(text)message(text);return true}catch(e){message(e.message||'Nie udało się zapisać bindera.');return false}finally{busy=false}}
+async function persist(binder,text){if(busy)return false;busy=true;try{await store.write(binder);renderCurrent();if(text)message(text);return true}catch(e){message(e.message||'Nie udało się zapisać bindera.');return false}finally{busy=false}}
 function stopPageTurn(){pageTurnToken++;pageAnimation?.cancel();pageAnimation=null;pageTurning=false;$b('b-sheet').inert=false;$b('b-sheet').removeAttribute('aria-busy');delete $b('b-page-window').dataset.turning;$b('b-page-select').disabled=false;}
 async function turn(next){
  const b=current();if(!b||pageTurning||!Number.isInteger(next))return;
@@ -118,7 +122,7 @@ globalThis.CardBinders={closeDialogs,refreshCurrency(){const b=current();if(!b)r
  const owned=collection().some(c=>c.id===card.id)?collection():[...collection(),card];
  const plan=placementPlan(binder,[{id:card.id,count:card.qty}],owned,{start:Math.min(target.start,capacity(binder)-1),grow:true,replace:target.replace});
  await store.write(plan.binder);openBinder(binder.id);page=Math.floor(plan.indices[0]/(binder.columns*binder.rows));rendered='';renderCurrent();animatePage();
- },enter(view){if(view!=='binder')stopPageTurn();if(view==='binders')renderShelf();if(view==='binder'){if(!current()){show('binders');return}renderCurrent();void refreshPrices(false)}},collectionChanged(){rendered='';if(document.body.dataset.view==='binder')renderCurrent();if($b('b-picker-dialog').open)renderPicker()}};
+ },enter(view){if(view!=='binder')stopPageTurn();if(view==='binders')renderShelf();if(view==='binder'){if(!current()){show('binders');return}renderCurrent();void refreshPrices(false)}},collectionChanged(){if(document.body.dataset.view==='binder')renderCurrent();if($b('b-picker-dialog').open)renderPicker()}};
 for(const button of document.querySelectorAll('[data-b-close]'))button.onclick=()=>{if(['b-choose-dialog','b-config-dialog'].includes(button.dataset.bClose))returnCard=null;$b(button.dataset.bClose).close()};
 for(const id of ['b-choose-dialog','b-config-dialog'])$b(id).addEventListener('cancel',()=>{returnCard=null});
 for(const id of ['b-create','b-create-first'])$b(id).onclick=()=>{returnCard=null;openConfig()};$b('home-open-binders').onclick=() =>show('binders');$b('collection-binders').onclick=()=>show('binders');$b('detail-add-binder').onclick=()=>{if(detailCard)chooseBinder(detailCard.id)};

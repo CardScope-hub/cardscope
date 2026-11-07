@@ -1,0 +1,93 @@
+[
+  {
+    "file": "catalog-mtg-expanded.json",
+    "before": 2265,
+    "after": 8651,
+    "added": 6386,
+    "oldIdsPreserved": true
+  },
+  {
+    "file": "catalog-weiss.json",
+    "before": 31916,
+    "after": 32119,
+    "added": 203,
+    "oldIdsPreserved": true
+  },
+  {
+    "file": "catalog-weiss-jp.json",
+    "before": 66033,
+    "after": 66408,
+    "added": 375,
+    "oldIdsPreserved": true
+  },
+  {
+    "file": "catalog-onepiece.json",
+    "before": 4400,
+    "after": 7568,
+    "added": 3168,
+    "oldIdsPreserved": true
+  },
+  {
+    "file": "catalog-riftbound.json",
+    "before": 1684,
+    "after": 2018,
+    "added": 334,
+    "oldIdsPreserved": true
+  },
+  {
+    "file": "catalog-swu.json",
+    "before": 10207,
+    "after": 10207,
+    "added": 0,
+    "oldIdsPreserved": true
+  },
+  {
+    "file": "catalog-pokemon-en.json",
+    "before": 21256,
+    "after": 21256,
+    "added": 0,
+    "oldIdsPreserved": true
+  },
+  {
+    "file": "catalog-pokemon-ja.json",
+    "before": 15923,
+    "after": 22735,
+    "added": 6812,
+    "oldIdsPreserved": true
+  },
+  {
+    "file": "catalog-pokemon-de.json",
+    "before": 18995,
+    "after": 18995,
+    "added": 0,
+    "oldIdsPreserved": true
+  },
+  {
+    "file": "catalog-pokemon-fr.json",
+    "before": 20045,
+    "after": 20045,
+    "added": 0,
+    "oldIdsPreserved": true
+  },
+  {
+    "file": "catalog-pokemon-es.json",
+    "before": 14264,
+    "after": 14264,
+    "added": 0,
+    "oldIdsPreserved": true
+  },
+  {
+    "file": "catalog-pokemon-it.json",
+    "before": 14514,
+    "after": 14514,
+    "added": 0,
+    "oldIdsPreserved": true
+  },
+  {
+    "file": "catalog-pokemon-pt.json",
+    "before": 13907,
+    "after": 13907,
+    "added": 0,
+    "oldIdsPreserved": true
+  }
+]

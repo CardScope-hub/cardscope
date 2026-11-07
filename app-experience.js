@@ -80,7 +80,7 @@
    });
    if(view==='scanner')updateScannerLabel();
    if(view===previous)return;
-   cancelMotion();const section=$(view);if(!section?.animate||reduced())return;
+   cancelMotion();if(['binders','binder','scanner'].includes(view))return;const section=$(view);if(!section?.animate||reduced())return;
    const backwards=['collection','scan'].includes(view)&&['detail','scanner','scan-result'].includes(previous);
    // Animate children, keeping sticky result panels and camera geometry unchanged.
    [...section.children].filter(el=>!el.hidden).slice(0,8).forEach((el,index)=>{
@@ -95,10 +95,9 @@
  };
  globalThis.CardExperience=experience;
  function updateScannerLabel(){
-  const game=$('scan-game'),language=$('scan-language');
-  const gameText=game.options?.[game.selectedIndex]?.textContent;
+  const language=$('scan-language');
   const languageText=language.options?.[language.selectedIndex]?.textContent;
-  $('scan-config-label').textContent=[gameText,languageText].filter(Boolean).join(' · ')||'Gra · język · silnik';
+  $('scan-config-label').textContent=languageText||'Język karty';
  }
  $('collection-scan').onclick=openScanner;
  $('home-open-collection').onclick=()=>show('collection');

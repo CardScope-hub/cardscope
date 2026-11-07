@@ -1,0 +1,36 @@
+/* Stable app chrome is independent of binder height, animations and dialogs. */
+html{min-height:100%;scrollbar-gutter:stable;scroll-behavior:auto}
+body{min-height:100vh;min-height:100svh;overflow-x:clip}
+body>main{min-height:100svh;overflow-anchor:none}
+body>nav.nav{position:fixed;top:auto;bottom:max(14px,env(safe-area-inset-bottom));left:12px;right:12px;width:auto;margin:0 auto;max-width:550px;z-index:40;transform:none;animation:none;transition:background .2s,border-color .2s;overflow-anchor:none}
+body[data-view="binders"] #binders,body[data-view="binder"] #binder{animation:none!important;transform:none;overflow-anchor:none}
+#binders .b-heading,#binder .b-reader-top,#binder .b-pagination{animation:none!important;transform:none}
+#binder .b-page-window{overflow-anchor:none;scrollbar-gutter:stable}
+#binder .b-value-panel{min-height:180px}
+#binder .b-pagination{min-height:56px}
+/* Camera and shutter are always the first two children, regardless of view size. */
+#scanner{display:flex;flex-direction:column;align-items:stretch}
+#scanner>.camera-stage{order:0;width:100%;height:clamp(230px,54svh,570px);min-height:230px;flex:none;margin:0 auto}
+#scanner>.shutter-row{order:1;flex:none;width:100%;max-width:330px;margin:0 auto;padding:12px 18px 8px}
+#scanner>.scanner-category{order:2}
+#scanner>#live-panel{order:3;margin:10px 0 14px}
+#scanner>.scanner-config{order:4;margin:0 0 14px}
+#scanner>#camera-status{order:5}
+#scanner>#camera-retry{order:6}
+#scanner>.scanner-secondary-tools{order:7}
+#scanner>.scan-upload-label{order:8}
+#scanner>#scan-upload{order:9}
+#scanner>.crop-note{order:10}
+.scanner-category{display:block;padding:12px 15px;border:1px solid #c5a3f02b;border-radius:16px;background:#21192d;margin:4px 0 0;flex:none}
+.scanner-category>div{display:flex;align-items:center;gap:12px;min-width:0}
+.scanner-category label{margin:0;flex:0 0 auto;font-size:11px;color:#c3afd9}
+.scanner-category #scan-game{min-width:0;width:100%;min-height:43px;margin:0;padding:10px 12px;font-size:16px;border-radius:11px}
+#scanner .scanner-config>summary{min-height:48px}
+#scanner .scanner-config-body{min-width:0}
+@media(max-width:380px){.scanner-category>div{gap:8px}.scanner-category label{font-size:10px}.scanner-category #scan-game{padding-left:8px;padding-right:8px}}
+@media(min-width:1000px){
+ body>nav.nav{top:max(16px,env(safe-area-inset-top));bottom:auto;left:42px;right:42px;width:calc(100% - 84px);max-width:1196px;border-radius:18px;margin:0 auto}
+ body>main,body[data-view] main{padding-top:102px}
+ body[data-view="scanner"] main{padding-top:92px}
+}
+@media(max-height:600px){#scanner>.camera-stage{height:44svh;min-height:190px}}

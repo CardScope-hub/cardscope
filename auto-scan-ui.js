@@ -22,7 +22,7 @@
  }
  $('auto-fallback-retry').onclick=()=>{const game=$('auto-fallback-game').value;if(!game){$('auto-fallback-game').focus();return;}scanId++;CardScanner.cancel();setGame(game);if(photo)void globalThis.CardAutoScanUI.retrySelected();else openScanner();};
  $('auto-orientation').onchange=()=>{scanId++;globalThis.CardLiveScan?.stop();CardScanner.cancel();syncScanner();$('live-results').replaceChildren();$('live-status').textContent='Ustaw kartę w nowej ramce i uruchom skan.';};
- $('live-auto-help').onclick=()=>{document.querySelector('.scanner-config').open=true;$('scan-game').scrollIntoView({block:'center'});$('scan-game').focus();};
+ $('live-auto-help').onclick=()=>{globalThis.CardLayout?.scanner();$('scan-game').scrollIntoView({block:'center',behavior:'smooth'});$('scan-game').focus();};
  globalThis.CardAutoScanUI={syncScanner,present,open,recognize,retrySelected:()=>recognizeSelected()};
  // Resolve the global entry point at click time, after all modules have loaded.
  function recognizeSelected(){return globalThis.CardAutoRecognizeSelected();}
