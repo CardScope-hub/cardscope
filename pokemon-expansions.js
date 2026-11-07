@@ -4,14 +4,14 @@ globalThis.CardPokemon = (() => {
  const provider=lang=>lang==='pt-br'?'pt':lang;
  function snapshot(lang){
   lang=provider(lang);if(!['en','ja','de','fr','es','it','pt'].includes(lang))return Promise.reject(Error('Nieobsługiwany język.'));
-  if(!snapshots.has(lang))snapshots.set(lang,raw('catalog-pokemon-'+lang+'.json?v=pokemon-lang-1',{ttl:86400000}).then(d=>{
+  if(!snapshots.has(lang))snapshots.set(lang,raw('catalog-pokemon-'+lang+'.json?v=maintenance-20261107-1',{ttl:86400000}).then(d=>{
    if(d.schema!==1||!Array.isArray(d.cards)||!Array.isArray(d.sets))throw Error('Nieprawidłowy katalog językowy.');
    return {...d,byId:new Map(d.cards.map(c=>[c.id,c])),bySet:new Map(d.sets.map(s=>[s.id,s]))};
   }).catch(e=>{snapshots.delete(lang);throw e}));return snapshots.get(lang);
  }
  const raw = (url, options) => CardCatalog.json(url, options);
  function additions() {
-  if (!pending) pending = raw('catalog-pokemon-latest.json?v=expansions-1', {ttl:86400000}).then(d => {
+  if (!pending) pending = raw('catalog-pokemon-latest.json?v=maintenance-20261107-1', {ttl:86400000}).then(d => {
    if(d.schema!==1||!Array.isArray(d.cards)||!Array.isArray(d.sets))throw Error('Nieprawidłowy katalog dodatków.');
    return {...d, byId:new Map(d.cards.map(c=>[c.id,c]))};
   }).catch(e=>{pending=null;throw e});
@@ -19,7 +19,7 @@ globalThis.CardPokemon = (() => {
  }
  async function index(lang) {
   const requested=lang;lang=provider(lang);
-  const bundled=lang!=='en'?await snapshot(lang).catch(()=>null):null;
+  const bundled=await snapshot(lang).catch(()=>null);
   const extra = lang==='en' ? await additions().catch(()=>null) : null;
   let cards, sets, note='';
   try {
@@ -58,7 +58,10 @@ globalThis.CardPokemon = (() => {
   const match=String(url).match(/^https:\/\/api\.tcgdex\.net\/v2\/en\/cards\/([^/?]+)$/);
   const extra=match ? await additions().catch(()=>null) : null;
   const patch=extra?.byId.get(decodeURIComponent(match?.[1]||''));
-  if(!patch)return raw(url,{ttl:300000,fallback:false});
+  if(!patch){try{return await raw(url,{ttl:300000,timeout:6500,fallback:false})}catch(e){
+   if(!match)throw e;const bundled=await snapshot('en').catch(()=>null),id=decodeURIComponent(match[1]),brief=bundled?.byId.get(id);if(!brief)throw e;
+   const set=bundled.bySet.get(brief.setId||id.slice(0,id.lastIndexOf('-')));return {...brief,catalogLanguage:'en',set:{name:set?.name||brief.setId,cardCount:{},...set},variants:{},variantsList:['Nieustalony'],catalogSnapshot:true};
+  }}
   let live={};
   if(!patch.syntheticId)try{live=await raw(url,{ttl:300000,timeout:4500,fallback:true})}catch{}
   // Keep real provider pricing IDs when available, discard generated Normal metadata

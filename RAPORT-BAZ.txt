@@ -1,0 +1,369 @@
+CARDSCOPE — RAPORT KATALOGÓW / 7 listopada 2026
+
+Zakres: wszystkie obsługiwane gry — Pokémon (7 języków), Magic: The Gathering,
+One Piece, Riftbound, Star Wars: Unlimited, Weiß Schwarz EN i JP.
+Łącznie +17 278 rekordów wydań kart. Warianty, reprinty, tokeny i osobne
+ilustracje są osobnymi rekordami. Wszystkie wcześniejsze ID zachowano.
+
+PODSUMOWANIE
+MTG: 2265 → 8651 (+6386), 56 serii w zapisanym katalogu, 40 693 nazw.
+One Piece: 4400 → 7568 (+3168).
+Riftbound: 1684 → 2018 (+334).
+Weiß Schwarz EN: 31 916 → 32 119 (+203).
+Weiß Schwarz JP: 66 033 → 66 408 (+375).
+Pokémon JP: 15 923 → 22 735 (+6812), 184 → 321 zestawów.
+Pokémon EN/DE/FR/ES/IT/PT: źródła ponownie sprawdzone; brak nowych rekordów.
+SWU: 10 207 rekordów; brak nowych ID, odświeżone metadane i 3308 rekordów cenowych.
+
+WYMIENIONE PRZEZ CIEBIE DODATKI
+Magic: Star Trek — 1279 rekordów łącznie: TRK 586, TRC 556, SDS 30,
+TTRK 27, TTRC 14, ATRK 54, ATRC 12. Data premiery źródła: 13.11.2026.
+Przedpremierowe karty dostępne w źródle są uwzględnione.
+One Piece Heroines Edition Vol.2 — EB-05: 61 bazowych numerów, 96 wydań
+z uwzględnieniem alternatywnych ilustracji i reprintów oraz 4 osobne DON!!.
+Zgodność liczby wydań każdego kodu potwierdzona z listą Bandai.
+
+DODANE SERIE MTG (kod | nazwa | liczba rekordów w katalogu)
+TTRC | Star Trek Commander Tokens | 14
+TRC | Star Trek Commander | 556
+SDS | Stardates | 30
+TTRK | Star Trek Tokens | 27
+TRK | Star Trek | 586
+ATRC | Star Trek Commander Art Series | 12
+ATRK | Star Trek Art Series | 54
+MBC | Mystery Booster Commander Edition | 77
+AFRA | Reality Fracture Art Series | 54
+TFDC | Foundations Commander Tokens | 17
+SLZ | The Zeta Set | 363
+HOB | The Hobbit | 321
+THOB | The Hobbit Tokens | 15
+AHOB | The Hobbit Art Series | 54
+AHOC | The Hobbit Eternal Art Series | 12
+HOC | The Hobbit Eternal | 158
+TMSH | Marvel Super Heroes Tokens | 27
+MSC | Marvel Super Heroes Commander | 866
+TMSC | Marvel Super Heroes Commander Tokens | 32
+AMSH | Marvel Super Heroes Art Series | 66
+FMSC | Marvel Super Heroes Jumpstart Front Cards | 61
+MSH | Marvel Super Heroes | 453
+PSOS | Secrets of Strixhaven Promos | 80
+TSOS | Secrets of Strixhaven Tokens | 14
+TSOC | Secrets of Strixhaven Commander Tokens | 30
+SOA | Secrets of Strixhaven Mystical Archive | 195
+SOC | Secrets of Strixhaven Commander | 426
+ASOS | Secrets of Strixhaven Art Series | 54
+SOS | Secrets of Strixhaven | 368
+PZA | Teenage Mutant Ninja Turtles Source Material | 20
+TMC | Teenage Mutant Ninja Turtles Eternal | 132
+ATMT | Teenage Mutant Ninja Turtles Art Series | 54
+FTMC | Teenage Mutant Ninja Turtles Eternal Front Cards | 5
+TTMT | Teenage Mutant Ninja Turtles Tokens | 10
+TMT | Teenage Mutant Ninja Turtles | 320
+TTMC | Teenage Mutant Ninja Turtles Eternal Tokens | 31
+PL26 | Year of the Horse 2026 | 5
+PECL | Lorwyn Eclipsed Promos | 80
+ECL | Lorwyn Eclipsed | 408
+AECL | Lorwyn Eclipsed Art Series | 54
+ECC | Lorwyn Eclipsed Commander | 176
+TECL | Lorwyn Eclipsed Tokens | 13
+TECC | Lorwyn Eclipsed Commander Tokens | 13
+PF26 | MagicFest 2026 | 19
+PW26 | Wizards Play Network 2026 | 24
+
+DODANE WYDANIA WEISS SCHWARZ
+EN | Umamusume: Pretty Derby - Beginning of a New Era | +203
+JP | PRカード【Wサイド】 | +45
+JP | ガールズ＆パンツァー / Girls und Panzer | +246
+JP | [TD] Girls und Panzer · GUP/W141-T01–T19 | +42
+JP | [TD] Girls und Panzer · GUP/W141-T20–T38 | +42
+
+UZUPEŁNIENIA ONE PIECE WEDŁUG GRUP ŹRÓDŁOWYCH
+Liczby poniżej dotyczą dodatkowych rekordów TCGplayer. Osobno dodano 79
+rekordów ze źródła OPTCG. Łącznie nowe rekordy: 3168.
+The Dominance of God | +53
+Extra Booster: One Piece Heroines Edition Vol. 2 | +20
+Set Sail Deck Set | +30
+The World's Strongest Warriors | +19
+The World's Strongest Warriors Release Event Cards | +75
+ST-33: Starter Deck 33 BLUE Kuzan | +1
+ST-34: Starter Deck 34 PURPLE Charlotte Katakuri | +1
+ST-36: Starter Deck 36 YELLOW Eustass"Captain"Kid | +2
+ST-30: Starter Deck 30 EX Luffy & Ace | +34
+The Time of Battle | +3
+The Time of Battle Release Event Cards | +75
+Adventure on Kami's Island | +12
+Adventure on Kami's Island Release Event Cards | +90
+Extra Booster: One Piece Heroines Edition | +5
+ST-29: Starter Deck 29 Egghead | +3
+The Azure Sea's Seven | +7
+The Azure Sea's Seven Release Event Cards | +89
+Carrying On His Will | +4
+Carrying On His Will: 3rd Anniversary Tournament Cards | +78
+Learn Together Deck Set | +51
+Premium Booster -The Best- Vol. 2 | +21
+Legacy of the Master | +1
+Legacy of the Master Release Event Cards | +75
+A Fist of Divine Speed | +1
+ST-23: Starter Deck 23 RED Shanks | +2
+ST-25: Starter Deck 25 BLUE Buggy | +2
+ST-26: Starter Deck 26 PURPLE/BLACK Monkey.D.Luffy | +2
+ST-28: Starter Deck 28 GREEN/YELLOW Yamato | +1
+A Fist of Divine Speed Release Event Cards | +75
+Extra Booster: Anime 25th Collection | +26
+Royal Blood | +4
+Royal Blood Release Event Cards | +75
+ST-21: Starter Deck 21 EX Gear 5 | +33
+Emperors in the New World | +5
+Emperors in the New World: 2nd Anniversary Tournament Cards | +75
+One Piece Demo Deck Cards | +26
+Revision Pack Cards | +33
+Premium Booster -The Best- | +15
+ST-15: Starter Deck 15 RED Edward.Newgate | +7
+ST-16: Starter Deck 16 GREEN Uta | +6
+ST-17: Starter Deck 17 BLUE Donquixote Doflamingo | +1
+ST-18: Starter Deck 18 PURPLE Monkey.D.Luffy | +2
+ST-19: Starter Deck 19 BLACK Smoker | +1
+Two Legends | +4
+Two Legends Pre-Release Cards | +75
+ST-14: Starter Deck 14 3D2Y | +5
+500 Years in the Future | +2
+500 Years in the Future Pre-Release Cards | +75
+Extra Booster: Memorial Collection | +1
+ST-13: Ultra Deck The Three Brothers | +1
+ST-12: Starter Deck 12 Zoro and Sanji | +1
+Wings of the Captain | +2
+Wings of the Captain Pre-Release Cards | +75
+Awakening of the New Era | +2
+Awakening of the New Era: 1st Anniversary Tournament Cards | +75
+ST-10: Ultra Deck The Three Captains | +1
+Kingdoms of Intrigue | +4
+Kingdoms of Intrigue Pre-Release Cards | +75
+Pillars of Strength Pre-Release Cards | +77
+ST-07: Starter Deck 7 Big Mom Pirates | +1
+Paramount War | +1
+Paramount War Pre-Release Cards | +75
+ST-01: Starter Deck 1 Straw Hat Crew | +2
+ST-02: Starter Deck 2 Worst Generation | +1
+ST-03: Starter Deck 3 The Seven Warlords of The Sea | +1
+One Piece Promotion Cards | +1323
+ST-01: Starter Deck 1 Straw Hat Crew (Super Pre-Release Edition) | +18
+ST-02: Starter Deck 2 Worst Generation (Super Pre-Release Edition) | +17
+ST-03: Starter Deck 3 The Seven Warlords of The Sea (Super Pre-Release Edition) | +17
+ST-04: Starter Deck 4 Animal Kingdom Pirates (Super Pre-Release Edition) | +17
+
+UZUPEŁNIENIA RIFTBOUND
+Radiance | +6
+T1 2025 Worlds Champion Bundles | +15
+Vendetta | +117
+Unleashed | +28
+Spiritforged | +21
+Riftbound Judge Promotional Cards | +1
+Origins: Proving Grounds | +4
+Riftbound Organized Play Promotional Cards | +132
+Riftbound Promotional Cards | +4
+Riftbound Worlds Bundle 2025 | +3
+Secret Garden | +3
+
+UZUPEŁNIENIA POKEMON JP
+Lista obejmuje 137 nowych zestawów i uzupełnienia 6 wcześniejszych.
+Angielskie nazwy są pomocniczymi opisami; nazwy kart pochodzą z japońskiej listy.
+20th | ポケットモンスターカードゲーム スターターパック | Pokemon Card Game Starter Pack | +84 | nowy zestaw
+BGS | バトルギフトセット「ボルトロスVSトルネロス」 | Thundurus VS Tornadus Battle Gift Set | +32 | nowy zestaw
+BKB | バトル強化デッキ60「ブラックキュレムEX」 | Black Kyurem-EX Deck | +20 | nowy zestaw
+BKR | バトル強化デッキ60「レシラムEX」 | Reshiram-EX Deck | +20 | nowy zestaw
+BKW | バトル強化デッキ60「ホワイトキュレムEX」 | White Kyurem-EX Deck | +20 | nowy zestaw
+BKZ | バトル強化デッキ60「ゼクロムEX」 | Zekrom-EX Deck | +20 | nowy zestaw
+BKc | バトル強化デッキ コバルオン | Cobalion Deck | +14 | nowy zestaw
+BKt | バトル強化デッキ テラキオン | Terrakion Deck | +14 | nowy zestaw
+BKv | バトル強化デッキ ビリジオン | Virizion Deck | +14 | nowy zestaw
+BTV | バトルテーマデッキ 「ビクティニ」 | Victini Deck | +26 | nowy zestaw
+BW1b | 拡張パック「ブラックコレクション」 | Black Collection | +53 | nowy zestaw
+BW1w | 拡張パック「ホワイトコレクション」 | White Collection | +54 | nowy zestaw
+BW2 | 拡張パック「レッドコレクション」 | Red Collection | +67 | nowy zestaw
+BW3h | 拡張パック「ヘイルブリザード」 | Hail Blizzard | +52 | nowy zestaw
+BW3p | 拡張パック「サイコドライブ」 | Psycho Drive | +52 | nowy zestaw
+BW4 | 拡張パック「ダークラッシュ」 | Dark Rush | +69 | nowy zestaw
+BW5n | 拡張パック「リューノブレード」 | Dragon Blade | +50 | nowy zestaw
+BW5z | 拡張パック「リューズブラスト」 | Dragon Blast | +50 | nowy zestaw
+BW6c | 拡張パック「コールドフレア」 | Cold Flare | +59 | nowy zestaw
+BW6f | 拡張パック「フリーズボルト」 | Freeze Bolt | +59 | nowy zestaw
+BW7 | 拡張パック「プラズマゲイル」 | Plasma Gale | +70 | nowy zestaw
+BW8f | 拡張パック「ラセンフォース」 | Spiral Force | +51 | nowy zestaw
+BW8n | 拡張パック「ライデンナックル」 | Raiden Knuckle | +51 | nowy zestaw
+BW9 | 拡張パック「メガロキャノン」 | Megalo Cannon | +76 | nowy zestaw
+BWP | BWプロモカード | Black & White Promotional Cards | +246 | nowy zestaw
+CP4 | プレミアムチャンピオンパック EX×M×BREAK | EX x MEGA x BREAK Champion Pack | +9 | uzupełnienie
+CS1 | BW コレクションシート 旅立ちの仲間 ツタージャ・ポカブ・ミジュマル | Snivy - Tepig - Oshawott Collection Sheet | +9 | nowy zestaw
+DS | 拡張パック「ドラゴンセレクション」 | Dragon Selection | +20 | nowy zestaw
+EBB | コンセプトパック「EXバトルブースト」 | EX Battle Boost | +97 | nowy zestaw
+GBR | ガブリアスデッキ３０ | Garchomp Half Deck | +18 | nowy zestaw
+HS | BW「はじめてセット」 | Starting Set BW | +57 | nowy zestaw
+HSP | はじめてセットDX ピカチュウver. | Starting Set BW Pikachu Edition | +48 | nowy zestaw
+HSZ | BW「はじめてセット 全国図鑑版」 | Starting Set BW Pokedex Edition | +48 | nowy zestaw
+HXY | XY 「はじめてセットDX」 | Starting Set XY | +51 | nowy zestaw
+KK | 最強爆流コンボデッキ60 カメックス＋キュレムEX | Blastoise & Kyurem-EX Deck | +19 | nowy zestaw
+KLD | BW バトル強化デッキ30「ケルディオ」 | Keldeo Half Deck | +18 | nowy zestaw
+M6a | 30th セレブレーション | 30th Celebration | +111 | nowy zestaw
+MA | プレミアムトレーナーボックス MEGA | Premium Trainer Box MEGA | +43 | nowy zestaw
+MBD | スターターセットMEGA メガディアンシーex | MEGA Starter Set Mega Diancie ex | +22 | nowy zestaw
+MBG | スターターセットMEGA メガゲンガーex | MEGA Starter Set Mega Gengar ex | +22 | nowy zestaw
+MC | スタートデッキ100 バトルコレクション | Starter Decks 100 Battle Collection | +8 | uzupełnienie
+MDB | トッププレイヤーが選ぶ100＋40枚 マスターデッキビルドBOX EX | Master Deck Build Box EX | +51 | nowy zestaw
+MEE | スターターセットex イーブイex | ex Starter Set Eevee ex | +20 | nowy zestaw
+MEM | スターターセットex ニャオハ＆マスカーニャex | ex Starter Set Sprigatito & Meowscarada ex | +18 | nowy zestaw
+MEZ | スターターセットex ゾロア＆ゾロアークex | ex Starter Set Zorua & Zoroark ex | +20 | nowy zestaw
+MF | 30th CELEBRATION プレミアムデッキセット エーフィ・ブラッキー | 30th Celebration Premium Deck Set Espeon & Umbreon | +49 | nowy zestaw
+MGg | 30枚デッキ対戦set「ミュウツーVSゲノセクト」ゲノセクト | Genesect Half Deck | +17 | nowy zestaw
+MGm | 30枚デッキ対戦set「ミュウツーVSゲノセクト」ミュウツー | Mewtwo Half Deck | +17 | nowy zestaw
+MMBp | MマスターデッキビルドBOX パワースタイル | Master Deck Build Box MEGA Power Style | +58 | nowy zestaw
+MMBs | MマスターデッキビルドBOX スピードスタイル | Master Deck Build Box MEGA Speed Style | +58 | nowy zestaw
+M-P | メガ プロモカード | Mega Promotional Cards | +6 | uzupełnienie
+MP1 | スタートデッキ100 バトルコレクション コロちゃおVer. | Starter Decks 100 Battle Collection CoroCiao ver. | +23 | nowy zestaw
+PBG | プラズマ団バトルギフトセット | Team Plasma Battle Gift Set | +18 | nowy zestaw
+PPD | プラズマ団パワードデッキ30 | Team Plasma Powered Deck | +19 | nowy zestaw
+S10b | Pokémon GO | Pokémon GO | +8 | uzupełnienie
+S8a | 25th アニバーサリーコレクション | 25th Anniversary Collection | +8 | uzupełnienie
+SAf | スターターセットV　闘 | Starter Set V Fighting | +25 | nowy zestaw
+SAg | スターターセットV　草 | Starter Set V Grass | +24 | nowy zestaw
+SAl | スターターセットV　雷 | Starter Set V Lightning | +25 | nowy zestaw
+SAr | スターターセットV　炎 | Starter Set V Fire | +24 | nowy zestaw
+SAw | スターターセットV　水 | Starter Set V Water | +24 | nowy zestaw
+SB | プレミアムトレーナーボックス ソード＆シールド | Premium Trainer Box Sword & Shield | +24 | nowy zestaw
+SC | コンセプトパック「シャイニーコレクション」 | Shiny Collection | +20 | nowy zestaw
+SC2 | スターターセットVMAX リザードン | Charizard VMAX Starter Set 2 | +21 | nowy zestaw
+SCd | スターターセットVMAX　オーロンゲ | Grimmsnarl VMAX Starter Set | +20 | nowy zestaw
+SCr | スターターセットVMAX　リザードン | Charizard VMAX Starter Set | +21 | nowy zestaw
+SD | Vスタートデッキ | V Starter Decks | +127 | nowy zestaw
+SEF | スターターセットVMAX フシギバナ | Venusaur VMAX Starter Set | +21 | nowy zestaw
+SEK | スターターセットVMAX カメックス | Blastoise VMAX Starter Set | +20 | nowy zestaw
+SF | プレミアムトレーナーボックス ICHIGEKI & RENGEKI | Premium Trainer Box Single Strike & Rapid Strike | +33 | nowy zestaw
+SGG | ハイクラスデッキ ゲンガーVMAX | High-Class Deck Gengar VMAX | +21 | nowy zestaw
+SGI | ハイクラスデッキ インテレオンVMAX | High-Class Deck Inteleon VMAX | +24 | nowy zestaw
+SH | ファミリーポケモンカードゲーム | Family Pokémon Card Game | +59 | nowy zestaw
+SI | スタートデッキ100 | Starter Decks 100 | +427 | nowy zestaw
+SJ | スペシャルデッキセットザシアン・ザマゼンタvsムゲンダイナ | Special Deck Set: Zacian & Zamazenta vs Eternatus | +30 | nowy zestaw
+SK | プレミアムトレーナーボックス VSTAR | VSTAR Premium Trainer Box | +30 | nowy zestaw
+SLD | スターターセットVSTAR「ダークライ」 | Starter Set Darkrai VSTAR | +20 | nowy zestaw
+SLL | スターターセットVSTAR「ルカリオ」 | Starter Set Lucario VSTAR | +21 | nowy zestaw
+SMA | スターターセット | Starter Set SM | +68 | nowy zestaw
+SMB | 「プレミアムトレーナーボックス」 | Premium Trainer Box | +15 | nowy zestaw
+SMC | スターターセット改造「カプ・ブルルGX」 | Starter Set Tapu Bulu-GX | +21 | nowy zestaw
+SMD | サン＆ムーン 30枚デッキ対戦セット「サトシVSロケット団」 | Ash VS Team Rocket Half Decks | +32 | nowy zestaw
+SME | スターターセット伝説 ソルガレオGX ルナアーラGX | Starter Set Solgaleo-GX & Lunala-GX | +21 | nowy zestaw
+SMF | プレミアムトレーナーボックス ウルトラサン・ウルトラムーン | Premium Trainer Box Ultra Sun & Ultra Moon | +12 | nowy zestaw
+SMG | デッキビルドBOX「ウルトラムーン」「ウルトラサン」 | Ultra Sun & Ultra Moon Deck Battle Box | +12 | nowy zestaw
+SMH | GXスタートデッキ | GX Starter Decks | +131 | nowy zestaw
+SMI | スターターセット「炎のブースターGX」「水のシャワーズGX」「雷のサンダースGX」 | Starter Sets Flareon & Jolteon & Vaporeon | +38 | nowy zestaw
+SMJ | プレミアムトレーナーボックス TAG TEAM GX | Tag Team GX Premium Trainer Box | +35 | nowy zestaw
+SMK | トレーナーバトルデッキ：ニビシティジムのタケシ・ハナダシティジムのカスミ | Brock & Misty Trainer Battle Decks | +31 | nowy zestaw
+SML | ファミリーポケモンカードゲーム | Family Pokémon Card Game | +51 | nowy zestaw
+SMM | スターターセット TAG TEAM GX | Tag Team GX Starter Sets | +31 | nowy zestaw
+SMN | デッキビルドBOX TAG TEAM GX | Tag Team GX Deck Build Box | +29 | nowy zestaw
+SMP | SMプロモカード | Sun and Moon Promotional Cards | +440 | nowy zestaw
+SMP1 | 月刊コロコロコミック　2017年1月号付録「イワンコ全力デッキ」 | Rockruff Full Strength Deck | +13 | nowy zestaw
+SN | スタートデッキ100 コロコロコミックver. | Starter Deck 100 CoroCoro ver. | +25 | nowy zestaw
+SNPo | XY BREAK進化パック「オンバーンBREAK」 | Noivern BREAK Evolution Pack | +10 | nowy zestaw
+SNPr | XY BREAK進化パック「ライチュウBREAK」 | Raichu BREAK Evolution Pack | +10 | nowy zestaw
+SO | スペシャルデッキセット リザードンVSTAR vs レックウザVMAX | Special Deck Set: Charizard VSTAR vs Rayquaza VMAX | +32 | nowy zestaw
+SP | ソード&シールド プロモカード | Sword & Shield Promotional Cards | +300 | nowy zestaw
+SP1 | ザシアン＋ザマゼンタBOX | Zacian & Zamazenta Box | +7 | nowy zestaw
+SP2 | VMAXスペシャルセット | VMAX Special Set | +8 | nowy zestaw
+SP3 | ジャンボパックセット 白銀のランス＆漆黒のガイスト | Jumbo-Pack Set Silver Lance & Jet-Black Spirit | +6 | nowy zestaw
+SP4 | VMAXスペシャルセット イーブイヒーローズ | VMAX Special Set Eevee Heroes | +8 | nowy zestaw
+SP5 | スペシャルカードセット | V-UNION Special Card Sets | +13 | nowy zestaw
+SP6 | VSTARスペシャルセット | VSTAR Special Set | +6 | nowy zestaw
+SPD | VSTAR&VMAX ハイクラスデッキ デオキシス | VSTAR&VMAX High-Class Deck Deoxys | +21 | nowy zestaw
+SPZ | VSTAR&VMAX ハイクラスデッキ ゼラオラ | VSTAR&VMAX High-Class Deck Zeraora | +21 | nowy zestaw
+SVAL | スターターセットex ホゲータ＆デンリュウex | ex Starter Set Fuecoco & Ampharos ex | +21 | nowy zestaw
+SVAM | スターターセットex ニャオハ＆ルカリオex | ex Starter Set Sprigatito & Lucario ex | +23 | nowy zestaw
+SVAW | スターターセットex クワッス＆ミミッキュex | ex Starter Set Quaxly & Mimikyu ex | +23 | nowy zestaw
+SVB | プレミアムトレーナーボックスex | Premium Trainer Box ex | +28 | nowy zestaw
+SVC | スターターセットex ピカチュウex&パーモット | ex Starter Set Pikachu ex & Pawmot | +21 | nowy zestaw
+SVD | exスタートデッキ | ex Starter Decks | +139 | nowy zestaw
+SVEL | スターターセットテラスタルラウドボーンex | Terastal Starter Set Skeledirge ex | +20 | nowy zestaw
+SVEM | スターターセットテラスタルミュウツーex | Terastal Starter Set Mewtwo ex | +20 | nowy zestaw
+SVF | デッキビルドBOX 黒炎の支配者 | Deck Build Box Ruler of the Black Flame | +38 | nowy zestaw
+SVG | スペシャルデッキセットex フシギバナ・リザードン・カメックス | Special Deck Set ex Venusaur & Charizard & Blastoise | +52 | nowy zestaw
+SVHK | スターターデッキ＆ビルドセット「古代のコライドンex」 | Ancient Koraidon ex Starter Deck & Build Set | +53 | nowy zestaw
+SVHM | スターターデッキ＆ビルドセット「未来のミライドンex」 | Future Miradon ex Starter Deck & Build Set | +53 | nowy zestaw
+SVI | スカーレット&バイオレット バトルアカデミー | Scarlet & Violet: Battle Academy | +74 | nowy zestaw
+SVJL | バトルマスターデッキ テラスタル リザードンex | Battle Master Deck Charizard ex | +21 | nowy zestaw
+SVJP | バトルマスターデッキ パオジアンex | Battle Master Deck Chien-Pao ex | +19 | nowy zestaw
+SVM | スタートデッキGenerations | Starter Decks Generations | +175 | nowy zestaw
+SVN | デッキビルドBOX「バトルパートナーズ」 | Battle Partners Deck Build Box | +45 | nowy zestaw
+SVOD | スターターセットex ダイゴのダンバル&メタグロスex | ex Starter Set Steven's Beldum & Metagross ex | +19 | nowy zestaw
+SVOM | スターターセットex マリィのモルペコ&オーロンゲex | ex Starter Set Marnie's Morpeko & Grimmsnarl ex | +20 | nowy zestaw
+SV-P | スカーレット&バイオレット プロモカード | Scarlet & Violet Promotional Cards | +12 | uzupełnienie
+SVP1 | exスペシャルセット | ex Special Set | +7 | nowy zestaw
+SZD | サザンドラデッキ３０ | Hydreigon Half Deck | +18 | nowy zestaw
+WAK | みんなのWAKUWAKUバトル | Everyone's Exciting Battle | +72 | nowy zestaw
+WCS23 | ポケモンワールドチャンピオンシップス2023横浜 記念デッキ「ピカチュウ」 | World Championships 2023 Yokohama Deck –Pikachu– | +32 | nowy zestaw
+X30 | XY「ゼルネアスデッキ30」 | Xerneas Half Deck | +15 | nowy zestaw
+XY | ハイクラスパック「THE BEST OF XY」 | Best of XY | +314 | nowy zestaw
+XYA | XY メガバトルデッキ60「MリザードンEX」 | MEGA Charizard Deck | +23 | nowy zestaw
+XYB | ハイパーメタルチェーンデッキ60「ディアルガEX+ギルガルドEX」 | Dialga-EX and Aegislash-EX Deck | +19 | nowy zestaw
+XYC | スーパーレジェンドセット60「ゼルネアスEX・イベルタルEX」 | Xerneas-EX and Yveltal-EX Deck | +25 | nowy zestaw
+XYD | メガバトルデッキ60「MレックウザEX」 | MEGA Rayquaza-EX Deck | +20 | nowy zestaw
+XYE | 対戦スタートセット30「エンブオーEX VS トゲキッスEX」 | Emboar-EX VS Togekiss-EX Half Decks | +32 | nowy zestaw
+XYF | XY BREAKコンボデッキ60「ゴルダックBREAK+パルキアEX」 | Golduck BREAK and Palkia-EX Deck | +17 | nowy zestaw
+XYG | パーフェクトバトルデッキ60「ジガルデEX」 | Perfect Battle Deck Zygarde-EX | +20 | nowy zestaw
+XYH | メガバトルデッキ60「タブンネEX」 | Mega Battle Deck Audino-EX | +27 | nowy zestaw
+XYP | XYプロモカード | XY Promotional Cards | +459 | nowy zestaw
+Y30 | XY「イベルタルデッキ30」 | Yveltal Half Deck | +15 | nowy zestaw
+
+ZAKRES I BRAKI ŹRÓDEŁ
+- MTG: zapisany katalog obejmuje wszystkie 50 papierowych zestawów 2026
+  obecnych w aktualnym bulk Scryfall oraz wcześniejsze FRA/LTR. Pełna starsza
+  historia i pozostałe języki nadal są wyszukiwane online przez Scryfall.
+  Pełny indeks dodatków ma 1066 pozycji. Nie są to 1066 kompletnych baz offline.
+- One Piece: sprawdzono 87 grup TCGCSV; uwzględniono wszystkie 7308
+  kwalifikujących się numerowanych produktów i DON!! z tego źródła.
+  53 rekordy są zapowiedziami. Nie deklarujemy kompletnych niewydanych serii.
+- Dwa złote DON!! z EB-05 mają w źródle imageCount=0: grafika może być
+  tymczasowa. Endpoint cen EB-05 zwrócił 401. Ta paczka nie gwarantuje
+  nowych wycen EB-05; brakujące kwoty nie zostały wymyślone.
+- Riftbound: 10 specjalnych produktów nie ma potwierdzonego drukowanego kodu
+  dodatku. Wewnętrzne oznaczenia grup nie są pokazywane jako numer karty.
+  Wykluczono błędny rekord Jarvan IV / 724641.
+- Weiß Schwarz: sprawdzono 179 grup EN i 563 aktywne serie Encore JP.
+  Bezpośrednie API Bushiroad było niedostępne w środowisku. JP zweryfikowano
+  przez Encore i zachowany publiczny mirror. Nie deklarujemy świeżego
+  pobrania całego oficjalnego API ani pełnej aktualizacji cen.
+- Pokémon: TCGdex w sześciu pozostałych językach nie zawierał nowych danych.
+  JP uzupełniono z 151 list Limitless. Brakujących drukowanych mianowników
+  numeracji nie zgadywano. Nazwa i lokalny numer nadal wskazują kandydatów
+  w skanerze; wydanie wymaga potwierdzenia.
+  Konflikty nazw M6-098 i M6-099 zachowano do wyjaśnienia, bez nadpisywania.
+- Daty i ceny z poprzednich źródeł zachowano tam, gdzie nie było świeżej
+  wyceny. Odświeżenie katalogu nie oznacza, że każda karta ma aktualną cenę.
+
+ŹRÓDŁA
+https://api.scryfall.com/sets
+https://api.scryfall.com/bulk-data
+https://api.tcgdex.net/v2/en/cards (oraz ja/de/fr/es/it/pt)
+https://limitlesstcg.com/cards/jp
+https://tcgcsv.com/tcgplayer/20/groups
+https://www.encoredecks.com/
+https://optcgapi.com/api/allSetCards/
+https://tcgcsv.com/tcgplayer/68/groups
+https://en.onepiece-cardgame.com/cardlist/?series=569205
+https://api.riftcodex.com/cards
+https://tcgcsv.com/tcgplayer/89/groups
+https://api.swu-db.com/
+
+WERYFIKACJA
+- Zachowane wszystkie stare ID w 13 głównych katalogach; brak duplikatów ID.
+- Wyszukiwanie TRK, Commander, Stardates i innych nowych serii MTG.
+- EB05-055 i pełne pokrycie 96 druków + 4 DON!!.
+- Wszystkie 578 nowych ID Weiß Schwarz odnalezione po właściwym kodzie.
+- 12 testów rozpoznawania Weiß Schwarz, priorytetu numeru, wariantów
+  oraz przerywania skanu: zaliczone.
+- Wyszukiwanie automatyczne w 7 kategoriach gier: zaliczone.
+- 7 indeksów Pokémon dostępnych offline, szczegóły/grafiki w 143 zestawach;
+  próba 32 nowych obrazów: 32 poprawne.
+- Układ skanera, idempotentne odświeżanie bindera, edycja kart, paginacja
+  i animacja/przerywanie przewracania stron: testy automatyczne zaliczone.
+- Podgląd przeglądarkowy był niedostępny. Wygląd/gesty na fizycznym telefonie
+  nie zostały zweryfikowane w tej sesji.
+
+Szczegółowe raporty źródłowe są w folderze raporty.

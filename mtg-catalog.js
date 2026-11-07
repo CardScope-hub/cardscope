@@ -1,16 +1,18 @@
 // MTG editions: public catalog snapshot plus live Scryfall prices.
 // Images remain at their source. No login, collection or scan data are sent here.
 globalThis.CardMTG=(()=>{
- const VERSION='mtg-expansions-1', localPages=new Map();
- const families={fra:['fra','frc','pfra','tfra','tfrc'],ltr:['ltr','ltc','pltr','pltc','tltr','tltc']};
+ const VERSION='maintenance-20261107-1', localPages=new Map();
+ const families={trk:['trk','trc','ttrk','ttrc','atrk','atrc','sds'],fra:['fra','frc','pfra','tfra','tfrc'],ltr:['ltr','ltc','pltr','pltc','tltr','tltc']};
  const normalize=s=>String(s||'').normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase().replace(/ł/g,'l').replace(/[^a-z0-9]+/g,' ').trim();
  const aliases=new Map([
+  ['star trek',families.trk],['magic the gathering star trek',families.trk],['star trek commander',['trc','ttrc','atrc']],['stardates',['sds']],
   ['reality fracture',families.fra],['reality fracture commander',['frc']],
   ['lord of the rings',families.ltr],['the lord of the rings',families.ltr],['lotr',families.ltr],['wladca pierscieni',families.ltr],
   ['tales of middle earth',families.ltr],['the lord of the rings tales of middle earth',families.ltr],
   ['tales of middle earth commander',['ltc']],['lord of the rings commander',['ltc']]
  ]);
- const codes=new Set(Object.values(families).flat());
+ const codes=new Set(Object.values(families).flat());let setsPending;
+ async function loadSets(snapshot){if(!setsPending)setsPending=snapshot('mtg-sets').then(d=>{for(const s of d.sets||[]){codes.add(s.code);const key=normalize(s.name);if(!aliases.has(key))aliases.set(key,[s.code]);}}).catch(()=>{setsPending=null});return setsPending;}
  function query(value){
   const q=String(value||'').trim(), key=normalize(q), group=aliases.get(key);
   if(group)return group.length===1?'set:'+group[0]:'('+group.map(c=>'set:'+c).join(' or ')+')';
@@ -57,7 +59,7 @@ globalThis.CardMTG=(()=>{
    const d=await snapshot('mtg-expanded'),c=d.cards.find(x=>x.id===params.id);
    if(!c)throw Error('Nie udało się pobrać tego wydania MTG. Sprawdź połączenie.');return {card:localCard(c,api,d.snapshotDate)};
   }
-  let q=query(params.q),key=q+'|'+ocr;
+  await loadSets(snapshot);let q=query(params.q),key=q+'|'+ocr;
   if(page>1&&localPages.has(key)){const saved=localPages.get(key);return localResult(saved.rows,page,q,api,saved.date)}
   if(page===1)localPages.delete(key);
   if(!offline)try{
@@ -71,7 +73,7 @@ globalThis.CardMTG=(()=>{
   if(!rows)throw Error('To zapytanie wymaga dostępu do Scryfall. Wpisz nazwę, serię lub kod, np. fra:43.');
   key=q+'|'+ocr;localPages.set(key,{rows,date:d.snapshotDate});if(localPages.size>25)localPages.delete(localPages.keys().next().value);
   const result=localResult(rows,page,q,api,d.snapshotDate);
-  if(!rows.length)result.note='Brak dopasowania w lokalnej bazie Reality Fracture i The Lord of the Rings. Pozostałe wydania są wyszukiwane online.';
+  if(!rows.length)result.note='Brak dopasowania w lokalnym katalogu wydań 2026 i wcześniejszych uzupełnień. Pełna historia wydań jest wyszukiwana online w Scryfall.';
   return result;
  }
  return Object.freeze({version:VERSION,search,query,select});

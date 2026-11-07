@@ -1,7 +1,7 @@
 // Image recovery is separate from card identity, language, pricing and account data.
 globalThis.CardPokemonArt=(()=>{
  'use strict';
- const VERSION='pokemon-lang-1',bindings=new WeakMap(),successful=new Map();
+ const VERSION='maintenance-20261107-1',bindings=new WeakMap(),successful=new Map();
  const languages={en:'Angielski',ja:'Japoński',de:'Niemiecki',fr:'Francuski',es:'Hiszpański',it:'Włoski','pt-br':'Portugalski',pt:'Portugalski'};
  let manifest;
  const language=c=>c?.catalogLanguage||Object.keys(languages).find(k=>languages[k]===c?.language)||'en';
