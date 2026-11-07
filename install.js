@@ -22,7 +22,7 @@ document.addEventListener('visibilitychange',()=>{
  else if(document.body.dataset.view==='collection')refreshCollectionWhenIdle();
 });
 $('sync-now').onclick=()=>CardStore.sync();
-CardStore.init(next=>{cards=next;globalThis.CardBinders?.collectionChanged();globalThis.CardExperience?.refreshHome();refreshCollectionWhenIdle()},(text,state,count)=>{$('sync-label').textContent=text+(count?' · '+count+' zmian':'');$('sync-panel').dataset.state=state;$('sync-login').hidden=!text.includes('Zaloguj')});
+CardStore.init(next=>{cards=next;globalThis.CardBinders?.collectionChanged();globalThis.CardExperience?.refreshHome();refreshCollectionWhenIdle()},(text,state,count)=>{$('sync-label').textContent=text.replace('Karty i bindery zapisane w Supabase','Karty i bindery zapisane na koncie')+(count?' · '+count+' zmian':'');$('sync-panel').dataset.state=state;$('sync-login').hidden=!text.includes('Zaloguj')});
 if('serviceWorker'in navigator)navigator.serviceWorker.register(new URL('sw.js',cardscopeInstallBase).href,{scope:cardscopeInstallBase.href,updateViaCache:'none'}).catch(()=>{$('offline-note').textContent='Nie udało się włączyć trybu offline. Korzystaj z aplikacji przy połączeniu z internetem.'});
 $('import-file').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>30000000)throw Error('Plik przekracza 30 MB.');const d=JSON.parse(await file.text());if(d.app!=='CardScope'||!Array.isArray(d.cards))throw Error('Wybierz kopię JSON z CardScope.');for(const c of d.cards)if(!c||!/^[\w-]{1,100}$/.test(c.id)||typeof c.name!=='string'||!c.name.trim()||c.name.length>120||!Number.isInteger(c.qty)||c.qty<1||c.qty>999||(c.price!==null&&(!Number.isFinite(c.price)||c.price<0))||c.priceCurrency&&!['EUR','USD','GBP','PLN'].includes(c.priceCurrency))throw Error('Kopia zawiera nieprawidłowe dane.');let count=0;for(const c of d.cards)if(!cards.some(x=>x.id===c.id)){await CardStore.add(c);count++}render();message('Zaimportowano '+count+' kart. Sprawdź status zapisu.')}catch(error){message(error.message||'Import się nie udał.')}finally{e.target.value=''}};
 
@@ -38,3 +38,13 @@ window.addEventListener('cardscope:account-change',()=>{
  $('matches').replaceChildren();$('collection').querySelectorAll?.('[data-private]').forEach(x=>x.remove());
  show('scan');globalThis.CardExperience?.refreshHome();
 });
+
+// A dismissible reminder after an update; the actual sync control stays on Start.
+(() => {
+ const revision='general-scan-1',notice=$('sync-update-notice');let key=null;
+ const remember=()=>{if(key)try{localStorage.setItem(key,revision)}catch{};notice.hidden=true;};
+ globalThis.CardScopeAuth?.subscribe(state=>{if(!state.user){notice.hidden=true;key=null;return;}key='cardscope.sync-reminder:'+state.user.id;let seen=false;try{seen=localStorage.getItem(key)===revision}catch{}notice.hidden=seen;});
+ $('sync-update-dismiss').onclick=remember;
+ $('sync-update-go').onclick=()=>{remember();show('scan');$('home-account').scrollIntoView({behavior:'smooth',block:'end'});$('sync-now').focus({preventScroll:true});};
+ $('sync-now').addEventListener('click',remember);
+})();

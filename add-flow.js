@@ -11,7 +11,7 @@
   $('lookup-title').textContent=scanning?'Odkrywamy Twoją kartę':'Znajdź dowolną kartę.';
   $('lookup-description').textContent=scanning?'Odczytujemy nazwę i numer, a następnie sprawdzamy ich zgodność z bazą kart.':'Wybierz grę i wpisz nazwę lub numer. Przeszukujesz pełną bazę — karta nie musi być w Twojej kolekcji. Wybierz właściwe wydanie i dodaj je.';
  }
- function catalog(){prepareLookup();scanId++;$('catalog-panel').open=true;$('catalog-submit').disabled=false;$('catalog-query').focus();status('Wpisz nazwę lub numer karty. Wybierz wynik, aby go dodać.');}
+ function catalog(){prepareLookup();$('auto-scan-help').hidden=true;scanId++;$('catalog-panel').open=true;$('catalog-submit').disabled=false;$('catalog-query').focus();status('Wpisz nazwę lub numer karty. Wybierz wynik, aby go dodać.');}
  function start(next,target=null){destination=target;mode=next;begin();$('catalog-query').value='';$('catalog-count').textContent='';if(mode==='catalog')catalog();else openScanner();labels();}
  function cancel(){const target=destination;destination=null;labels();if(target)CardBinders.open(target.id);else show('collection');}
  globalThis.CardAddFlow={start,lookup,enter(view){if(!allowed.has(view))destination=null;labels()},async afterSave(card){
