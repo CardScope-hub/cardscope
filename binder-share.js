@@ -1,6 +1,51 @@
-// Explicit, portable read-only snapshot. Never exports unrelated collection or purchase baselines.
-(()=>{const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- function make(binder,cards){const byId=new Map(cards.map(c=>[c.id,c])),currency=globalThis.CardCurrency?.selected||'EUR';let total=0,unknown=0;const per=binder.rows*binder.columns,pages=[];
- for(let page=0;page<binder.pages;page++){const pockets=[];for(let i=page*per;i<(page+1)*per;i++){const c=byId.get(binder.slots[i]);if(!c){pockets.push('<div class="pocket empty">＋</div>');continue;}const q=binder.quotes?.[c.id],amount=q?.amount??c.price,unit=q?.currency||c.priceCurrency||'EUR',value=amount==null?null:globalThis.CardCurrency?.convert(amount,unit);if(value==null)unknown++;else total+=value;const artwork=c.artwork||c.photo;let image='';try{const u=new URL(artwork);if(u.protocol==='https:')image='<img loading="lazy" alt="" src="'+escape(u.href)+'">';}catch{}const price=value==null?'Brak wyceny / kursu':new Intl.NumberFormat('pl-PL',{style:'currency',currency}).format(value);pockets.push('<article class="pocket">'+image+'<b>'+escape(c.name)+'</b><small>'+escape([c.number,c.rarity,c.language].filter(Boolean).join(' · '))+'</small><strong>'+escape(price)+'</strong></article>');}pages.push('<section><h2>Strona '+(page+1)+'</h2><div class="grid" style="--columns:'+binder.columns+'">'+pockets.join('')+'</div></section>');}
- const sum=new Intl.NumberFormat('pl-PL',{style:'currency',currency}).format(total);return '<!doctype html><html lang="pl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+escape(binder.name)+' · CardScope</title><style>body{margin:0;background:#110d19;color:#f4eafd;font:15px system-ui;padding:24px;max-width:1000px;margin:auto}header{padding:28px;background:linear-gradient(120deg,#493063,#22172e);border-radius:24px}h1{font-size:32px}.grid{display:grid;grid-template-columns:repeat(var(--columns),minmax(0,1fr));gap:8px}.pocket{background:#23192f;border:1px solid #b998dd33;border-radius:12px;padding:8px;min-width:0;overflow-wrap:anywhere}.pocket img{width:100%;aspect-ratio:63/88;object-fit:contain}.pocket b,.pocket small,.pocket strong{display:block;margin:7px 0}.pocket small{color:#baa7ce}.empty{min-height:80px;text-align:center;color:#756080}footer{margin:30px 0;color:#baa7ce}</style><header><small>CARDSCOPE · UDOSTĘPNIONY BINDER</small><h1>'+escape(binder.name)+'</h1><p>'+escape(binder.subtitle)+'</p><h2>Wartość wycenionych kart: '+escape(sum)+'</h2><p>'+unknown+' pozycji bez wyceny lub kursu. Każda kieszonka to jedna karta.</p></header>'+pages.join('')+'<footer>Zapis z '+escape(new Date().toLocaleString('pl-PL'))+'. Widok tylko do odczytu. Ceny są zapisanym stanem, nie aktualizują się automatycznie. Ilustracje wymagają internetu. Udostępniono wyłącznie zawartość tego bindera.</footer></html>';}
- globalThis.CardBinderShare={html:make,async export(binder,cards){if(!binder)return;const file=new File([make(binder,cards)],'CardScope-binder.html',{type:'text/html'});try{if(navigator.canShare?.({files:[file]})){await navigator.share({files:[file],title:binder.name});return;}const url=URL.createObjectURL(file),a=document.createElement('a');a.href=url;a.download=file.name;a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);message('Pobrano binder do udostępnienia. Odbiorca otwiera plik HTML w przeglądarce. To kopia kart i cen z tej chwili.');}catch(e){if(e.name!=='AbortError')message('Nie udało się udostępnić bindera. Spróbuj ponownie.');}}};})();
+// Share an unlisted URL on this website. Only the owner can create or revoke it.
+(() => {
+ 'use strict';
+ const base=new URL('./',document.currentScript?.src||location.href);
+ const $=id=>document.getElementById(id);
+ let selected=null,owner=null,generation=0,busy=false;
+ const dialog=document.createElement('dialog');dialog.id='binder-share-dialog';dialog.className='share-dialog';
+ dialog.setAttribute('aria-labelledby','share-heading');
+ dialog.innerHTML=`<div class="share-heading"><span class="eyebrow">TWOJA KOLEKCJA, WSPÓLNA PASJA</span><button type="button" id="share-close" class="round-control" aria-label="Zamknij udostępnianie">×</button></div><h2 id="share-heading">Pokaż swój binder.</h2><p id="share-binder-name"></p><p>Każdy z linkiem obejrzy karty, powiększy je i sprawdzi ostatnie zapisane wyceny. Bez logowania i bez możliwości edycji.</p><label for="share-owner">Nazwa właściciela widoczna dla innych</label><input id="share-owner" type="text" maxlength="50" autocomplete="nickname" placeholder="Twój nick"><p class="fine">Udostępniasz tylko ten binder. Zmiany kart i cen pojawią się w linku po synchronizacji i odświeżeniu widoku przez odbiorcę.</p><button id="share-publish" class="primary" type="button">Utwórz link do bindera ↗</button><div id="share-link-tools" hidden><label for="share-url">Link do Twojego bindera</label><input id="share-url" readonly type="url"><div class="share-actions"><button id="share-copy" class="primary" type="button">Kopiuj link</button><button id="share-native" class="secondary" type="button">Udostępnij ↗</button><a id="share-preview" class="secondary" target="_blank" rel="noopener noreferrer">Otwórz podgląd ↗</a></div><button id="share-revoke" class="text-btn" type="button">Wyłącz ten link</button></div><p id="share-status" role="status" aria-live="polite"></p>`;
+ document.body.append(dialog);
+ const valid=run=>run===generation&&dialog.open&&owner===globalThis.CardScopeAuth?.state.user?.id;
+ function lock(value){busy=value;dialog.setAttribute('aria-busy',String(value));for(const id of ['share-publish','share-revoke'])$(id).disabled=value;}
+ function state(data){
+  $('share-link-tools').hidden=!data?.enabled;
+  $('share-publish').textContent=data?.enabled?'Zapisz nazwę właściciela':'Utwórz link do bindera ↗';
+  if(data?.enabled){const url=new URL('binder.html',base);url.searchParams.set('share',data.token);$('share-url').value=url.href;$('share-preview').href=url.href;$('share-owner').value=data.ownerName;}
+  else{$('share-url').value='';$('share-preview').removeAttribute('href');}
+ }
+ async function rpc(action,name){
+  const who=owner,id=selected,auth=globalThis.CardScopeAuth,config=globalThis.CARDSCOPE_SUPABASE;
+  if(!who||auth?.state.user?.id!==who)throw Error('Zaloguj się na konto właściciela bindera.');
+  const session=await auth.syncSession(who);
+  if(owner!==who||selected!==id||auth.state.user?.id!==who)throw Error('Konto lub binder zmieniły się. Otwórz udostępnianie ponownie.');
+  const res=await fetch(new URL('/rest/v1/rpc/cardscope_binder_share_manage_v1',config.url),{method:'POST',credentials:'omit',cache:'no-store',redirect:'error',signal:AbortSignal.timeout(25000),headers:{apikey:config.publishableKey,Authorization:'Bearer '+session.accessToken,'Content-Type':'application/json'},body:JSON.stringify({p_binder_id:id,p_action:action,p_owner_name:name||null})});
+  const data=await res.json().catch(()=>null);
+  if(!res.ok){if(data?.code==='PGRST202'||data?.code==='42P01')throw Error('Włącz linki w Supabase: uruchom plik 02-BINDER-LINKI.sql w SQL Editor.');if(res.status===401||res.status===403)throw Error('Sesja wygasła. Zaloguj się ponownie.');if(data?.message==='Sync binder first')throw Error('Najpierw zsynchronizuj binder z kontem.');throw Error('Nie udało się zapisać linku. Spróbuj ponownie.');}
+  return data;
+ }
+ async function open(binder){
+  if(!binder)return;generation++;selected=binder.id;owner=globalThis.CardScopeAuth?.state.user?.id;
+  state(null);$('share-binder-name').textContent=binder.name;
+  $('share-owner').value=globalThis.CardScopeAuth?.state.user?.user_metadata?.display_name||'';
+  $('share-status').textContent='Sprawdzam udostępnianie…';if(!dialog.open)dialog.showModal();lock(true);const run=generation;
+  try{const data=await rpc('status');if(valid(run)){state(data);$('share-status').textContent=data?.enabled?'Link jest aktywny. Możesz go skopiować lub wyłączyć.':'Binder pozostaje prywatny, dopóki nie utworzysz linku.';}}
+  catch(e){if(valid(run)||run===generation)$('share-status').textContent=e.message||'Brak połączenia.';}
+  finally{if(run===generation)lock(false);}
+ }
+ $('share-publish').onclick=async()=>{
+  if(busy)return;const name=$('share-owner').value.trim();if(!name){$('share-status').textContent='Podaj nazwę właściciela, np. swój nick.';$('share-owner').focus();return;}
+  lock(true);const run=generation;$('share-status').textContent='Synchronizuję binder i przygotowuję link…';
+  try{await globalThis.CardCloud?.sync();if(!valid(run))return;const cloud=globalThis.CardCloud?.state;if(cloud?.pending||['error','offline','conflict'].includes(cloud?.kind))throw Error('Dokończ synchronizację przed udostępnieniem. Sprawdź status u góry aplikacji.');const data=await rpc('publish',name);if(valid(run)){state(data);$('share-status').textContent='Gotowe. Skopiuj link i wyślij go wybranej osobie.';}}
+  catch(e){if(valid(run))$('share-status').textContent=e.message||'Brak połączenia. Spróbuj ponownie.';}
+  finally{if(run===generation)lock(false);}
+ };
+ $('share-copy').onclick=async()=>{try{await navigator.clipboard.writeText($('share-url').value);$('share-status').textContent='Link skopiowany.';}catch{$('share-url').focus();$('share-url').select();$('share-status').textContent='Zaznaczono link. Skopiuj go ręcznie.';}};
+ $('share-native').onclick=async()=>{if(!navigator.share){$('share-copy').click();return;}try{await navigator.share({title:$('share-binder-name').textContent+' · CardScope',url:$('share-url').value});}catch(e){if(e.name!=='AbortError')$('share-status').textContent='Użyj przycisku „Kopiuj link”.';}};
+ $('share-revoke').onclick=async()=>{if(busy)return;lock(true);const run=generation;try{const data=await rpc('revoke');if(valid(run)){state(data);$('share-status').textContent='Link wyłączony. Utworzenie nowego linku nie przywróci starego.';}}catch(e){if(valid(run))$('share-status').textContent=e.message||'Nie udało się wyłączyć linku.';}finally{if(run===generation)lock(false);}};
+ $('share-close').onclick=()=>dialog.close();dialog.addEventListener('close',()=>{generation++;busy=false;selected=null;owner=null;});
+ window.addEventListener('cardscope:account-change',()=>{generation++;dialog.close();state(null);});
+ globalThis.CardBinderShare={open,export:open};
+})();

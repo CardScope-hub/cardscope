@@ -1,0 +1,15 @@
+/* Keep the action and the actual price together, immediately beneath the artwork. */
+#scan-result .result-quick-actions{max-width:430px;margin:14px auto 24px;display:flex;flex-direction:column;gap:12px;text-align:left}
+#scan-result .result-quick-actions>#result-save{width:100%;min-height:54px;justify-content:center;background:linear-gradient(120deg,#d9bcff,#af81ec);color:#291735;font-weight:700;font-size:16px;border:1px solid #e8d5ff80;border-radius:17px;box-shadow:0 8px 30px #8d5fc029}
+#scan-result .result-quick-actions .result-market{margin:0;padding:20px 22px}
+#scan-result .result-quick-actions #result-price{font-size:clamp(30px,8vw,40px);margin:12px 0 16px}
+#scan-result .result-art{margin-inline:auto}#scan-result .result-art img{max-height:53svh;width:auto;max-width:100%;object-fit:contain}#scan-result .result-art #result-flip{display:block;margin:8px auto 0}#scan-result .result-art #result-flip[hidden]{display:none}
+#scan-result .result-identity{position:static}
+#scan-result .result-options{margin-bottom:20px}
+#home-art .home-card{object-fit:contain;height:auto;aspect-ratio:63/88;background:#20172c;transition:opacity .25s}
+#home-art .home-card:not([src]){opacity:0}
+#home-art .art-label{font-size:9px;letter-spacing:1px;max-width:95%;text-align:center;margin:auto;line-height:1.5;bottom:5px}
+.share-dialog{background:linear-gradient(145deg,#251a36,#17121f);color:#f4edff;border:1px solid #b998df55;border-radius:25px;padding:28px;width:min(520px,calc(100% - 32px));max-height:85dvh;overflow:auto;box-sizing:border-box;box-shadow:0 24px 90px #0009}
+.share-dialog::backdrop{background:#08040ecc;backdrop-filter:blur(8px)}.share-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}.share-dialog h2{font-size:30px;letter-spacing:-1px;margin:18px 0 8px}.share-dialog p{font-size:14px;line-height:1.7;color:#c4b5d4}.share-dialog #share-binder-name{font-size:18px;color:#dfc6ff;font-weight:600}.share-dialog label{display:block;margin:18px 0 8px;font-size:13px}.share-dialog input{width:100%;box-sizing:border-box;min-height:48px;font-size:16px;padding:12px;color:#f4edff;background:#0f0a18;border:1px solid #b694da55;border-radius:12px}.share-dialog #share-publish{width:100%;margin:10px 0}.share-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.share-actions>*{flex:1;white-space:nowrap;text-align:center}.share-dialog #share-revoke{color:#efb4cb}.share-dialog #share-status{min-height:24px;color:#d5b6ff;font-size:13px}.share-dialog [hidden]{display:none!important}
+@media(min-width:1000px){#scan-result .result-quick-actions{max-width:390px}#scan-result .result-art img{max-height:420px}#scan-result .result-pricing{padding-top:0}}
+@media(prefers-reduced-motion:reduce){#home-art .home-card{transition:none}}
