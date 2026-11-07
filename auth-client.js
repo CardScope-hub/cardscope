@@ -14,7 +14,11 @@
   if (linkError) window.history.replaceState(null, '', window.location.pathname + window.location.search);
   let client = null, serial = 0, state = {status:'loading', user:null, recovery:false, error:''};
   const listeners = new Set();
+  let profileView=null;
+  const withProfile=user=>{if(!user||profileView?.id!==user.id)return user;const p=profileView;return {...user,user_metadata:{...user.user_metadata,...CardProfile.metadata(p,user.user_metadata),cardscope_social:p}};};
   function publish(next) {
+    if ('user' in next && next.user?.id!==profileView?.id)profileView=null;
+    if(next.user)next={...next,user:withProfile(next.user)};
     state = Object.freeze({...state, ...next});
     for (const listener of listeners) { try { listener(state); } catch (error) { console.error('CardScope: nie udało się odświeżyć widoku konta.'); } }
   }
@@ -95,6 +99,10 @@
     get state() { return state; },
     subscribe(callback) { listeners.add(callback); callback(state); return () => listeners.delete(callback); },
     errorText, refresh,
+    applyProfileView(profile,expectedOwner){
+      if(!profile||profile.id!==expectedOwner||state.user?.id!==expectedOwner||state.recovery)throw Error("Account changed");
+      profileView={...profile};publish({user:state.user});
+    },
     async syncSession(expectedOwner) {
       requireClient();
       const {data,error}=await client.auth.getSession();

@@ -6,16 +6,19 @@
   <meta name="theme-color" content="#100d18">
   <meta name="referrer" content="no-referrer">
   <meta name="robots" content="noindex,nofollow">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src https:; base-uri 'self'; form-action 'none'; object-src 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https:; connect-src https:; base-uri 'self'; form-action 'none'; object-src 'none'">
   <title>Twój profil · CardScope</title>
   <link rel="icon" href="./icon.svg">
   <link rel="stylesheet" href="./auth.css?v=1">
-  <link rel="stylesheet" href="./profile.css?v=profile-1">
+  <link rel="stylesheet" href="./profile.css?v=social-1">
   <script src="./supabase-config.js?v=1" defer></script>
   <script src="./vendor/supabase-2.118.0.js" defer></script>
-  <script src="./profile-core.js?v=profile-1" defer></script>
-  <script src="./auth-client.js?v=profile-1" defer></script>
-  <script src="./auth-page.js?v=profile-1" defer></script>
+  <script src="./profile-core.js?v=social-1" defer></script>
+  <script src="./auth-client.js?v=social-1" defer></script>
+  <script src="./social-client.js?v=social-1" defer></script>
+  <script src="./profile-media.js?v=social-1" defer></script>
+  <script src="./auth-page.js?v=social-1" defer></script>
+  <script src="./social-page.js?v=social-1" defer></script>
 </head>
 <body>
 <div class="cs-login">
@@ -44,11 +47,13 @@
       <div id="auth-config" class="auth-notice" role="alert" hidden></div>
       <div class="account-tabs" role="tablist" aria-label="Twoje konto">
         <button id="account-tab-profile" role="tab" type="button" aria-selected="true" aria-controls="profile-pane">Profil</button>
+        <button id="account-tab-friends" role="tab" type="button" aria-selected="false" aria-controls="friends-pane" tabindex="-1">Znajomi</button>
         <button id="account-tab-login" role="tab" type="button" aria-selected="false" aria-controls="login-pane" tabindex="-1">Logowanie</button>
       </div>
       <section id="profile-pane" role="tabpanel" aria-labelledby="account-tab-profile">
         <div class="profile-heading"><span class="profile-eyebrow">TWÓJ KOLEKCJONERSKI PODPIS</span><h2>Twoje konto.<br><em>Twój charakter.</em></h2><p>Stwórz profil, który pasuje do Twojej kolekcji.</p></div>
         <div class="profile-cover" id="profile-cover" data-theme="amethyst">
+          <div id="profile-banner-image" class="profile-banner-image" aria-hidden="true"></div>
           <span class="profile-cover-grid" aria-hidden="true"></span><span class="profile-cover-star" aria-hidden="true">✧</span>
           <span class="profile-cover-label">CARDSCOPE / COLLECTOR PROFILE</span>
           <div class="profile-avatar" id="profile-preview-avatar" aria-hidden="true">◈</div>
@@ -61,12 +66,22 @@
         <form id="profile-form" action="#" method="post" hidden>
           <fieldset id="profile-fields">
             <div class="profile-section-label"><span>01</span><b>Twój avatar</b><small>Wybierz swój symbol</small></div>
+            <div class="profile-media-actions"><button type="button" id="profile-avatar-upload" class="social-button">＋ Zdjęcie z biblioteki</button><button type="button" id="profile-avatar-remove" class="auth-link" hidden>Usuń zdjęcie</button></div>
+            <input id="profile-avatar-file" type="file" accept="image/*" hidden aria-label="Wybierz zdjęcie profilowe">
+            <p class="profile-field-help">Własne zdjęcie albo jeden z symboli poniżej.</p>
             <div id="profile-avatar-options" class="profile-avatar-options" role="group" aria-label="Symbol avatara"></div>
             <div class="profile-theme-row"><span>Kolor profilu</span><div id="profile-theme-options" role="group" aria-label="Kolor profilu"></div></div>
+            <div class="profile-media-actions"><button type="button" id="profile-banner-upload" class="social-button">▧ Ustaw baner z biblioteki</button><button type="button" id="profile-banner-remove" class="auth-link" hidden>Usuń baner</button></div>
+            <input id="profile-banner-file" type="file" accept="image/*" hidden aria-label="Wybierz baner profilu">
+            <p class="profile-field-help">Wybierz kadr, przybliż zdjęcie i zapisz profil. JPG, PNG lub WebP · do 15 MB.</p>
+            <p id="profile-media-status" class="profile-field-help" role="status"></p>
             <div class="profile-section-label"><span>02</span><b>Kilka słów o Tobie</b></div>
             <label for="profile-name">Nick<input id="profile-name" name="displayName" type="text" autocomplete="nickname" minlength="2" maxlength="50" required placeholder="Jak się do Ciebie zwracać?" aria-describedby="profile-name-help"></label><p id="profile-name-help" class="profile-field-help">Nazwa wyświetlana na Twoim profilu.</p>
             <label for="profile-bio">O mnie <span class="profile-optional">opcjonalnie</span><textarea id="profile-bio" name="bio" rows="3" maxlength="160" placeholder="Kolekcjonuję od pierwszego boostera…" aria-describedby="profile-bio-count"></textarea></label><span id="profile-bio-count" class="profile-char-count">0 / 160</span>
             <label for="profile-game">Ulubiona karcianka<select id="profile-game" name="game"></select></label>
+            <label class="profile-discovery"><input type="checkbox" id="profile-discoverable"><span>Pozwól znaleźć mnie po nazwie<small>Inni zalogowani kolekcjonerzy zobaczą Twój nick, zdjęcie, baner i opis. E-mail pozostaje prywatny. Przy wyłączonej opcji możesz zapraszać przez link.</small></span></label>
+            <p id="profile-service-status" class="profile-field-help" role="status"></p>
+            <button type="button" id="profile-reload" class="auth-link">Wczytaj zapisany profil</button>
             <div id="profile-message" class="auth-notice" role="status" aria-live="polite" hidden></div>
             <div class="profile-save-row"><button id="profile-save" type="submit" class="cs-login-primary">Utwórz profil <span aria-hidden="true">↗</span></button><button id="profile-discard" type="button" class="auth-link" hidden>Cofnij zmiany</button></div>
           </fieldset>
@@ -74,6 +89,23 @@
           <div class="profile-private-account"><span aria-hidden="true">◇</span><div><small>TWOJE KONTO</small><span id="profile-email"></span><p>Adres e-mail jest widoczny tylko dla Ciebie w tym widoku.</p></div></div>
           <button type="button" id="profile-account-settings" class="auth-link">Przejdź do ustawień logowania →</button>
         </form>
+      </section>
+      <section id="friends-pane" role="tabpanel" aria-labelledby="account-tab-friends" hidden>
+        <div class="profile-heading"><span class="profile-eyebrow">KOLEKCJONUJ W DOBRYM TOWARZYSTWIE</span><h2>Twoi ludzie.<br><em>Wspólna pasja.</em></h2><p>Znajdź kolekcjonerów po nazwie lub wyślij im swój link.</p></div>
+        <div id="friends-guest" class="social-empty" hidden><span aria-hidden="true">✧</span><h3>Dołącz do znajomych</h3><p>Zaloguj się lub utwórz konto. Zaproszenie z linku będzie tu na Ciebie czekać.</p><button type="button" id="friends-login" class="cs-login-primary">Zaloguj się / załóż konto ↗</button></div>
+        <div id="friends-message" class="auth-notice" role="status" aria-live="polite" hidden></div>
+        <div id="friends-content" hidden>
+          <div id="friend-invite-card" class="social-invite-target" hidden></div>
+          <div id="friends-needs-profile" class="social-empty" hidden><p>Najpierw zapisz swój profil, aby inni mogli Cię rozpoznać.</p><button id="friends-edit-profile" type="button" class="social-button">Uzupełnij profil →</button></div>
+          <div class="social-invite-box"><span class="profile-eyebrow">TWÓJ LINK DO ZNAJOMYCH</span><h3>Jedno kliknięcie bliżej.</h3><p>Wyślij swój link. Druga osoba wybierze „Wyślij zaproszenie”, a Ty je zaakceptujesz.</p><input id="friend-link" type="text" readonly aria-label="Twój link do zaproszenia" placeholder="Najpierw utwórz link" hidden><div class="social-actions"><button type="button" id="friend-link-create" class="social-button">Utwórz link</button><button type="button" id="friend-link-copy" class="social-button" hidden>Kopiuj link</button><button type="button" id="friend-link-share" class="social-button" hidden>Udostępnij</button></div><div class="social-actions"><button type="button" id="friend-link-rotate" class="auth-link" hidden>Wygeneruj nowy link</button><button type="button" id="friend-link-revoke" class="auth-link" hidden>Wyłącz link</button></div></div>
+          <label class="social-search-label" for="friends-search">Znajdź kolekcjonera</label><input id="friends-search" class="social-search" type="search" maxlength="50" autocomplete="off" placeholder="Wpisz nazwę profilu lub kod…" aria-describedby="friends-search-help"><p id="friends-search-help" class="profile-field-help">Minimum 2 znaki. Wyniki obejmują profile z włączoną widocznością.</p>
+          <div id="friends-results" aria-live="polite"></div>
+          <div class="social-list-heading"><h3>Twoje kontakty</h3><button type="button" id="friends-refresh" class="auth-link">↻ Odśwież</button></div>
+          <section aria-labelledby="friends-incoming-title"><h4 id="friends-incoming-title">Otrzymane zaproszenia</h4><div id="friends-incoming"></div></section>
+          <section aria-labelledby="friends-accepted-title"><h4 id="friends-accepted-title">Znajomi</h4><div id="friends-accepted"></div></section>
+          <details class="social-outgoing"><summary>Wysłane zaproszenia <span id="friends-outgoing-count">0</span></summary><div id="friends-outgoing"></div></details>
+          <p class="social-private-note">Znajomi widzą profil. Twoja kolekcja i bindery pozostają prywatne, dopóki samodzielnie nie udostępnisz bindera.</p>
+        </div>
       </section>
       <section id="login-pane" role="tabpanel" aria-labelledby="account-tab-login" hidden>
       <div id="auth-tabs" class="auth-tabs" aria-label="Wybierz logowanie lub rejestrację">
@@ -108,5 +140,7 @@
   </main>
   <footer class="cs-login-footer"><span>CARDSCOPE <i>·</i> COLLECT SOMETHING GREAT.</span><span>Twoje karty. Twój świat.</span></footer>
 </div>
+<dialog id="profile-crop-dialog" class="profile-dialog" aria-labelledby="profile-crop-title"><div class="profile-dialog-inner"><span class="profile-eyebrow">DOBRY KADR ROBI RÓŻNICĘ</span><h2 id="profile-crop-title">Twoje zdjęcie</h2><canvas id="profile-crop-canvas" aria-label="Podgląd kadru zdjęcia"></canvas><p>Przeciągnij zdjęcie lub ustaw kadr suwakami.</p><label>Przybliżenie<input id="profile-crop-zoom" type="range" min="1" max="3" step="0.01" value="1"></label><div class="crop-position"><label>Lewo / prawo<input id="profile-crop-x" type="range" min="0" max="100" step="0.1" value="50"></label><label>Góra / dół<input id="profile-crop-y" type="range" min="0" max="100" step="0.1" value="50"></label></div><div class="social-actions"><button id="profile-crop-cancel" type="button" class="social-button">Anuluj</button><button id="profile-crop-use" type="button" class="cs-login-primary">Użyj tego kadru ↗</button></div></div></dialog>
+<dialog id="friend-profile-dialog" class="profile-dialog" aria-labelledby="friend-profile-title"><div class="profile-dialog-inner"><button type="button" id="friend-profile-close" class="social-button social-close" aria-label="Zamknij profil">✕</button><div id="friend-profile-view"></div></div></dialog>
 </body>
 </html>

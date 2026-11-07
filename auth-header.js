@@ -3,7 +3,7 @@
  const profile=document.getElementById('header-account'),login=document.getElementById('sync-login');
  if(profile){profile.href=auth.profileUrl;profile.classList.add('account-profile-link');profile.removeAttribute('target');
   const icon=document.createElement('span'),label=document.createElement('span');icon.className='profile-mini-avatar';icon.setAttribute('aria-hidden','true');label.className='profile-link-label';label.textContent='Profil';profile.replaceChildren(icon,label);
-  auth.subscribe(state=>{const p=CardProfile.read(state.user);CardProfile.paint(icon,p);profile.title=state.user&&p.displayName?'Profil: '+p.displayName:'Twój profil i logowanie';profile.setAttribute('aria-label',profile.title);});
+  auth.subscribe(state=>{const p=CardProfile.read(state.user);(window.CardSocial?.paintAvatar||CardProfile.paint)(icon,p);profile.title=state.user&&p.displayName?'Profil: '+p.displayName:'Twój profil i logowanie';profile.setAttribute('aria-label',profile.title);});
  }
  if(login)login.href=auth.signInUrl||auth.loginUrl;
  if(!cloud)return;

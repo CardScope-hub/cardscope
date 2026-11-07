@@ -67,10 +67,10 @@
     try{
       if(action==='login'){
         await auth.signIn($('auth-email').value,$('auth-password').value);
-        if(auth.state.user){pane='profile';message('Zalogowano pomyślnie.','success');}
+        if(auth.state.user){pane=window.CardInvite?.pending?'friends':'profile';message('Zalogowano pomyślnie.','success');}
       }else if(action==='register'){
         const data=await auth.signUp($('auth-email').value,$('auth-password').value,$('auth-name').value);
-        if(data.session&&auth.state.user){pane='profile';message('Konto jest gotowe.','success');}
+        if(data.session&&auth.state.user){pane=window.CardInvite?.pending?'friends':'profile';message('Konto jest gotowe.','success');}
         else {mode='login';message('Sprawdź pocztę i potwierdź adres, jeśli otrzymasz wiadomość. Jeśli masz już konto, zaloguj się lub odzyskaj hasło.','success');}
       }else if(action==='reset'){
         await auth.reset($('auth-email').value);message('Jeśli istnieje konto dla tego adresu, otrzymasz link do zmiany hasła. Sprawdź również spam.','success');
@@ -87,43 +87,43 @@
     finally{busy=false;clearPasswords();render(auth.state);}
   };
   // Profile and login share the existing callback URL; URL fragments remain with Auth.
-  let pane=new URLSearchParams(window.location.search).get('view')==='login'?'login':'profile';
+  let pane=['login','friends'].includes(new URLSearchParams(window.location.search).get('view'))?new URLSearchParams(window.location.search).get('view'):'profile';
   let profileOwner=null,profileGeneration=0,profileSaving=false,profileDirty=false,baseline=null,draft=CardProfile.read(null);
-  const profileValue=()=>({displayName:$('profile-name').value,bio:$('profile-bio').value,game:$('profile-game').value,avatar:draft.avatar,theme:draft.theme});
-  const comparable=p=>JSON.stringify([p.displayName,p.bio,p.game,p.avatar,p.theme]);
+  const profileValue=()=>({displayName:$('profile-name').value,bio:$('profile-bio').value,game:$('profile-game').value,avatar:draft.avatar,theme:draft.theme,discoverable:$('profile-discoverable').checked,version:baseline?.version||0,...window.CardMedia.get()});
+  const comparable=p=>JSON.stringify([p.displayName,p.bio,p.game,p.avatar,p.theme,p.avatarPath||null,p.bannerPath||null,!!p.discoverable,p.version||0]);
   function profileMessage(value='',kind='info'){$('profile-message').textContent=value;$('profile-message').dataset.kind=kind;$('profile-message').hidden=!value;}
-  function loadProfile(user){draft=CardProfile.read(user);baseline={...draft};$('profile-name').value=draft.displayName;$('profile-bio').value=draft.bio;$('profile-game').value=draft.game;profileDirty=false;profileMessage();}
+  function loadProfile(user){draft=CardProfile.read(user);baseline={...draft};window.CardMedia.reset(draft);$('profile-discoverable').checked=!!draft.discoverable;$('profile-name').value=draft.displayName;$('profile-bio').value=draft.bio;$('profile-game').value=draft.game;profileDirty=false;profileMessage();}
   function previewProfile(){
-    const p=profileOwner?profileValue():CardProfile.read(null);CardProfile.paint($('profile-preview-avatar'),p);$('profile-cover').dataset.theme=p.theme;
+    const p=profileOwner?profileValue():CardProfile.read(null);window.CardMedia.preview(p);$('profile-cover').dataset.theme=p.theme;
     $('profile-preview-name').textContent=p.displayName.trim()||'Twój nick';$('profile-preview-game').textContent=CardProfile.games[p.game]||CardProfile.games[''];$('profile-preview-bio').textContent=p.bio.trim();$('profile-preview-bio').hidden=!p.bio.trim();$('profile-bio-count').textContent=Array.from(p.bio).length+' / 160';
-    for(const button of $('profile-avatar-options').children){button.setAttribute('aria-pressed',String(button.dataset.value===p.avatar));CardProfile.paint(button,{avatar:button.dataset.value,theme:p.theme})}
+    for(const button of $('profile-avatar-options').children){button.setAttribute('aria-pressed',String(!p.avatarPath&&!window.CardMedia.blobs.avatar&&button.dataset.value===p.avatar));CardProfile.paint(button,{avatar:button.dataset.value,theme:p.theme})}
     for(const button of $('profile-theme-options').children){const selected=button.dataset.value===p.theme;button.setAttribute('aria-pressed',String(selected));button.textContent=selected?'✓':'';}
-    $('profile-discard').hidden=!profileDirty;$('profile-save').textContent=profileSaving?'Zapisuję…':baseline?.complete?'Zapisz zmiany ↗':'Utwórz profil ↗';
-    $('profile-save').disabled=profileSaving||busy||(!!baseline?.complete&&!profileDirty);
-    const status=$('profile-save-status');status.dataset.saved=String(!!baseline?.complete&&!profileDirty);
-    status.textContent=profileSaving?'Zapisuję profil na Twoim koncie…':profileDirty?'Masz niezapisane zmiany.':baseline?.complete?'Profil zapisany na Twoim koncie.':'Wybierz swój styl i utwórz profil.';
+    $('profile-discard').hidden=!profileDirty;$('profile-save').textContent=profileSaving?'Zapisuję…':baseline?.version?'Zapisz zmiany ↗':'Utwórz profil ↗';
+    $('profile-save').disabled=profileSaving||busy||window.CardSocial.state.status!=='ready'||(!!baseline?.version&&!profileDirty);
+    const status=$('profile-save-status');status.dataset.saved=String(!!baseline?.version&&!profileDirty);
+    status.textContent=profileSaving?'Zapisuję profil na Twoim koncie…':profileDirty?'Masz niezapisane zmiany.':baseline?.version?'Profil zapisany na Twoim koncie.':'Wybierz swój styl i utwórz profil.';
   }
   function renderProfile(state){
     const user=state.status==='signed-in'&&!state.recovery?state.user:null,owner=user?.id||null;
     if(owner!==profileOwner){profileGeneration++;profileOwner=owner;profileSaving=false;loadProfile(user);}
     else if(!profileDirty&&!profileSaving&&comparable(CardProfile.read(user))!==comparable(baseline||{}))loadProfile(user);
     if(state.recovery||(state.status==='guest'&&state.error))pane='login';
-    for(const name of ['profile','login']){const selected=name===pane,tab=$('account-tab-'+name);tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1;tab.disabled=busy||profileSaving||(name==='profile'&&state.recovery);$(name+'-pane').hidden=!selected;}
+    for(const name of ['profile','friends','login']){const selected=name===pane,tab=$('account-tab-'+name);tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1;tab.disabled=busy||profileSaving||(name!=='login'&&state.recovery);$(name+'-pane').hidden=!selected;}
     $('profile-loading').hidden=state.status!=='loading';$('profile-guest').hidden=state.status!=='guest';$('profile-form').hidden=!user;
     $('profile-error').hidden=!['error','unconfigured'].includes(state.status);$('profile-error-text').textContent=state.error||'Nie udało się wczytać konta.';$('profile-retry').hidden=state.status==='unconfigured';
     $('profile-fields').disabled=profileSaving||busy||!user;$('profile-account-settings').disabled=profileSaving||busy;
-    $('profile-email').textContent=user?.email||'';previewProfile();
+    $('profile-email').textContent=user?.email||'';previewProfile();window.dispatchEvent(new CustomEvent('cardscope-pane',{detail:pane}));
   }
-  function switchPane(next,focus=false){if(busy||profileSaving||(auth.state.recovery&&next==='profile'))return;pane=next;render(auth.state);if(focus)$('account-tab-'+next).focus();}
-  for(const name of ['profile','login']){
+  function switchPane(next,focus=false){if(busy||profileSaving||(auth.state.recovery&&next!=='login'))return;pane=next;render(auth.state);if(focus)$('account-tab-'+next).focus();}
+  for(const name of ['profile','friends','login']){
     $('account-tab-'+name).onclick=()=>switchPane(name);
-    $('account-tab-'+name).onkeydown=event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();switchPane(event.key==='Home'?'profile':event.key==='End'?'login':name==='profile'?'login':'profile',true);};
+    $('account-tab-'+name).onkeydown=event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();switchPane(event.key==='Home'?'profile':event.key==='End'?'login':['profile','friends','login'][(['profile','friends','login'].indexOf(name)+(event.key==='ArrowRight'?1:2))%3],true);};
   }
-  for(const [key,avatar]of Object.entries(CardProfile.avatars)){const button=document.createElement('button');button.type='button';button.className='profile-avatar-choice';button.dataset.value=key;button.title=avatar.label;button.setAttribute('aria-label',avatar.label);button.setAttribute('aria-pressed','false');CardProfile.paint(button,{avatar:key,theme:'amethyst'});button.onclick=()=>{draft.avatar=key;profileEdited()};$('profile-avatar-options').append(button);}
+  for(const [key,avatar]of Object.entries(CardProfile.avatars)){const button=document.createElement('button');button.type='button';button.className='profile-avatar-choice';button.dataset.value=key;button.title=avatar.label;button.setAttribute('aria-label',avatar.label);button.setAttribute('aria-pressed','false');CardProfile.paint(button,{avatar:key,theme:'amethyst'});button.onclick=()=>{draft.avatar=key;window.CardMedia.remove('avatar');profileEdited()};$('profile-avatar-options').append(button);}
   for(const [key,label]of Object.entries(CardProfile.themes)){const button=document.createElement('button');button.type='button';button.className='profile-theme-choice';button.dataset.value=key;button.dataset.theme=key;button.title=label;button.setAttribute('aria-label',label);button.setAttribute('aria-pressed','false');button.onclick=()=>{draft.theme=key;profileEdited()};$('profile-theme-options').append(button);}
   for(const [key,label]of Object.entries(CardProfile.games)){const option=document.createElement('option');option.value=key;option.textContent=label;$('profile-game').append(option);}
-  function profileEdited(){if(!profileOwner||profileSaving)return;profileDirty=comparable(profileValue())!==comparable(baseline);profileMessage();previewProfile();}
-  $('profile-name').oninput=$('profile-bio').oninput=$('profile-game').onchange=profileEdited;
+  function profileEdited(){if(!profileOwner||profileSaving)return;profileDirty=window.CardMedia.dirty||comparable(profileValue())!==comparable(baseline);profileMessage();previewProfile();}
+  $('profile-name').oninput=$('profile-bio').oninput=$('profile-game').onchange=$('profile-discoverable').onchange=profileEdited;document.addEventListener('profile-media-change',profileEdited);
   $('profile-login').onclick=()=>changeMode('login');$('profile-register').onclick=()=>changeMode('register');$('profile-account-settings').onclick=()=>switchPane('login');$('auth-edit-profile').onclick=()=>switchPane('profile');
   $('profile-discard').onclick=()=>{if(profileSaving)return;loadProfile(auth.state.user);previewProfile();};
   $('profile-retry').onclick=()=>{if(auth.state.status!=='loading')void auth.refresh();};
@@ -131,10 +131,13 @@
     event.preventDefault();if(profileSaving||busy||!profileOwner||!$('profile-form').reportValidity())return;
     const owner=profileOwner,run=++profileGeneration,value=profileValue();profileSaving=true;profileMessage();render(auth.state);
     const current=()=>run===profileGeneration&&owner===profileOwner&&auth.state.user?.id===owner;
-    try{await auth.saveProfile(value,owner);if(!current())return;loadProfile(auth.state.user);profileMessage('Gotowe! Twój profil został zapisany.','success');}
-    catch(error){if(current())profileMessage(auth.errorText(error),'error');}
+    try{await window.CardSocial.save(value,window.CardMedia.blobs,owner);if(!current())return;loadProfile(auth.state.user);profileMessage('Gotowe! Twój profil został zapisany.','success');}
+    catch(error){if(current())profileMessage(window.CardSocial.errorText(error),'error');}
     finally{if(current()){profileSaving=false;render(auth.state);}}
   };
 
+  $('profile-reload').onclick=async()=>{if(profileSaving)return;if(profileDirty&&!confirm('Wczytać zapisany profil i odrzucić niezapisane zmiany?'))return;try{await window.CardSocial.load(true);loadProfile(auth.state.user);previewProfile()}catch(e){profileMessage(window.CardSocial.errorText(e),'error')}};
+  window.CardAccountUI=Object.freeze({switchPane,changeMode,get pane(){return pane}});
+  window.CardSocial.subscribe(s=>{$('profile-service-status').textContent=s.status==='loading'?'Wczytuję zapis profilu…':s.error||'';render(auth.state)});
   auth.subscribe(render);
 })();
