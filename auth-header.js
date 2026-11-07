@@ -1,8 +1,12 @@
 (() => {
- const auth=globalThis.CardScopeAuth,cloud=globalThis.CardCloud;if(!auth||!cloud)return;
+ const auth=globalThis.CardScopeAuth,cloud=globalThis.CardCloud;if(!auth)return;
  const profile=document.getElementById('header-account'),login=document.getElementById('sync-login');
- if(profile){profile.href=auth.loginUrl;profile.removeAttribute('target')}
- if(login)login.href=auth.loginUrl;
+ if(profile){profile.href=auth.profileUrl;profile.classList.add('account-profile-link');profile.removeAttribute('target');
+  const icon=document.createElement('span'),label=document.createElement('span');icon.className='profile-mini-avatar';icon.setAttribute('aria-hidden','true');label.className='profile-link-label';label.textContent='Profil';profile.replaceChildren(icon,label);
+  auth.subscribe(state=>{const p=CardProfile.read(state.user);CardProfile.paint(icon,p);profile.title=state.user&&p.displayName?'Profil: '+p.displayName:'Twój profil i logowanie';profile.setAttribute('aria-label',profile.title);});
+ }
+ if(login)login.href=auth.signInUrl||auth.loginUrl;
+ if(!cloud)return;
  const panel=document.createElement('section');panel.id='cardscope-auth-status';panel.setAttribute('aria-label','Konto i synchronizacja');
  Object.assign(panel.style,{padding:'14px 16px',margin:'0 0 16px',border:'1px solid #c8a7f940',borderRadius:'16px',background:'#a879e708',color:'#c9b6db',fontSize:'13px',lineHeight:'1.6',overflowWrap:'anywhere'});
  const account=document.createElement('div'),info=document.createElement('p'),actions=document.createElement('div'),notice=document.createElement('p');
@@ -17,7 +21,6 @@
   const user=auth.state.user,s=cloud.state,raw=user?.user_metadata?.display_name;
   const name=(typeof raw==='string'&&raw.trim())||user?.email||'Kolekcjoner';
   account.textContent=user?'Konto: '+(user.email||name):'Zaloguj się, aby korzystać z kolekcji na swoich urządzeniach.';
-  if(profile){profile.textContent=user?Array.from(name).slice(0,2).join('').toLocaleUpperCase('pl'):'CS';profile.title=user?'Konto: '+(user.email||name):'Zaloguj się';}
   migrate.hidden=!user||!s.legacy;migrate.disabled=busy;backup.hidden=!user;backup.disabled=busy;
   info.textContent=s.legacy?'Na tym urządzeniu znaleziono '+s.legacy.cards+' kart i '+s.legacy.binders+' binderów ze starego zapisu. Przenieś je na powyższe konto. Oryginalna kopia pozostanie na urządzeniu.':user?'Karty i bindery zapisują się na Twoim koncie. Użyj „Synchronizuj”, aby wysłać oczekujące zmiany i pobrać zapis z innych urządzeń.':'Lokalna kopia z wcześniejszej wersji nie została usunięta.';
  }

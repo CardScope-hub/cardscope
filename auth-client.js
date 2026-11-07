@@ -5,6 +5,8 @@
   const base = new URL('./', script?.src || window.location.href);
   const loginUrl = new URL('login.html', base).href;
   const appUrl = new URL('app.html', base).href;
+  const profileUrl = new URL('login.html?view=profile',base).href,signInUrl=new URL('login.html?view=login',base).href;
+  let endpoint=null,publicKey='',profileBusy=false;
   const fragment = new URLSearchParams(window.location.hash.slice(1));
   let recovery = fragment.get('type') === 'recovery';
   let linkError = fragment.has('error') || fragment.has('error_code');
@@ -48,9 +50,17 @@
       email_address_invalid:'Sprawdź poprawność adresu e-mail.',
       otp_expired:'Link wygasł lub został już wykorzystany. Poproś o nowy.',
       session_not_found:'Sesja wygasła. Zaloguj się ponownie.',
+      bad_jwt:'Sesja wygasła. Zaloguj się ponownie.',
+      user_not_found:'Konto jest niedostępne. Zaloguj się ponownie.',
       refresh_token_not_found:'Sesja wygasła. Zaloguj się ponownie.',
       captcha_failed:'Projekt wymaga CAPTCHA. Ten formularz nie ma jeszcze integracji CAPTCHA.'
     };
+    if(code==='profile_name')return 'Nick powinien mieć od 2 do 50 znaków.';
+    if(code==='profile_bio')return 'Opis może mieć maksymalnie 160 znaków.';
+    if(code==='profile_choice')return 'Wybierz avatar, kolor i grę z dostępnej listy.';
+    if(code==='profile_owner')return 'Konto zmieniło się lub sesja wygasła. Otwórz profil ponownie.';
+    if(code==='profile_busy')return 'Trwa zapisywanie profilu. Poczekaj chwilę.';
+    if(error?.name==='AbortError')return 'Zapis trwał zbyt długo. Sprawdź połączenie i spróbuj ponownie.';
     if (messages[code]) return messages[code];
     if (error?.name === 'AuthRetryableFetchError' || error instanceof TypeError) return 'Nie udało się połączyć z Supabase. Sprawdź internet i konfigurację projektu.';
     if (error?.status === 429) return messages.over_request_rate_limit;
@@ -81,7 +91,7 @@
   function requireClient() { if (!client) throw Error('Najpierw uzupełnij konfigurację Supabase.'); }
   function assertResult(result) { if (result.error) throw result.error; return result.data; }
   const api = {
-    loginUrl, appUrl,
+    loginUrl, appUrl, profileUrl, signInUrl,
     get state() { return state; },
     subscribe(callback) { listeners.add(callback); callback(state); return () => listeners.delete(callback); },
     errorText, refresh,
@@ -112,6 +122,28 @@
       const data=assertResult(await client.auth.updateUser({password}));
       recovery=false;await refresh();return data;
     },
+    async saveProfile(input,expectedOwner) {
+      requireClient();
+      if(profileBusy)throw Object.assign(Error('Profile busy'),{code:'profile_busy'});
+      const value=CardProfile.validate(input),owner=expectedOwner;
+      const check=()=>{if(!owner||state.status!=='signed-in'||state.user?.id!==owner||recovery)throw Object.assign(Error('Account changed'),{code:'profile_owner'});};
+      check();profileBusy=true;let timer;
+      try{
+        const {data:sessionData,error:sessionError}=await client.auth.getSession();check();if(sessionError)throw sessionError;
+        const session=sessionData?.session;if(session?.user?.id!==owner||!session.access_token)throw Object.assign(Error('Wrong session'),{code:'profile_owner'});
+        // Verify and pin this write to this account, even if another tab signs in meanwhile.
+        const verified=await client.auth.getUser(session.access_token);check();if(verified.error)throw verified.error;
+        if(verified.data?.user?.id!==owner)throw Object.assign(Error('Wrong owner'),{code:'profile_owner'});
+        const payload=CardProfile.metadata(value,verified.data.user.user_metadata),controller=new AbortController();
+        timer=setTimeout(()=>controller.abort(),15000);
+        const response=await fetch(endpoint,{method:'PUT',headers:{apikey:publicKey,Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},credentials:'omit',cache:'no-store',signal:controller.signal,body:JSON.stringify({data:payload})});
+        const saved=await response.json();check();
+        if(!response.ok)throw Object.assign(Error('Profile request failed'),{code:saved.error_code||saved.code,status:response.status});
+        if(saved.id!==owner)throw Object.assign(Error('Wrong response owner'),{code:'profile_owner'});
+        // A metadata update must not disconnect the current collection database.
+        serial++;publish({status:'signed-in',user:saved,error:''});return CardProfile.read(saved);
+      }finally{clearTimeout(timer);profileBusy=false;}
+    },
     async signOut() {
       requireClient();assertResult(await client.auth.signOut({scope:'local'}));
       serial++;recovery=false;linkError=false;publish({status:'guest',user:null,recovery:false,error:''});
@@ -120,6 +152,7 @@
   window.CardScopeAuth=api;
   try {
     const config=configValues(window.CARDSCOPE_SUPABASE);
+    endpoint=new URL('/auth/v1/user',config.url).href;publicKey=config.key;
     if (!window.supabase?.createClient) throw Error('Nie wczytano biblioteki logowania. Sprawdź, czy wgrano folder vendor z paczki.');
     client=window.supabase.createClient(config.url,config.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:'implicit',storageKey:'cardscope-auth:'+new URL(config.url).hostname}});
     client.auth.onAuthStateChange((event,session) => {

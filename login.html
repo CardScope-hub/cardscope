@@ -7,17 +7,19 @@
   <meta name="referrer" content="no-referrer">
   <meta name="robots" content="noindex,nofollow">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src https:; base-uri 'self'; form-action 'none'; object-src 'none'">
-  <title>Twoje konto · CardScope</title>
+  <title>Twój profil · CardScope</title>
   <link rel="icon" href="./icon.svg">
   <link rel="stylesheet" href="./auth.css?v=1">
+  <link rel="stylesheet" href="./profile.css?v=profile-1">
   <script src="./supabase-config.js?v=1" defer></script>
   <script src="./vendor/supabase-2.118.0.js" defer></script>
-  <script src="./auth-client.js?v=cloud-sync-1" defer></script>
-  <script src="./auth-page.js?v=1" defer></script>
+  <script src="./profile-core.js?v=profile-1" defer></script>
+  <script src="./auth-client.js?v=profile-1" defer></script>
+  <script src="./auth-page.js?v=profile-1" defer></script>
 </head>
 <body>
 <div class="cs-login">
-  <a href="#cs-login-panel" class="cs-login-skip">Przejdź do logowania</a>
+  <a href="#cs-login-panel" class="cs-login-skip">Przejdź do profilu</a>
   <header class="cs-login-header">
     <a class="cs-login-brand" href="./app.html"><span aria-hidden="true">◈</span>CardScope</a>
     <a class="cs-login-back" href="./app.html">← Wróć do aplikacji</a>
@@ -37,14 +39,48 @@
       </div>
       <div class="cs-login-games">POKÉMON <i>·</i> MAGIC <i>·</i> ONE PIECE <i>·</i> WEIẞ SCHWARZ <i>·</i> RIFTBOUND</div>
     </section>
-    <section class="cs-login-panel" id="cs-login-panel" aria-labelledby="auth-title" tabindex="-1">
-      <div class="cs-login-panel-top"><span class="cs-login-emblem" aria-hidden="true">◈</span><span id="auth-status" class="cs-login-status" role="status">Przygotowuję logowanie…</span></div>
+    <section class="cs-login-panel" id="cs-login-panel" aria-label="Profil i logowanie" tabindex="-1">
+      <div class="cs-login-panel-top"><span class="cs-login-emblem" aria-hidden="true">◈</span><span id="auth-status" class="cs-login-status" role="status">Przygotowuję Twoje konto…</span></div>
       <div id="auth-config" class="auth-notice" role="alert" hidden></div>
+      <div class="account-tabs" role="tablist" aria-label="Twoje konto">
+        <button id="account-tab-profile" role="tab" type="button" aria-selected="true" aria-controls="profile-pane">Profil</button>
+        <button id="account-tab-login" role="tab" type="button" aria-selected="false" aria-controls="login-pane" tabindex="-1">Logowanie</button>
+      </div>
+      <section id="profile-pane" role="tabpanel" aria-labelledby="account-tab-profile">
+        <div class="profile-heading"><span class="profile-eyebrow">TWÓJ KOLEKCJONERSKI PODPIS</span><h2>Twoje konto.<br><em>Twój charakter.</em></h2><p>Stwórz profil, który pasuje do Twojej kolekcji.</p></div>
+        <div class="profile-cover" id="profile-cover" data-theme="amethyst">
+          <span class="profile-cover-grid" aria-hidden="true"></span><span class="profile-cover-star" aria-hidden="true">✧</span>
+          <span class="profile-cover-label">CARDSCOPE / COLLECTOR PROFILE</span>
+          <div class="profile-avatar" id="profile-preview-avatar" aria-hidden="true">◈</div>
+          <strong id="profile-preview-name">Twój nick</strong><span id="profile-preview-game">Wszystkie karcianki</span>
+          <p id="profile-preview-bio" hidden></p>
+        </div>
+        <div id="profile-loading" class="profile-state" role="status">Sprawdzam Twoje konto…</div>
+        <div id="profile-guest" hidden><p class="profile-guest-copy">Nadaj sobie nick, wybierz avatar i opowiedz o swojej kolekcji. Profil zapisze się na Twoim koncie.</p><button type="button" id="profile-login" class="cs-login-primary">Zaloguj się <span aria-hidden="true">↗</span></button><button type="button" id="profile-register" class="auth-link">Pierwszy raz tutaj? Załóż konto</button></div>
+        <div id="profile-error" class="auth-notice" role="status" hidden><span id="profile-error-text"></span><button id="profile-retry" type="button" class="auth-link">Spróbuj ponownie</button></div>
+        <form id="profile-form" action="#" method="post" hidden>
+          <fieldset id="profile-fields">
+            <div class="profile-section-label"><span>01</span><b>Twój avatar</b><small>Wybierz swój symbol</small></div>
+            <div id="profile-avatar-options" class="profile-avatar-options" role="group" aria-label="Symbol avatara"></div>
+            <div class="profile-theme-row"><span>Kolor profilu</span><div id="profile-theme-options" role="group" aria-label="Kolor profilu"></div></div>
+            <div class="profile-section-label"><span>02</span><b>Kilka słów o Tobie</b></div>
+            <label for="profile-name">Nick<input id="profile-name" name="displayName" type="text" autocomplete="nickname" minlength="2" maxlength="50" required placeholder="Jak się do Ciebie zwracać?" aria-describedby="profile-name-help"></label><p id="profile-name-help" class="profile-field-help">Nazwa wyświetlana na Twoim profilu.</p>
+            <label for="profile-bio">O mnie <span class="profile-optional">opcjonalnie</span><textarea id="profile-bio" name="bio" rows="3" maxlength="160" placeholder="Kolekcjonuję od pierwszego boostera…" aria-describedby="profile-bio-count"></textarea></label><span id="profile-bio-count" class="profile-char-count">0 / 160</span>
+            <label for="profile-game">Ulubiona karcianka<select id="profile-game" name="game"></select></label>
+            <div id="profile-message" class="auth-notice" role="status" aria-live="polite" hidden></div>
+            <div class="profile-save-row"><button id="profile-save" type="submit" class="cs-login-primary">Utwórz profil <span aria-hidden="true">↗</span></button><button id="profile-discard" type="button" class="auth-link" hidden>Cofnij zmiany</button></div>
+          </fieldset>
+          <p id="profile-save-status" class="profile-save-status" role="status">Profil zapisze się na Twoim koncie.</p>
+          <div class="profile-private-account"><span aria-hidden="true">◇</span><div><small>TWOJE KONTO</small><span id="profile-email"></span><p>Adres e-mail jest widoczny tylko dla Ciebie w tym widoku.</p></div></div>
+          <button type="button" id="profile-account-settings" class="auth-link">Przejdź do ustawień logowania →</button>
+        </form>
+      </section>
+      <section id="login-pane" role="tabpanel" aria-labelledby="account-tab-login" hidden>
       <div id="auth-tabs" class="auth-tabs" aria-label="Wybierz logowanie lub rejestrację">
         <button id="auth-tab-login" type="button" aria-pressed="true">Zaloguj się</button>
         <button id="auth-tab-register" type="button" aria-pressed="false">Załóż konto</button>
       </div>
-      <h2 id="auth-title">Dobrze Cię<br><em>widzieć.</em></h2>
+      <h2 id="auth-title" tabindex="-1">Dobrze Cię<br><em>widzieć.</em></h2>
       <p id="auth-intro" class="cs-login-intro">Zaloguj się e-mailem i hasłem do konta CardScope.</p>
       <div id="auth-message" class="auth-notice" role="status" aria-live="polite" hidden></div>
       <form id="auth-form" action="#" method="post">
@@ -61,11 +97,13 @@
       <button id="auth-back-login" class="auth-link" type="button" hidden>← Wróć do logowania</button>
       <div id="auth-account" hidden>
         <div class="cs-login-account"><span class="cs-login-avatar" id="auth-avatar" aria-hidden="true">CS</span><div><small>ZALOGOWANO JAKO</small><strong id="auth-account-name"></strong><span id="auth-account-email"></span></div><span class="cs-login-account-check" aria-label="Zalogowano">✓</span></div>
+        <button id="auth-edit-profile" type="button" class="cs-login-primary">Przejdź do profilu <span aria-hidden="true">↗</span></button>
         <a id="auth-open-app" class="cs-login-primary" href="./app.html">Otwórz CardScope <span aria-hidden="true">↗</span></a>
         <button id="auth-signout" class="auth-link" type="button">Wyloguj się na tym urządzeniu</button>
       </div>
       <noscript><p class="auth-notice">Włącz JavaScript w przeglądarce, aby korzystać z logowania.</p></noscript>
       <p class="auth-storage-note">Po zalogowaniu otwórz aplikację i wybierz Synchronizuj. Status „zapisane w Supabase” potwierdza wysłanie kart i binderów. Przy pierwszym uruchomieniu możesz przenieść dotychczasową lokalną kolekcję na swoje konto.</p>
+      </section>
     </section>
   </main>
   <footer class="cs-login-footer"><span>CARDSCOPE <i>·</i> COLLECT SOMETHING GREAT.</span><span>Twoje karty. Twój świat.</span></footer>
