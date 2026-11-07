@@ -39,7 +39,32 @@ globalThis.CardCatalog=(()=>{
   if(ocr){const sim=Math.max(...[c.name,...CardScanIndex.aliases(c.name)].map(n=>T.nameScore(n,q)));return key.length>=4&&sim>=(key.length<8?.79:.74)?Math.round(sim*100):0}
   return key.split(' ').every(x=>T.norm([c.name,c.localId,c.set.name,c.rarity,...(c.aliases||[]),...(c.searchTerms||[])].join(' ')).includes(x))?45:0;
  }
- async function search(params){const {game,id}=params,q=String(params.q||'').trim(),page=Math.max(1,Number(params.page)||1),ocr=params.ocr==='1';
+ // Build a lightweight code/name index once; map only the requested page to UI cards.
+ // This avoids re-creating 66k Japanese card objects for every OCR attempt.
+ const weissIndexes=new Map();
+ async function weissScanIndex(game){
+  if(weissIndexes.has(game))return weissIndexes.get(game);
+  const pending=(async()=>{const data=await snapshot(game),codes=new Map(),names=new Map(),series=new Map(),records=[];const W=globalThis.CardWeissScan;
+   for(const raw of data.cards){const jp=game==='weiss-jp',name=jp?raw[1]:raw.name,number=jp?raw[3]:raw.number,aliases=jp?[raw[2],...(data.aliases?.[raw[0]]||[])]:raw.aliases||[],key=W.codeKey(number),set=W.seriesKey(number),record={raw,name,number,key,set,aliases};records.push(record);
+    if(!codes.has(key))codes.set(key,[]);codes.get(key).push(record);if(!series.has(set))series.set(set,[]);series.get(set).push(record);
+    for(const n of [name,...aliases].filter(Boolean)){const nk=W.nameKey(n);if(!names.has(nk))names.set(nk,[]);names.get(nk).push(record);}
+   }
+   return {data,records,codes,names,series,codeList:[...codes.values()].map(a=>({key:a[0].key,value:a[0].number.split(' ')[0]})),nameList:[...new Set(records.flatMap(r=>[r.name,...r.aliases]).filter(Boolean))]};
+  })();weissIndexes.set(game,pending);pending.catch(()=>weissIndexes.delete(game));return pending;
+ }
+ async function searchWeiss(params){const {game,id}=params,book=await weissScanIndex(game),d=book.data,W=CardWeissScan,q=String(params.q||'').trim(),page=Math.max(1,Number(params.page)||1),ocr=params.ocr==='1',date=(d.snapshotDate||d.retrievedAt||'').slice(0,10);
+  if(params.index==='1')return {names:book.nameList,retrievedAt:date};
+  let selected=book.records,weissSeriesApplied;
+  if(params.weissSeries){const subset=book.series.get(params.weissSeries);weissSeriesApplied=!!subset?.length;if(weissSeriesApplied)selected=subset;}
+  if(id){const r=selected.find(r=>String(game==='weiss-jp'?'jp-'+r.raw[0]:r.raw.id)===id);return {card:r?entry(game,r.raw,d):null};}
+  let found;const exact=book.codes.get(W.codeKey(q)),title=book.names.get(W.nameKey(q));
+  if(exact?.length)found=exact;
+  else if(ocr&&title?.length)found=[...new Set(title)];
+  else found=selected.map(r=>({r,s:score({gameKey:game,name:r.name,localId:r.number,aliases:r.aliases,set:{name:game==='weiss-jp'?d.sets[r.raw[5]]:r.raw.set},rarity:game==='weiss-jp'?r.raw[4]:r.raw.rarity,searchTerms:game==='weiss-jp'?d.searchTerms?.[r.raw[0]]:r.raw.searchTerms},q,ocr)})).filter(r=>r.s>0).sort((a,b)=>b.s-a.s||a.r.name.localeCompare(b.r.name)).map(x=>x.r);
+  if(weissSeriesApplied)found=found.filter(r=>r.set===params.weissSeries);
+  return {cards:found.slice((page-1)*36,page*36).map(r=>entry(game,r.raw,d)),total:found.length,catalogCount:book.records.length,nextPage:found.length>page*36?page+1:null,weissSeriesApplied,source:d.source,note:'Kopia katalogu: '+date+'. Porównaj numer i ilustrację.'};
+ }
+ async function search(params){if(['weiss','weiss-jp'].includes(params.game)&&globalThis.CardWeissScan?.codeKey)return searchWeiss(params);const {game,id}=params,q=String(params.q||'').trim(),page=Math.max(1,Number(params.page)||1),ocr=params.ocr==='1';
   if(!['mtg','swu','riftbound','onepiece','weiss','weiss-jp'].includes(game))throw Error('Wybierz obsługiwaną grę.');
   if(game==='swu')return CardSWU.search(params,{snapshot});
   if(game==='mtg')return CardMTG.search(params,{json,snapshot,mtgCard});
@@ -66,5 +91,5 @@ globalThis.CardCatalog=(()=>{
   const rows=d.cards.filter(r=>CardWeiss.family(game==='weiss-jp'?r[3]:r.number)===key).map(r=>entry(game,r,d));
   return rows.sort((a,b)=>CardWeiss.rarity(a.rarity).localeCompare(CardWeiss.rarity(b.rarity))||a.localId.localeCompare(b.localId)||a.id.localeCompare(b.id));
  }
- return Object.freeze({json,search,snapshot,riftCard,mtgCard,score,weissVariants});
+ return Object.freeze({json,search,snapshot,riftCard,mtgCard,score,weissVariants,weissScanIndex});
 })();

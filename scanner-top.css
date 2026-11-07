@@ -1,0 +1,15 @@
+/* Camera first on mobile and desktop; secondary controls follow the shutter. */
+body[data-view="scanner"] main{padding-top:max(10px,env(safe-area-inset-top))}
+#scanner>.camera-stage{margin-top:0;height:clamp(240px,58svh,590px)}
+#scanner>.shutter-row{width:100%;max-width:330px;padding:14px 18px 6px;margin:0 auto;gap:24px}
+#scanner>.shutter-row .round-control{width:44px;height:44px;background:#ffffff07}
+#scanner>.scan-help{min-height:0;margin:8px auto 14px}
+#scanner>.scanner-config{margin:0 0 16px}
+#scanner .scanner-config>summary{flex-wrap:wrap;row-gap:5px}
+#scanner .scanner-config .config-value{overflow-wrap:anywhere;min-width:0;flex:1 1 160px;line-height:1.5}
+#scanner .scanner-config .auto-scan-hint{text-align:left;margin:12px 0;color:#bba9ce}
+#scanner .scanner-config .auto-scan-options{justify-content:space-between;margin:14px 0}
+#scanner .scanner-config .scanner-instruction{margin:18px 0 8px;line-height:1.6}
+#scanner>.scanner-secondary-tools{max-width:330px;margin:20px auto 16px;padding:0 18px}
+#scanner>.scanner-secondary-tools .aim-pill{background:transparent;border:0;padding:0;text-align:center;font-size:10px;color:#a695b9}
+@media(max-height:600px){#scanner>.camera-stage{height:48svh;min-height:190px}#scanner>.shutter-row{padding-top:10px}}

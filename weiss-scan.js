@@ -20,11 +20,11 @@ globalThis.CardWeissScan=(()=>{
  const seriesKey=s=>numberText(s).match(/\b([A-Z0-9]{2,10}\s*\/\s*[SW][A-Z]?[0-9OILSBZ]{1,4})/)?.[1].replace(/\s/g,'')||'';
  function seriesReads(e){const by=new Map();for(const r of e.numbers||[]){if((r.confidence||0)<60)continue;for(const m of numberText(r.text).matchAll(/\b[A-Z0-9]{2,10}\s*\/\s*[SW][A-Z]?[0-9OILSBZ]{1,4}/g)){const s=seriesKey(m[0]);if(s)by.set(s,{value:s,confidence:r.confidence})}}return [...by.values()]}
  function nameScore(name,text){const a=nameKey(name),b=nameKey(text);if(!a||!b)return 0;if(a===b)return 1;
-  if(a.length>=5&&b.includes(a)&&b.length-a.length<=Math.max(3,a.length*.12))return .98;
+  if(a.length>=5&&b.includes(a)&&b.length-a.length<=Math.max(3,Math.min(14,a.length*(a.length>=12?.4:.12))))return .98;
   if(a.length>=5){let shared=0;for(let i=0;i<a.length-1;i++)if(b.includes(a.slice(i,i+2)))shared++;if(shared/(a.length-1)<.35)return 0;}
   // The title band can include a small icon or logo at either edge.
   // Compare bounded windows, never a short character name inside a long title.
-  if(a.length>=5&&b.length>a.length&&b.length-a.length<=Math.max(6,a.length*.22)){
+  if(a.length>=5&&b.length>a.length&&b.length-a.length<=Math.max(6,Math.min(14,a.length*.4))){
    let best=0;for(let length=Math.max(3,a.length-1);length<=Math.min(b.length,a.length+1);length++)for(let start=0;start+length<=b.length;start++)best=Math.max(best,(1-T.distance(a,b.slice(start,start+length))/Math.max(a.length,length))*.98);return best;
   }
   if(Math.abs(a.length-b.length)>Math.max(2,a.length*.2))return 0;
@@ -57,50 +57,52 @@ globalThis.CardWeissScan=(()=>{
  function rank(cards,evidence){return cards.map(card=>({card,evidence:compare(card,evidence)})).sort((a,b)=>b.evidence.score-a.evidence.score||a.card.name.localeCompare(b.card.name));}
  function footerStatus(e){const r=reads(e),s=seriesReads(e);return e.weissLookup?.mode==='code'?'Seria i numer: '+(e.weissLookup.value||r[0]?.value):r.length?'Seria i numer: '+r.map(x=>x.value).join(' / '):s.length?'Seria: '+s.map(x=>x.value).join(' / ')+' · numer nieodczytany':'Seria i numer: brak pewnego odczytu';}
  async function lookupCode(game,evidence,{search,valid=()=>true,onstage=()=>{}}={}){
-  const observed=reads(evidence),sources=[];let failure;
-  for(const r of observed.slice(0,3)){if(!valid())return null;onstage('Szukam numeru '+r.value+'…');try{const data=await search({game,q:r.value,ocr:'0'});if(!valid())return null;const cards=(data.cards||[]).filter(c=>codeKey(c.localId)===r.key);if(cards.length)sources.push({q:r.value,ocr:'0',data:{...data,cards}})}catch(e){if(!valid())return null;failure=e}}
-  const clear=observed.filter(x=>!x.uncertain);if(sources.length&&observed.length===1&&clear.length===1){evidence.weissLookup={mode:'code',key:clear[0].key,value:clear[0].value};return {sources,query:clear[0].value,mode:'code'};}
-  // Check both interpretations of a joined rarity against the real catalog.
-  // A true printing suffix is preserved whenever both printings exist.
-  const sourceKeys=new Set(sources.flatMap(s=>s.data.cards.map(c=>codeKey(c.localId))));
-  if(sourceKeys.size===1&&!failure){const key=[...sourceKeys][0],hit=observed.find(r=>r.key===key),siblings=observed.filter(r=>r.key!==key);if(hit?.rarityJoined&&hit.confidence>=60&&siblings.length&&siblings.every(r=>r.key.startsWith(key)&&/^(RR|CR|CC|R|C|U)$/.test(r.key.slice(key.length))&&r.confidence>=60)){
-   evidence.weissLookup={mode:'code',key,value:hit.value};return {sources,query:hit.value,mode:'code'};
-  }}
-  // Confusable characters may retrieve candidates but cannot prove a printing.
-  if(!sources.length)for(const r of observed.slice(0,2)){if(!valid())return null;try{const data=await search({game,q:r.value,ocr:'1'});if(!valid())return null;const cards=(data.cards||[]).filter(c=>Number.isFinite(T.weissDistance(r.value,c.localId)));if(cards.length)sources.push({q:r.value,ocr:'1',data:{...data,cards}})}catch(e){if(!valid())return null;failure=e}}
+  let observed=reads(evidence),failure;const sources=[];
+  try{if(globalThis.CardCatalog?.weissScanIndex&&globalThis.CardWeissCodebook){const book=await CardCatalog.weissScanIndex(game);if(!valid())return null;const direct=[];
+    // Retain every independent pass for consensus, not just its highest score.
+    for(const r of evidence.numbers||[])for(const read of reads({numbers:[r]}))if(book.codes.has(read.key))direct.push(read);
+    observed=CardWeissCodebook.aggregate([...direct,...CardWeissCodebook.observe(book,evidence)]);
+  }}catch(e){failure=e;}
+  evidence.weissCodeCandidates=observed.slice(0,8).map(r=>({value:r.value,key:r.key,confidence:r.confidence,support:r.support||1,uncertain:r.uncertain}));
+  for(const r of observed.slice(0,6)){if(!valid())return null;onstage('Sprawdzam numer '+r.value+'…');try{const data=await search({game,q:r.value,ocr:'0'});if(!valid())return null;const cards=(data.cards||[]).filter(c=>codeKey(c.localId)===r.key);if(cards.length)sources.push({q:r.value,ocr:'0',data:{...data,cards}})}catch(e){if(!valid())return null;failure=e}}
+  const keys=new Set(sources.flatMap(s=>s.data.cards.map(c=>codeKey(c.localId)))),hits=observed.filter(r=>keys.has(r.key)),top=hits[0];
+  // Two consistent observations from different crops protect against a single
+  // mistaken digit. One code shared by multiple variants still requires a choice.
+  const confirmed=top&&!failure&&top.support>=2&&top.confidence>=65&&hits.length===1;
+  if(confirmed){evidence.weissLookup={mode:'code',key:top.key,value:top.value};return {sources,query:top.value,mode:'code'};}
+  // Exact typed/test evidence without the local codebook retains legacy semantics.
+  if(!globalThis.CardWeissCodebook&&sources.length&&observed.length===1&&!observed[0].uncertain){evidence.weissLookup={mode:'code',key:observed[0].key,value:observed[0].value};return {sources,query:observed[0].value,mode:'code'};}
+  if(!sources.length)for(const r of observed.slice(0,2)){if(!valid())return null;try{const data=await search({game,q:r.value,ocr:'1'});if(!valid())return null;const cards=(data.cards||[]).filter(c=>Number.isFinite(T.weissDistance(r.value,c.localId)));if(cards.length)sources.push({q:r.value,ocr:'1',data:{...data,cards}})}catch(e){failure=e}}
   return {sources,query:observed[0]?.value||'',mode:'uncertain',failure};
  }
  async function lookup(game,evidence,names,{search,valid=()=>true,onstage=()=>{},getNames,readNames,codeResult}={}){
   const code=codeResult||await lookupCode(game,evidence,{search,valid,onstage});if(!code||!valid())return null;if(code.mode==='code')return code;
   onstage('Numer niepotwierdzony — sprawdzam pełną nazwę karty…');
   if(!names?.length&&getNames)try{names=await getNames()}catch{}if(!valid())return null;names=names||[];
-  if(readNames)try{await readNames(names)}catch(e){if(!valid()||e.name==='AbortError')return null;evidence.nameReadFailed=true}if(!valid())return null;
+  if(readNames)try{await readNames(names)}catch(e){if(!valid()||e.name==='AbortError')return null;if(e.weissEngineError)throw e;evidence.nameReadFailed=true}if(!valid())return null;
   const matches=suggest(names,evidence),queries=matches.map(x=>x.name);evidence.weissNames=matches.map(x=>x.name);
   // OCR noise is never presented as an identified Japanese name or used as a
   // broad catalog query. Only a title supported by the bundled dictionary is used.
   if(!names.length&&game==='weiss'&&!queries.length)queries.push(...titleLines(evidence).filter(x=>x.confidence>=75&&/^[A-Za-z0-9\s.,'’!?:\-–—()]+$/.test(x.text)&&nameKey(x.text).length>=6).slice(0,2).map(x=>x.text));
   const sources=[...code.sources];let failure=code.failure;
   const series=seriesReads(evidence);
-  for(const q of [...new Set(queries)].slice(0,3)){if(!valid())return null;try{const filter=series.length===1?{weissSeries:series[0].value}:{},data=await search({game,q,ocr:'1',...filter});if(!valid())return null;const unknownSeries=data.weissSeriesApplied===false;if(unknownSeries)evidence.weissRejectedSeries=filter.weissSeries;const cards=(data.cards||[]).filter(c=>unknownSeries||series.length!==1||seriesKey(c.localId)===series[0].value);if(cards.length)sources.push({q,ocr:'1',...(unknownSeries?{}:filter),data:{...data,cards}})}catch(e){if(!valid())return null;failure=e}}
+  for(const q of [...new Set(queries)].slice(0,3)){if(!valid())return null;try{const filter=series.length===1?{weissSeries:series[0].value}:{};let data=await search({game,q,ocr:'1',...filter});if(!data.cards?.length&&filter.weissSeries){data=await search({game,q,ocr:'1'});data={...data,weissSeriesApplied:false};}if(!valid())return null;const unknownSeries=data.weissSeriesApplied===false;if(unknownSeries)evidence.weissRejectedSeries=filter.weissSeries;const cards=(data.cards||[]).filter(c=>unknownSeries||series.length!==1||seriesKey(c.localId)===series[0].value);if(cards.length)sources.push({q,ocr:'1',...(unknownSeries?{}:filter),data:{...data,cards}})}catch(e){if(!valid())return null;failure=e}}
   const mode=queries.length?'name':'uncertain';evidence.weissLookup={mode};return {sources,query:queries[0]||code.query,mode,note:failure?.message||'Nie potwierdzono serii i numeru ani nazwy. Zbliż dolną część karty, usuń odblaski lub wpisz dane ręcznie.'};
  }
  const numberPasses=[
-  {region:[.105,.886,.168,.018],psm:'7',width:900,freeText:true},
-  {region:[.095,.88,.21,.032],psm:'7',width:1000},
-  {region:[.105,.886,.18,.024],psm:'7',enhance:true,width:950,freeText:true},
-  {region:[.05,.875,.3,.045],psm:'11',width:1200},
-  {region:[0,.84,1,.12],psm:'11',width:2200},
-  {region:[0,.92,1,.08],psm:'11',width:2200}
+  {region:[.09,.885,.22,.022],psm:'7',width:1200,freeText:true},
+  {region:[0,.73,1,.27],psm:'11',width:2200,freeText:true,broad:true},
+  {region:[.09,.875,.24,.042],psm:'7',width:1200,enhance:true,freeText:true},
+  {region:[.03,.845,.40,.10],psm:'11',width:1600,freeText:true}
  ].map(p=>({...p,kind:'numbers',latin:true}));
  const landscapeNumberPasses=[
-  {region:[.425,.897,.14,.024],psm:'7',width:900,freeText:true},
-  {region:[.415,.889,.16,.035],psm:'7',width:1000},
-  {region:[.425,.897,.14,.024],psm:'7',width:900,enhance:true,freeText:true},
-  {region:[.37,.88,.23,.052],psm:'11',width:1100},
-  {region:[0,.85,1,.13],psm:'11',width:2200}
+  {region:[.415,.889,.17,.023],psm:'7',width:1000,freeText:true},
+  {region:[0,.67,1,.33],psm:'11',width:2200,freeText:true,broad:true},
+  {region:[.405,.88,.18,.045],psm:'7',width:1000,enhance:true,freeText:true},
+  {region:[.34,.83,.30,.12],psm:'11',width:1500,freeText:true}
  ].map(p=>({...p,kind:'numbers',latin:true}));
- const namePasses=[{region:[.27,.895,.65,.05],psm:'7'}, {region:[.29,.896,.54,.052],psm:'6'}, {region:[.27,.885,.65,.065],psm:'7',enhance:true}].map(p=>({...p,kind:'names',latin:false,width:1400}));
- const landscapeNamePasses=[{region:[.59,.88,.36,.068],psm:'7'}, {region:[.575,.88,.39,.075],psm:'6'}, {region:[.59,.88,.36,.068],psm:'7',enhance:true}].map(p=>({...p,kind:'names',latin:false,width:1200}));
+ const namePasses=[{region:[.20,.81,.78,.16],psm:'11',width:1800,broad:true},{region:[.27,.895,.65,.05],psm:'7'}, {region:[.29,.896,.54,.052],psm:'6'}, {region:[.27,.885,.65,.065],psm:'7',enhance:true}].map(p=>({...p,kind:'names',latin:false,width:p.width||1400}));
+ const landscapeNamePasses=[{region:[.50,.78,.49,.19],psm:'11',width:1500,broad:true},{region:[.59,.88,.36,.068],psm:'7'}, {region:[.575,.88,.39,.075],psm:'6'}, {region:[.59,.88,.36,.068],psm:'7',enhance:true}].map(p=>({...p,kind:'names',latin:false,width:p.width||1200}));
  const landscape=image=>(image.naturalWidth||image.width)>(image.naturalHeight||image.height);
  const getNumberPasses=image=>landscape(image)?landscapeNumberPasses:numberPasses;
  const getNamePasses=image=>landscape(image)?landscapeNamePasses:namePasses;
@@ -120,22 +122,53 @@ globalThis.CardWeissScan=(()=>{
  }
  function readout(e){return [footerStatus(e),'Nazwa: '+(e.weissNames?.join(' / ')||'brak potwierdzonego odczytu')].join('\n')}
  function syncScanner(){const enabled=typeof currentGame==='function'&&is(currentGame()),control=$('weiss-scan-options'),guide=$('scan-guide');if(control)control.hidden=!enabled;if(guide&&enabled)guide.dataset.orientation=$('weiss-orientation')?.value||'portrait';}
- function createReader(game,valid=()=>true){const workers=new Map();let closed=false,usedJapanese=false,neuralUnavailable=false;
+ function createReader(game,valid=()=>true){const workers=new Map();let closed=false,usedJapanese=false,neuralUnavailable=false,stage=()=>{};
   const check=()=>{if(closed||!valid())throw new DOMException('Anulowano','AbortError')};
   async function close(){if(closed)return;closed=true;const old=[...workers.values()];workers.clear();for(const w of old){CardScanRuntime.untrack(w);await w.terminate().catch(()=>{})}if(usedJapanese&&valid())CardScanRuntime.cancel()}
-  async function worker(lang){check();if(workers.has(lang))return workers.get(lang);await loadOCR();check();const w=await Tesseract.createWorker(lang,1,{},lang==='eng'?{load_system_dawg:'0',load_freq_dawg:'0'}:{});if(closed||!valid()){await w.terminate().catch(()=>{});check()}CardScanRuntime.track(w);workers.set(lang,w);return w;}
-  async function pass(image,p,evidence){check();const w=await worker(p.kind==='numbers'||game==='weiss'?'eng':'jpn');const r=await readScanPass(w,image,p);check();evidence[p.kind].push({...r,source:'weiss-'+p.kind});return r;}
-  return {close,async scan(image,{search,getNames,onstage=()=>{},onread=()=>{}}={}){check();const evidence={names:[],numbers:[],full:'',game,weissOrientation:landscape(image)?'landscape':'portrait',engine:'Weiss · seria i numer'},attempts=new Map();let code;
+  async function worker(lang){check();if(workers.has(lang))return workers.get(lang);
+   const previous=[...workers.values()][0],params=lang==='eng'?{load_system_dawg:'0',load_freq_dawg:'0'}:{};
+   if(previous?.reinitialize){await previous.reinitialize(lang,1,params);check();workers.clear();workers.set(lang,previous);return previous;}
+   for(const w of workers.values()){CardScanRuntime.untrack(w);await w.terminate().catch(()=>{});}workers.clear();
+   const create=globalThis.CardWeissOCR?.create;if(!create){await loadOCR();check();}
+   let w;try{w=await (create?create(lang,params,m=>{if(!closed&&valid()&&/loading.*(?:core|language)/i.test(m.status||''))stage('Wczytuję odczyt Weiß Schwarz — pierwszy start może potrwać chwilę…');}):Tesseract.createWorker(lang,1,{},params));}catch(e){e.weissEngineError=true;throw e;}if(closed||!valid()){await w.terminate().catch(()=>{});check();}CardScanRuntime.track(w);workers.set(lang,w);return w;
+  }
+  async function pass(image,p,evidence){check();const w=await worker(p.kind==='numbers'||game==='weiss'?'eng':'jpn');
+   await w.setParameters({tessedit_pageseg_mode:p.psm,user_defined_dpi:'300',preserve_interword_spaces:'1',tessedit_char_whitelist:p.latin&&!p.freeText?'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/-_@+ |':''});
+   const crop=enhancedRegion(image,p.region,p.enhance,p.width||1800),{data}=await w.recognize(crop,{rotateAuto:true},{text:true,blocks:true});check();
+   const lines=data.blocks?.flatMap(b=>b.paragraphs?.flatMap(p=>p.lines||[])||[])||data.lines||[],passId='weiss-'+p.kind+'-'+evidence.numbers.length+'-'+evidence.names.length;
+   const rows=lines.map(l=>({text:l.text||'',confidence:l.confidence||0,source:passId,region:p.region,box:l.bbox,cropWidth:crop.width,cropHeight:crop.height,y:p.region[1]+(((l.bbox?.y0||0)+(l.bbox?.y1||0))/2-24)/(crop.height-48)*p.region[3]})).filter(x=>x.text.trim());
+   // OCR may split a title into separate blocks around a shine or decoration.
+   // Rejoin only nearby fragments on the same printed baseline, never paragraphs.
+   const groups=[];for(const row of rows.filter(r=>r.box&&r.confidence>=15).sort((a,b)=>a.box.y0-b.box.y0||a.box.x0-b.box.x0)){
+    const b=row.box,cy=(b.y0+b.y1)/2,h=b.y1-b.y0;let g=groups.find(g=>Math.abs(g.cy-cy)<=Math.min(g.h,h)*.55);if(!g){g={cy,h,rows:[]};groups.push(g);}g.rows.push(row);
+   }
+   for(const g of groups){const sorted=g.rows.sort((a,b)=>a.box.x0-b.box.x0);let part=[];const emit=()=>{if(part.length>1){const first=part[0],last=part.at(-1),length=part.reduce((s,r)=>s+r.text.trim().length,0);rows.push({...first,text:part.map(r=>r.text.trim()).join(' '),confidence:part.reduce((s,r)=>s+r.confidence*r.text.trim().length,0)/Math.max(1,length),box:{x0:first.box.x0,x1:last.box.x1,y0:Math.min(...part.map(r=>r.box.y0)),y1:Math.max(...part.map(r=>r.box.y1))},joined:true});}part=[];};for(const row of sorted){if(part.length&&row.box.x0-part.at(-1).box.x1>Math.max(g.h,row.box.y1-row.box.y0)*4)emit();part.push(row);}emit();}
+   if(!rows.length)rows.push({text:data.text||'',confidence:data.confidence||0,source:passId,region:p.region});
+   evidence[p.kind].push(...rows);if(p.broad&&p.kind==='numbers'&&game==='weiss')evidence.names.push(...rows.filter(r=>r.y>=.875&&r.y<=.955));return rows;
+  }
+  return {close,async scan(image,{search,getNames,onstage=()=>{},onread=()=>{}}={}){check();stage=onstage;const original=image,alignment=globalThis.CardWeissFrame?.prepare(image);if(alignment?.aligned)image=alignment.image;const evidence={aligned:!!alignment?.aligned,names:[],numbers:[],full:'',game,weissOrientation:landscape(image)?'landscape':'portrait',engine:'Weiss · seria i numer'},attempts=new Map();let code;
    const memo=async params=>{const key=JSON.stringify(params);if(!attempts.has(key))attempts.set(key,search(params));return attempts.get(key)};
-   for(const p of getNumberPasses(image)){check();onstage('Odczytuję serię i numer Weiß Schwarz…');try{await pass(image,p,evidence);onread(evidence)}catch(e){check();evidence.numberReadFailed=true;break}check();if(!reads(evidence).length)continue;code=await lookupCode(game,evidence,{search:memo,valid:()=>!closed&&valid(),onstage});check();if(code?.mode==='code'){onread(evidence);return {evidence,result:code}}}
+   for(const p of getNumberPasses(image)){check();onstage('Odczytuję serię i numer Weiß Schwarz…');try{await pass(image,p,evidence);onread(evidence)}catch(e){check();if(e.weissEngineError)throw e;evidence.numberReadFailed=true;break}check();code=await lookupCode(game,evidence,{search:memo,valid:()=>!closed&&valid(),onstage});check();if(code?.sources?.length&&code.mode!=='code'&&!evidence.codeZoomed){
+     const row=[...evidence.numbers].reverse().find(r=>r.box&&r.confidence>=40&&T.weissReads(numberText(r.text)).length);
+     if(row){evidence.codeZoomed=true;const [x,y,w,h]=row.region,b=row.box,px=w/(row.cropWidth-48),py=h/(row.cropHeight-48),left=Math.max(0,x+(b.x0-30)*px),top=Math.max(0,y+(b.y0-29)*py),right=Math.min(1,x+(b.x1-18)*px),bottom=Math.min(1,y+(b.y1-19)*py);
+      if(right>left&&bottom>top)await pass(image,{kind:'numbers',latin:true,freeText:true,region:[left,top,right-left,bottom-top],psm:'7',width:1500,enhance:true},evidence);
+      check();code=await lookupCode(game,evidence,{search:memo,valid:()=>!closed&&valid(),onstage});check();
+     }
+    }if(code?.mode==='code'){onread(evidence);return {evidence,result:code}}}
    const result=await lookup(game,evidence,[],{search:memo,valid:()=>!closed&&valid(),onstage,getNames,codeResult:code,readNames:async names=>{
     const found=()=>{const matches=suggest(names,evidence);evidence.weissNames=matches.map(x=>x.name);onread(evidence);return matches.some(x=>x.similarity>=.98)};
+    if(found())return;
+    for(const p of getNamePasses(image)){check();onstage(game==='weiss-jp'?'Odczytuję japoński tytuł…':'Odczytuję pełną angielską nazwę…');await pass(image,p,evidence);if(found())return;}
+    // A wide, contrast-adjusted fallback also works when sleeves, borders or
+    // decorative artwork prevent a confident geometric crop.
+    for(const source of alignment?.aligned?[image,original]:[image]){check();onstage('Sprawdzam szerszy kadr nazwy i poprawiam kontrast…');await pass(source,{kind:'names',latin:false,region:landscape(source)?[.43,.75,.56,.24]:[.15,.78,.84,.21],psm:'11',width:2000,enhance:true},evidence);if(found())return;}
     if(game==='weiss-jp'&&!neuralUnavailable&&typeof CardScanRuntime.read==='function')try{
+     for(const w of workers.values()){CardScanRuntime.untrack(w);await w.terminate().catch(()=>{});}workers.clear();check();
      for(const p of japanesePasses(image)){check();usedJapanese=true;onstage('Odczytuję japońską nazwę karty…');const canvas=enhancedRegion(image,p.region,p.enhance,p.width),r=await CardScanRuntime.read(canvas,{language:'ja',maxSide:1500,onstage:s=>{if(valid()&&s==='loading')onstage('Wczytuję lokalny odczyt japońskich nazw…')}});check();evidence.names.push(...titleEvidence(r,p,image));evidence.engine='Weiss · japoński OCR';if(found())return;}
     }catch(e){check();neuralUnavailable=true;evidence.japaneseReadFailed=true;onstage('Sprawdzam japoński tytuł odczytem rezerwowym…')}
-    for(const p of getNamePasses(image)){check();onstage(game==='weiss-jp'?'Sprawdzam japoński tytuł odczytem rezerwowym…':'Odczytuję pełną angielską nazwę…');await pass(image,p,evidence);if(found())break;}
+
    }});check();onread(evidence);return {evidence,result};
   }};
  }
- return Object.freeze({is,numberText,nameKey,nameScore,titleLines,suggest,reads,compare,rank,footerStatus,lookupCode,lookup,createReader,numberPasses,namePasses,landscape,getNumberPasses,getNamePasses,japanesePasses,titleEvidence,seriesKey,seriesReads,readout,syncScanner});
+ return Object.freeze({is,codeKey,numberText,nameKey,nameScore,titleLines,suggest,reads,compare,rank,footerStatus,lookupCode,lookup,createReader,numberPasses,namePasses,landscape,getNumberPasses,getNamePasses,japanesePasses,titleEvidence,seriesKey,seriesReads,readout,syncScanner});
 })();

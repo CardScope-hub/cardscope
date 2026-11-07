@@ -1,0 +1,50 @@
+CARDSCOPE — TESTY POPRAWKI WEISS-RELIABLE-1
+7 listopada 2026
+
+METODA
+23 różne, publiczne grafiki kart EN i JP z aktualnych katalogów CardScope.
+Karty pionowe i poziome, zwykłe, SR, SP i PR; m.in. NIKKE, Oshi no Ko,
+Blue Archive, Re:Zero, Love Live, Idolmaster, Date A Live, Sword Art Online,
+Azur Lane oraz Rascal Does Not Dream.
+
+Łącznie 92 odczyty finalnej wersji: grafika bez zmian, margines i obrót 3°,
+trapezowa perspektywa oraz perspektywa z jasnością 70% i lekkim rozmyciem.
+Obrazowe testy uruchamiają rzeczywisty Tesseract 5.1.1 z modelami eng/jpn
+best_int oraz lokalny japoński odczyt rezerwowy Paddle w WASM.
+Katalog jest prawdziwy: 31 916 rekordów EN i 66 033 rekordów JP.
+
+Za trafienie uznano obecność dokładnego drukowanego kodu testowanej karty
+wśród pierwszych sześciu propozycji. To NIE oznacza, że każde wydanie
+rozpoznano jako jedyny wynik. Przy nieczytelnym numerze może być potrzebny
+wybór ilustracji lub rzadkości spośród wydań o tej samej nazwie.
+
+WYNIKI
+Stara wersja w 32 porównywalnych próbach: 16/32.
+Porównanie — czyste i obrócone: 32/32.
+Dodatkowe wydania — cztery warianty kadru: 28/28.
+Perspektywa, przyciemnienie i lekkie rozmycie: 28/32.
+Łącznie właściwe wydanie w propozycjach: 88/92.
+Błędne potwierdzenie numeru jako jednoznacznego: 0.
+
+DODATKOWE SPRAWDZENIA
+• 12 testów logiki: pierwszeństwo kodu, zgodność dwóch odczytów, niepewne
+  i sprzeczne numery, rzadkości, typowe pomyłki znaków, indeks/paginacja,
+  japońskie nazwy, anulowanie, zmiany języka, zwalnianie workerów,
+  brakujące pliki silnika oraz ścieżki GitHub Pages — zaliczone.
+• Testy interfejsu: wszystkie dotychczasowe identyfikatory zachowane,
+  kamera i przycisk na górze, konto na dole strony głównej, dodawanie
+  karty pod ilustracją, pełne warianty w skanie na żywo, klikalność
+  podczas kolejnego odczytu i odrzucanie spóźnionych wyników — zaliczone.
+• Regresje wyszukiwania Pokémon, MTG, SWU, One Piece, Riftbound i obu
+  języków Weiß Schwarz, trybu automatycznego i anulowania — zaliczone.
+• Wybór ostrego zamiast rozmytego tekstu stopki oraz odrzucanie pustej
+  klatki przez wyrównywanie obrazu — zaliczone.
+• Składnia JS oraz zgodność wersji modułów w HTML i service workerze
+  — zaliczone.
+
+GRANICE TESTÓW
+To kontrolowane próby na grafikach i ich transformacjach, nie fizyczny
+aparat iPhone'a/Androida. Nie testowano wszystkich 97 949 rekordów ani
+wszystkich koszulek, odblasków, kamer i warunków oświetlenia. Nie oznacza
+to gwarancji 100% skuteczności. Nieczytelne lub niejednoznaczne odczyty
+pozostają propozycjami. Szczegóły wszystkich 92 prób są w TESTY.csv.
