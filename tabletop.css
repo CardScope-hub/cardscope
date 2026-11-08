@@ -6,7 +6,7 @@
 .life-icon svg{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6}
 #tabletop-open .life-icon svg{width:28px;height:28px}
 #tabletop-open[data-active=true]::after{content:'';position:absolute;right:5px;top:5px;width:6px;height:6px;border-radius:2px;background:#5a356f}
-body:is([data-view=scanner],[data-view=processing],[data-view=edit]) #tabletop-open{display:none}
+body:not([data-view="scan"]) #tabletop-open.life-fab{display:none}
 
 :is(#tabletop-dialog,#tabletop-menu){--life-ink:#f6effc;--life-muted:#b4a3c6;--life-line:#caa7e52a;color-scheme:dark;font-family:inherit;color:var(--life-ink);background:#171021;border:1px solid var(--life-line);border-radius:22px;max-width:940px;width:calc(100% - 24px);max-height:95dvh;padding:0;overflow:auto}
 :is(#tabletop-dialog,#tabletop-menu).cs-modal-shell{--cs-panel-width:940px;--cs-panel-padding:0px}

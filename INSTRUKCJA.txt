@@ -1,53 +1,24 @@
-CARDSCOPE — PEŁNY EKRAN GRY I MENU POD KOSTKĄ
-Wersja: tabletop-3
+CARDSCOPE — KOSTKA TYLKO NA EKRANIE GŁÓWNYM
+Wersja: tabletop-home-1
 
-ZMIANY
-• Plansza zajmuje cały dostępny ekran aplikacji, bez ramki okna i listy kafelków.
-• Duże, kolorowe pola graczy; przy 6 osobach układ 2 × 3 w pionie i 3 × 2 w poziomie.
-• Przy 3 i 5 osobach ostatnie pole w pionie wykorzystuje wolną szerokość.
-• Kostka na środku planszy otwiera wyśrodkowane menu nad grą.
-• W menu: historia z filtrem gracza, cofanie punktów, losowanie startu i nowa partia.
-• „Wróć do gry” lub X menu zamyka tylko menu. Wyniki i czas zostają.
-• Zegar pozostaje widoczny na planszy i w menu.
-• Jasny kwadratowy X w prawym górnym rogu pozostaje dostępny.
-• Obsługa 2–6 graczy, wszystkie punkty, historia i zapis partii są zachowane.
-• Nie ma opcji obracania pól graczy.
+Ikona otwierająca licznik jest widoczna wyłącznie w zakładce „Start”.
+Po przejściu do kolekcji, binderów, tradingu, skanera i pozostałych widoków
+znika; po powrocie na Start pojawia się ponownie.
+Kostka otwierająca menu wewnątrz trwającej gry działa jak dotychczas.
 
-WGRYWANIE
-To paczka aktualizacyjna do istniejącego CardScope.
+To mała poprawka do ostatniej wersji z obróconymi punktami
+i zaokrąglonymi polami (tabletop-4).
+
 1. Rozpakuj ZIP.
-2. W repozytorium GitHub otwórz katalog z app.html.
-3. Wgraj do tego katalogu wszystkie 9 plików kodu:
-   app.html, login.html, binder.html, sw.js,
-   ui-polish.css, ui-polish.js,
-   tabletop-core.js, tabletop.js, tabletop.css.
-4. Zastąp pliki o tych samych nazwach, zostaw pozostałe pliki aplikacji
-   i zapisz commit. Nie umieszczaj aktualizacji w dodatkowym podfolderze.
-5. Poczekaj na zakończenie publikacji GitHub Pages.
-6. Otwórz stronę z internetem i zastosuj aktualizację, jeśli pojawi się komunikat.
-   Odśwież stronę; aplikację dodaną do ekranu głównego zamknij i otwórz ponownie.
+2. W repozytorium GitHub podmień 3 pliki obok dotychczasowego app.html:
+   app.html, tabletop.css, sw.js.
+3. Zapisz commit i poczekaj na zakończenie publikacji GitHub Pages.
+4. Otwórz stronę z internetem, zastosuj aktualizację, jeżeli się pojawi,
+   i odśwież stronę. Aplikację z ekranu głównego zamknij i uruchom ponownie.
 
-INSTRUKCJA.txt i SUMY-SHA256.txt są pomocnicze i nie trzeba ich wgrywać.
-Nie trzeba zmieniać Supabase, wykonywać SQL ani dodawać kluczy API.
+Nie twórz dodatkowego podfolderu ani nie usuwaj innych plików aplikacji.
+INSTRUKCJA.txt i SUMY-SHA256.txt są pomocnicze; nie musisz ich wgrywać.
 
-OBSŁUGA
-Kostka nad nawigacją CardScope otwiera licznik lub ustawienia nowej partii.
-Po rozpoczęciu gry dotknij kostki na środku planszy, aby otworzyć menu.
-„Opcje” pozwalają losować rozpoczynającego albo rozpocząć nową partię.
-„Historia” pokazuje zmiany punktów, cofnięcia i czas każdego ruchu.
-Przycisk „Cofnij” odwraca ostatnią niecofniętą zmianę punktów.
-X menu wraca do planszy. X planszy wraca do CardScope i zachowuje partię.
-Zegar liczy czas także po zamknięciu okna gry.
-Nowa partia zastępuje poprzednie wyniki i historię dopiero po jej rozpoczęciu.
-
-Zapis jest lokalny w tej przeglądarce/aplikacji. Aktualizacja zachowuje trwającą
-partię, także zapis z wersji tabletop-2. Dla zapisu najstarszego licznika,
-który nie przechowywał czasu startu, zegar nadal pokazuje czas od aktualizacji.
-Pełny ekran oznacza dostępny obszar aplikacji. Paski Safari/Chrome są kontrolowane
-przez przeglądarkę; aplikacja dodana do ekranu głównego nie ma paska adresu.
-
-WERYFIKACJA
-Testy funkcjonalne przeszły: otwieranie i zamykanie środkowego menu, powrót
-do gry, nowa partia, 2–6 graczy, historia, cofanie, losowanie, zegar, zapis
-i wznowienie oraz istniejące przyciski X w innych oknach CardScope.
-Nie było dostępnego podglądu przeglądarkowego; wyglądu na telefonie nie zweryfikowano.
+Sprawdzono widoczność kostki podczas przełączania widoków, jej powrót na
+ekran główny oraz zachowanie kostki menu gry. Zaktualizowano wersję pamięci
+podręcznej aplikacji, żeby poprawka mogła zostać pobrana na telefonie.
