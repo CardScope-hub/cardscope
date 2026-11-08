@@ -29,14 +29,28 @@
  const boardButton=button('','life-view',()=>showScreen('board'));boardButton.id='life-board-tab';boardButton.setAttribute('aria-controls','life-menu-options');boardButton.append(icon('grid'),el('span','','Opcje'));
  const historyButton=button('','life-view',()=>showScreen('history'));historyButton.id='life-history-tab';historyButton.setAttribute('aria-controls','life-history');const historyCount=el('span','life-history-count','0');historyButton.append(icon('history'),el('span','','Historia'),historyCount);views.append(boardButton,historyButton);
  const undo=button('','life-tool',undoLast);undo.id='life-undo';undo.append(icon('undo'),el('span','','Cofnij'));undo.title='Cofnij ostatnią zmianę życia';nav.append(views,undo);
- const board=el('div','life-board');board.id='life-board';const panels=[];
+ const board=el('div','life-board');board.id='life-board';const panels=[],FEEDBACK_MS=1200;
+ // Keep visual bursts separate from the saved, per-click game history.
+ function clearFeedback(p){clearTimeout(p.feedbackTimer);p.feedbackTimer=0;p.feedbackSum=0;p.feedbackUntil=0;p.feedback.dataset.visible='false';}
+ function clearFeedbacks(){panels.forEach(clearFeedback);}
+ function showFeedback(player,delta){
+  const p=panels[player];if(!p)return;const now=performance.now();
+  if(now>=p.feedbackUntil)p.feedbackSum=0;
+  clearTimeout(p.feedbackTimer);p.feedbackSum+=delta;p.feedbackUntil=now+FEEDBACK_MS;
+  p.feedback.textContent=p.feedbackSum===0?'±0':(p.feedbackSum>0?'+':'−')+Math.abs(p.feedbackSum);
+  p.feedback.dataset.sign=p.feedbackSum>0?'plus':p.feedbackSum<0?'minus':'neutral';
+  p.feedback.dataset.visible='true';p.feedbackTimer=setTimeout(()=>clearFeedback(p),FEEDBACK_MS);
+ }
  let seatFrame=0;
  const seatObserver=typeof ResizeObserver!=='undefined'?new ResizeObserver(scheduleSeats):null;
  function setSeatStyle(seat,key,value){if(seat.style.getPropertyValue(key)!==value)seat.style.setProperty(key,value);}
  function sizeScore(p){
   if(!p.geometry)return;const {numberWidth,numberHeight}=p.geometry;
   const length=String(state.players[Number(p.panel.dataset.player)].life).length;
-  const size=Math.max(12,Math.floor(Math.min(180,numberHeight*.95,numberWidth/(length*.66))));
+  const feedbackSpace=Math.round(Math.min(30,Math.max(18,numberHeight*.2)));
+  const size=Math.max(12,Math.floor(Math.min(180,(numberHeight-feedbackSpace)*.95,numberWidth/(length*.66))));
+  setSeatStyle(p.seat,'--seat-delta-space',feedbackSpace+'px');
+  setSeatStyle(p.seat,'--seat-delta-size',Math.max(12,Math.min(20,Math.round(feedbackSpace*.65)))+'px');
   setSeatStyle(p.seat,'--seat-score-size',size+'px');
  }
  function layoutSeats(){
@@ -62,14 +76,16 @@
  function scheduleSeats(){if(!seatFrame)seatFrame=requestAnimationFrame(layoutSeats);}
 
  function buildPlayers(){
-  seatObserver?.disconnect();panels.length=0;board.replaceChildren();board.dataset.count=String(state.players.length);
+  clearFeedbacks();seatObserver?.disconnect();panels.length=0;board.replaceChildren();board.dataset.count=String(state.players.length);
   for(let i=0;i<state.players.length;i++){
    const panel=el('section','life-player'),seat=el('div','life-seat');panel.dataset.player=String(i);panel.setAttribute('aria-labelledby','life-player-name-'+i);
    const who=el('div','life-player-heading'),numberTag=el('span','life-player-tag','0'+(i+1)),playerName=el('h3','life-player-name'),badge=el('span','life-starter','START');playerName.id='life-player-name-'+i;badge.hidden=true;who.append(numberTag,playerName,badge);
    const counter=el('div','life-counter'),minus=button('−','life-step',()=>adjust(i,-1)),plus=button('+','life-step',()=>adjust(i,1));minus.dataset.delta='-1';plus.dataset.delta='1';
-   const value=el('output','life-number');value.id='life-value-'+i;value.setAttribute('aria-live','off');counter.append(minus,value,plus);
+   const readout=el('div','life-readout'),feedback=el('span','life-change'),value=el('output','life-number');
+   feedback.setAttribute('aria-hidden','true');feedback.dataset.visible='false';
+   value.id='life-value-'+i;value.setAttribute('aria-live','off');readout.append(feedback,value);counter.append(minus,readout,plus);
    const quick=el('div','life-quick'),minus5=button('−5','life-step-small',()=>adjust(i,-5)),plus5=button('+5','life-step-small',()=>adjust(i,5));minus5.dataset.delta='-5';plus5.dataset.delta='5';const latest=el('span','life-last-change','PUNKTY ŻYCIA');quick.append(minus5,latest,plus5);
-   seat.append(who,counter,quick);panel.append(seat);board.append(panel);panels.push({panel,seat,playerName,badge,value,latest,buttons:[minus,plus,minus5,plus5],geometry:null});seatObserver?.observe(panel);
+   seat.append(who,counter,quick);panel.append(seat);board.append(panel);panels.push({panel,seat,playerName,badge,value,latest,feedback,feedbackSum:0,feedbackUntil:0,feedbackTimer:0,buttons:[minus,plus,minus5,plus5],geometry:null});seatObserver?.observe(panel);
   }
   historyFilter.replaceChildren(el('option','','Wszyscy gracze'));historyFilter.firstChild.value='all';
   state.players.forEach((p,i)=>{const option=el('option','',p.name);option.value=String(i);historyFilter.append(option);});scheduleSeats();
@@ -108,7 +124,7 @@
  function stopClock(){clearInterval(clockTimer);clockTimer=0;}
  function syncClock(){stopClock();if(dialog.open&&!match.hidden&&!document.hidden){tickClock();clockTimer=setInterval(tickClock,1000);}}
  function showSetup(newMatch=false){
-  if(menu.open)menu.close();clearRoll();stopClock();dialog.dataset.lifeStage='setup';setup.hidden=false;match.hidden=true;timerBox.hidden=true;title.textContent=state?'Nowe rozdanie.':'Wasza gra. Wasze zasady.';intro.textContent=state?'Obecny wynik i historię zastąpisz dopiero po rozpoczęciu nowej partii.':'Od pierwszego ruchu do ostatniego punktu.';
+  if(menu.open)menu.close();clearFeedbacks();clearRoll();stopClock();dialog.dataset.lifeStage='setup';setup.hidden=false;match.hidden=true;timerBox.hidden=true;title.textContent=state?'Nowe rozdanie.':'Wasza gra. Wasze zasady.';intro.textContent=state?'Obecny wynik i historię zastąpisz dopiero po rozpoczęciu nowej partii.':'Od pierwszego ruchu do ostatniego punktu.';
   selectedCount=state?.players.length||2;lifeInput.value=String(state?.initial||30);nameInputs.forEach((input,i)=>input.value=state?.players[i]?.name||'');resume.hidden=!state;start.textContent=state?'Rozpocznij nową partię':'Rozpocznij partię';error.hidden=true;error.textContent='';lifeInput.removeAttribute('aria-invalid');status.textContent='';updatePresets();updateCount();resetScroll();if(newMatch)countButtons[selectedCount-2].focus({preventScroll:true});
  }
  function showMatch(){if(!state)return;setup.hidden=true;match.hidden=false;timerBox.hidden=false;dialog.dataset.lifeStage='match';gameLabel.textContent=state.players.length+' GRACZY';title.textContent='Partia w toku';intro.textContent=state.players.length+' graczy · '+state.initial+' życia na start';timerLabel.textContent=state.timerEstimated?'CZAS OD AKTUALIZACJI':'CZAS PARTII';error.hidden=true;buildPlayers();showScreen('board');render();syncClock();}
@@ -136,14 +152,14 @@
   if(!shown.length){const empty=el('li','life-history-empty');empty.append(icon('history'),el('strong','',filter==='all'?'Pierwszy ruch przed wami.':'Ten gracz nie ma jeszcze ruchów.'),el('span','','Dodane i odjęte punkty pojawią się tutaj.'));historyList.append(empty);}
   if(historyMore.hidden){const beginning=el('li','life-history-start');beginning.append(el('span','life-start-dot'),el('span','',state.historyPartial?'Początek dostępnej historii':'Początek partii · po '+state.initial+' pkt życia'),el('span','',state.historyPartial?'wcześniej':'00:00'));historyList.append(beginning);}
  }
- function adjust(player,delta){if(!state)return;try{state=C.change(state,player,delta);persist();render();status.textContent=state.players[player].name+': '+state.players[player].life+' pkt życia.';}catch(e){status.textContent=e.message;}}
- function undoLast(){if(!state)return;const target=C.undoTarget(state);if(!target)return;state=C.undo(state);persist();render();status.textContent='Cofnięto zmianę. '+state.players[target.player].name+': '+state.players[target.player].life+' pkt życia.';}
+ function adjust(player,delta){if(!state)return;try{state=C.change(state,player,delta);persist();render();showFeedback(player,delta);status.textContent=state.players[player].name+': '+state.players[player].life+' pkt życia.';}catch(e){status.textContent=e.message;}}
+ function undoLast(){if(!state)return;const target=C.undoTarget(state);if(!target)return;state=C.undo(state);persist();render();showFeedback(target.player,target.before-target.after);status.textContent='Cofnięto zmianę. '+state.players[target.player].name+': '+state.players[target.player].life+' pkt życia.';}
  function rollStarter(){if(!state||roll.disabled)return;try{state=C.draw(state,()=>crypto.getRandomValues(new Uint32Array(1))[0]);persist();render();status.textContent=starts.textContent+'.';roll.disabled=true;roll.dataset.rolling='true';rollTimer=setTimeout(clearRoll,460);}catch(e){status.textContent=e.message||'Losowanie jest chwilowo niedostępne.';}}
  setup.addEventListener('submit',event=>{event.preventDefault();try{const next=C.create(lifeInput.value,nameInputs.map(n=>n.value),selectedCount);state=next;persist();showMatch();hub.focus({preventScroll:true});status.textContent='Nowa partia: '+selectedCount+' graczy, po '+state.initial+' pkt życia.';}catch(e){error.textContent=e.message;error.hidden=false;lifeInput.setAttribute('aria-invalid','true');lifeInput.focus({preventScroll:true});}});
  lifeInput.addEventListener('input',()=>{updatePresets();lifeInput.removeAttribute('aria-invalid');error.hidden=true;});
  fab.onclick=()=>{if(dialog.open)return;if(storageAvailable)state=read()||state;if(state)showMatch();else showSetup();dialog.showModal();scheduleSeats();document.documentElement.classList.add('cs-tabletop-open');fab.setAttribute('aria-expanded','true');syncClock();if(state)hub.focus({preventScroll:true});else countButtons[selectedCount-2].focus({preventScroll:true});};
- dialog.addEventListener('close',()=>{if(menu.open)menu.close();document.documentElement.classList.remove('cs-tabletop-open');clearRoll();stopClock();fab.setAttribute('aria-expanded','false');fab.focus({preventScroll:true});});
- document.addEventListener('visibilitychange',syncClock);window.addEventListener('pagehide',stopClock);window.addEventListener('pageshow',syncClock);
+ dialog.addEventListener('close',()=>{if(menu.open)menu.close();document.documentElement.classList.remove('cs-tabletop-open');clearFeedbacks();clearRoll();stopClock();fab.setAttribute('aria-expanded','false');fab.focus({preventScroll:true});});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)clearFeedbacks();syncClock();});window.addEventListener('pagehide',()=>{clearFeedbacks();stopClock();});window.addEventListener('pageshow',syncClock);
  function place(){positionFrame=0;const nav=document.querySelector('.nav'),r=nav?.getBoundingClientRect(),height=window.innerHeight,width=window.innerWidth;if(r&&r.width>0&&r.height>0&&r.top>height*.4&&r.top<height){fab.style.bottom=Math.round(height-r.top+12)+'px';fab.style.right=Math.max(16,Math.round(width-r.right+8))+'px';}}
  function schedulePosition(){if(!positionFrame)positionFrame=requestAnimationFrame(place);}
  const mainNav=document.querySelector('.nav');if(mainNav&&typeof ResizeObserver!=='undefined')new ResizeObserver(schedulePosition).observe(mainNav);

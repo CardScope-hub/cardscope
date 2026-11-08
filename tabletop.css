@@ -119,6 +119,14 @@ html.cs-tabletop-open,html.cs-tabletop-open body{overflow:hidden;overscroll-beha
 #tabletop-dialog .life-counter,#tabletop-dialog .life-quick{display:contents}
 #tabletop-dialog .life-number{grid-column:2;grid-row:2/4;align-self:center;text-align:center;color:#fff5ff;font-size:var(--seat-score-size,60px);font-weight:600;letter-spacing:-1px;line-height:1;font-variant-numeric:tabular-nums;min-width:0;padding:0;white-space:nowrap}
 #tabletop-dialog .life-player[data-empty=true] .life-number{color:#f3bdd0}
+/* A reserved feedback row prevents the score from jumping as bursts appear. */
+#tabletop-dialog .life-readout{box-sizing:border-box;position:relative;grid-column:2;grid-row:2/4;align-self:center;min-width:0;padding-top:var(--seat-delta-space,24px);text-align:center;pointer-events:none}
+#tabletop-dialog .life-readout .life-number{display:block}
+#tabletop-dialog .life-change{box-sizing:border-box;position:absolute;top:0;left:0;right:0;margin-inline:auto;width:max-content;max-width:100%;padding:2px 7px;border:1px solid #dfc0ff38;border-radius:6px;background:#21162fee;color:#dfc5fa;font-size:var(--seat-delta-size,16px);font-weight:650;font-variant-numeric:tabular-nums;line-height:1;letter-spacing:0;white-space:nowrap;opacity:0;visibility:hidden;transform:translateY(4px);transition:opacity .18s ease,transform .18s ease,visibility .18s;pointer-events:none}
+#tabletop-dialog .life-change[data-sign=plus]{color:#b4f5d2;border-color:#8cebb84d;background:#17372cee}
+#tabletop-dialog .life-change[data-sign=minus]{color:#ffc0d3;border-color:#fb9cb84d;background:#432231ee}
+#tabletop-dialog .life-change[data-visible=true]{opacity:1;visibility:visible;transform:translateY(0)}
+@media(prefers-reduced-motion:reduce){#tabletop-dialog .life-change{transition:none;transform:none}}
 #tabletop-dialog .life-step{display:grid;place-items:center;align-self:center;width:100%;height:var(--seat-button-height,44px);grid-row:2;border:1px solid #efddff38;border-radius:12px;background:#ffffff0a;color:#f5e8ff;font-size:26px;font-weight:500;line-height:1;padding:0;touch-action:manipulation}
 #tabletop-dialog .life-step:first-child{grid-column:1}
 #tabletop-dialog .life-step:last-child{grid-column:3}
