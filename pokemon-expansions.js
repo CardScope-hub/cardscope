@@ -3,8 +3,8 @@ globalThis.CardPokemon = (() => {
  let pending;const snapshots=new Map();
  const provider=lang=>lang==='pt-br'?'pt':lang;
  function snapshot(lang){
-  lang=provider(lang);if(!['en','ja','de','fr','es','it','pt'].includes(lang))return Promise.reject(Error('Nieobsługiwany język.'));
-  if(!snapshots.has(lang))snapshots.set(lang,raw('catalog-pokemon-'+lang+'.json?v=pokemon-hd-1',{ttl:86400000}).then(d=>{
+  lang=provider(lang);if(!['en','ja','de','fr','es','it','pt','ko','zh-cn','zh-tw'].includes(lang))return Promise.reject(Error('Nieobsługiwany język.'));
+  if(!snapshots.has(lang))snapshots.set(lang,raw('catalog-pokemon-'+lang+'.json?v='+(['ko','zh-cn','zh-tw'].includes(lang)?'pokemon-asian-1':'pokemon-hd-1'),{ttl:86400000}).then(d=>{
    if(d.schema!==1||!Array.isArray(d.cards)||!Array.isArray(d.sets))throw Error('Nieprawidłowy katalog językowy.');
    return {...d,byId:new Map(d.cards.map(c=>[c.id,c])),bySet:new Map(d.sets.map(s=>[s.id,s]))};
   }).catch(e=>{snapshots.delete(lang);throw e}));return snapshots.get(lang);
@@ -20,6 +20,10 @@ globalThis.CardPokemon = (() => {
  async function index(lang) {
   const requested=lang;lang=provider(lang);
   const bundled=await snapshot(lang).catch(()=>null);
+  if(['ko','zh-cn','zh-tw'].includes(lang)){
+   if(!bundled)throw Error('Nie udało się wczytać katalogu tego języka. Sprawdź połączenie i pliki aktualizacji.');
+   return {cards:bundled.cards,sets:bundled.sets,note:'Katalog regionalny · '+bundled.preparedAt+'.'};
+  }
   const extra = lang==='en' ? await additions().catch(()=>null) : null;
   let cards, sets, note='',liveIndex=true;
   try {
@@ -46,6 +50,12 @@ globalThis.CardPokemon = (() => {
   return {cards:cards.filter(c=>!c.image?.includes('/tcgp/')&&ids.has(c.setId||c.id.slice(0,c.id.lastIndexOf('-')))),sets,note};
  }
  async function card(url) {
+  const asian=String(url).match(/^https:\/\/api\.tcgdex\.net\/v2\/(ko|zh-cn|zh-tw)\/cards\/([^/?]+)$/);
+  if(asian){
+   const lang=asian[1],id=decodeURIComponent(asian[2]),d=await snapshot(lang),c=d.byId.get(id);
+   if(!c)throw Error('Nie znaleziono tego numeru w wybranym wydaniu językowym.');
+   return {...c,gameKey:'pokemon',game:'Pokémon',catalogLanguage:lang,set:d.bySet.get(c.setId)||{id:c.setId,name:c.setId,cardCount:{}},variants:c.variants||{},variantsList:c.variantsList||['Nieustalony'],catalogSnapshot:true};
+  }
   const localized=String(url).match(/^https:\/\/api\.tcgdex\.net\/v2\/(ja|de|fr|es|it|pt-br|pt)\/cards\/([^/?]+)$/);
   if(localized){
    const requested=localized[1],lang=provider(requested),id=decodeURIComponent(localized[2]);

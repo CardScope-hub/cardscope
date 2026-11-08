@@ -3,6 +3,7 @@ const normalize=s=>String(s??'').normalize('NFKD').replace(/\p{M}/gu,'').toLower
 const cardNumber=s=>String(s??'').toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/^(\D*)0+(?=\d)/,'$1');
 // Set browsing is manual-only. It must never loosen scanner confidence.
 function rankManualCatalog(catalog,sets,text){
+ if(globalThis.CardPokemonAsian?.supports(catalog[0]?.catalogLanguage))return CardPokemonAsian.manual(catalog,sets,text);
  const key=normalize(text),id=catalog.find(c=>normalize(c.id)===key);
  if(id)return rankCatalog([id],sets,id.localId);
  const scopes=[];
@@ -45,6 +46,7 @@ function scanCandidatePool(catalog,evidence){
  return [...found.values()];
 }
 function rankScanCatalog(catalog,sets,evidence){
+ if(globalThis.CardPokemonAsian?.supports(evidence.language))return CardPokemonAsian.rank(catalog,sets,evidence);
  if(evidence.language==='ja')return CardPokemonJP.rank(catalog,sets,evidence);
  catalog=scanCandidatePool(catalog,evidence);
  let ranked=rankScanCatalogBase(catalog,sets,evidence);

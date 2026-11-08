@@ -28,7 +28,7 @@ globalThis.CardAutoScan=(()=>{
   const mtg=CardMTGScan.reads(e.mtg);if(mtg.pairs.length)add('mtg',mtg.reliable?100:80,'Seria i numer Magic',true);
   const one=CardScanIndex.numbers('onepiece',e.onepiece).filter(n=>n.code&&!/^P-/.test(n.value));if(one.length)add('onepiece',one.some(n=>!n.uncertain&&n.confidence>=60)?100:80,'Numer One Piece',true);
   const rift=CardScanIndex.numbers('riftbound',e.riftbound).filter(n=>n.code&&!/^pr-/i.test(n.value));if(rift.length)add('riftbound',rift.some(n=>!n.uncertain&&n.confidence>=60)?100:80,'Seria i numer Riftbound',true);
-  if(/pok[eé]mon|weakness|resistance|retreat|\bHP\s*\d{2,3}|\d{2,3}\s*HP\b|たね|にげる|弱点|ポケモン/i.test(text))add('pokemon',72,'Układ i tekst Pokémon');
+  if(/\bC(?:SV|SM|S|BB)\d|\b(?:SV|SM|S|M)\d+[a-z]?\s*(?:KR?|F)\b|宝可梦|寶可夢|포켓몬|pok[eé]mon|weakness|resistance|retreat|\bHP\s*\d{2,3}|\d{2,3}\s*HP\b|たね|にげる|弱点|ポケモン/i.test(text))add('pokemon',72,'Układ i tekst Pokémon');
   if(/lucasfilm|star\s*wars|fantasy\s*flight|shield\s+token/i.test(text))add('swu',72,'Tekst Star Wars: Unlimited');
   if(/wizards\s+of\s+the\s+coast|\b(?:sorcery|instant|enchantment|planeswalker)\b|legendary\s+(?:creature|artifact)|\bcreature\s*[—-]/i.test(text))add('mtg',70,'Tekst Magic');
   if(/riftbound|riot\s*games|rune\s+pool|champion\s+(?:unit|legend)|when\s+(?:i|you)\s+conquer/i.test(text))add('riftbound',70,'Tekst Riftbound');
@@ -70,7 +70,7 @@ globalThis.CardAutoScan=(()=>{
   if(rows.some(r=>r.exact))return finish(rows,routes,failed);
   // A Pokémon fraction alone is not enough. Its title must match too.
   if(!codeOnly||routes.some(r=>r.game==='pokemon'))try{
-   check();const e=evidences.pokemon,lang=japanese(e.names.map(r=>r.text).join(' '))?'ja':language;
+   check();const e=evidences.pokemon,lang=CardPokemonAsian.languageHint(e.full||e.names.map(r=>r.text).join(' '),language);
    const index=await getPokemon(lang);check();const ranked=rankPokemon(index.cards,index.sets,{...e,language:lang});
    const found=ranked.filter(r=>r.certain||r.name>=.88||r.recognizedName).slice(0,12),certain=found.filter(r=>r.certain);
    for(const r of found)append('pokemon',[{...r.c,_pokemon:true,_set:r.set}],{lang,exact:!!r.certain,incomplete:certain.length!==1,score:r.certain?1000:110+(r.name||.88)*50+(r.num?20:0)});
@@ -91,7 +91,7 @@ globalThis.CardAutoScan=(()=>{
  }
  function tesseractResult(data,width,height){const lines=data.blocks?.flatMap(b=>b.paragraphs?.flatMap(p=>p.lines||[])||[])||data.lines||[];return {width,height,texts:lines.map(l=>({text:l.text,mean:(l.confidence||0)/100,box:[[l.bbox.x0,l.bbox.y0],[l.bbox.x1,l.bbox.y0],[l.bbox.x1,l.bbox.y1],[l.bbox.x0,l.bbox.y1]]}))};}
  function createReader(valid=()=>true,deps={}){
-  let closed=false,classic=null,neuralFailed=!!deps.preferClassic;const wsReaders=new Map();let jpReader=null;
+  let closed=false,classic=null,neuralFailed=!!deps.preferClassic;const wsReaders=new Map();let jpReader=null;const asianReaders=new Map();
   const check=()=>{if(closed||!valid())throw new DOMException('Anulowano','AbortError');};
   const search=deps.search||((p)=>otherJSON(p)),getNames=deps.getNames||(g=>scanDictionary(g)),getPokemon=deps.getPokemon||(l=>getCatalog(l)),rankPokemon=deps.rankPokemon||((c,s,e)=>rankScanCatalog(c,s,e));
   async function read(image,options={}){check();
@@ -101,9 +101,10 @@ globalThis.CardAutoScan=(()=>{
    const canvas=options.region?enhancedRegion(image,options.region,!!options.enhance,2200):image;
    const {data}=await classic.recognize(canvas,{}, {text:true,blocks:true});check();return tesseractResult(data,canvas.width||canvas.naturalWidth,canvas.height||canvas.naturalHeight);
   }
-  async function close(){closed=true;if(classic){CardScanRuntime.untrack(classic);await classic.terminate().catch(()=>{});classic=null;}for(const r of wsReaders.values())await r.close();wsReaders.clear();await jpReader?.close();jpReader=null;}
+  async function readAsian(image,lang,onstage){const index=await getPokemon(lang);check();let reader=asianReaders.get(lang);if(!reader){reader=CardPokemonAsian.createReader(lang,()=>!closed&&valid());asianReaders.set(lang,reader);}const e=await reader.read(image,index,{onstage});check();const ranked=rankPokemon(index.cards,index.sets,e),rows=ranked.map(r=>({card:{...r.c,_pokemon:true,_set:r.set,gameKey:'pokemon',catalogLanguage:lang,_autoGame:'pokemon',_autoLanguage:lang},exact:!!r.certain,incomplete:ranked.length!==1,score:r.certain?1000:160}));return {...finish(rows,[]),evidences:{pokemon:e}};}
+  async function close(){closed=true;for(const r of asianReaders.values())await r.close();asianReaders.clear();if(classic){CardScanRuntime.untrack(classic);await classic.terminate().catch(()=>{});classic=null;}for(const r of wsReaders.values())await r.close();wsReaders.clear();await jpReader?.close();jpReader=null;}
   return {close,async scan(image,{onstage=()=>{},language='en'}={}){
-   check();let result=await read(image,{onstage:s=>onstage(s==='loading'?'Wczytuję lokalny odczyt wszystkich gier…':'Odczytuję kartę i szukam jej gry…')});check();
+   check();if(CardPokemonAsian.supports(language)){const asian=await readAsian(image,language,onstage);check();if(asian.cards.length)return asian;}let result=await read(image,{onstage:s=>onstage(s==='loading'?'Wczytuję lokalny odczyt wszystkich gier…':'Odczytuję kartę i szukam jej gry…')});check();
    let evidences=fromResult(result),routes=classify(evidences);const memo=new Map(),options={search:p=>{const k=JSON.stringify(p);if(!memo.has(k))memo.set(k,search(p));return memo.get(k);},getNames,getPokemon,rankPokemon,valid:()=>!closed&&valid(),language,onstage};
    let found=await resolve(evidences,{...options,codeOnly:true});check();
    if(found.single||found.cards.some(c=>routes.some(r=>r.game===c._autoGame&&r.score>=100)))return {...found,evidences};
@@ -112,6 +113,8 @@ globalThis.CardAutoScan=(()=>{
    for(const pass of [{region:[0,.82,1,.18],enhance:false},{region:[.55,.89,.45,.11],enhance:true}]){
     onstage('Powiększam numer i oznaczenie serii…');const r=await read(image,pass);check();footers.push(...CardNeuralEvidence.crop(r));evidences=fromResult(result,footers);routes=classify(evidences);found=await resolve(evidences,{...options,codeOnly:true});check();if(found.single||found.cards.some(c=>routes.some(r=>r.game===c._autoGame&&r.score>=100)))return {...found,evidences};
    }
+   const detectedLanguage=CardPokemonAsian.languageHint(evidences.pokemon.full,language);
+   if(CardPokemonAsian.supports(detectedLanguage)&&detectedLanguage!==language){const asian=await readAsian(image,detectedLanguage,onstage);check();if(asian.cards.length)return asian;}
    // Preserve the precise portrait-footer pass for small SWU collector numbers.
    if(routes.some(r=>r.game==='swu')&&CardSWUScan.isPortrait(image))for(const pass of CardSWUScan.getFooterPasses(image).slice(0,2)){
     onstage('Odczytuję mały numer Star Wars…');const r=await read(image,pass);check();footers.push(...CardNeuralEvidence.crop(r).map(x=>({...x,source:'auto-swu-footer'})));evidences=fromResult(result,footers);routes=classify(evidences);found=await resolve(evidences,{...options,codeOnly:true});check();if(found.single)return {...found,evidences};

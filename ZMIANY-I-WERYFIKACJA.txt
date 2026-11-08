@@ -1,0 +1,53 @@
+CARDSCOPE — pokemon-asian-1
+Katalogi przygotowane z danych dostępnych 8 listopada 2026 r.
+
+ZMIANY
+- Osobne katalogi i wybory języka: ko, zh-cn, zh-tw.
+- Koreański: 20 323 pozycje w 264 grupach katalogowych.
+- Chiński uproszczony: 24 542 pozycje w 245 grupach; 15 083 różne pary
+  dodatek/numer. Liczba pozycji obejmuje różne nadruki i warianty.
+- Chiński tradycyjny: 14 588 pozycji w 134 grupach.
+- Terastal Gathering CSV9.5C: 259 różnych numerów / 601 wariantów nadruku.
+- Rozdzielenie numeracji /208 (CSV9.5C) od /187 (SV8a).
+- Usunięcie błędnego mieszania chińskiego uproszczonego z tradycyjnym.
+- Scalenie oznaczenia języka F z właściwym dodatkiem tajwańskim.
+- Skan zwykły i na żywo: seria i pełny numer przed nazwą.
+- Odczyt chińskich znaków istniejącym lokalnym silnikiem; osobne modele
+  koreańskie i chińskie do odczytu rezerwowego, bez kluczy API.
+- Wyszukiwanie po numerze, dodatku, rodzimej nazwie; osobna tożsamość języka
+  również w zdjęciach, zapisanej kolekcji, binderach i Tradingu.
+- Niepewny odczyt pozostaje propozycją do porównania; różne warianty nie są
+  arbitralnie łączone. Anulowanie skanu zwalnia uruchamiany model.
+- Nowa wersja cache aplikacji, ścieżki zgodne z GitHub Pages /cardscope/.
+
+WERYFIKACJA
+132 sprawdzenia katalogów i integracji zakończone powodzeniem, w tym:
+unikalność identyfikatorów; właściwa numeracja i język; wyszukiwanie ręczne;
+odrzucanie błędnych regionów; zachowanie niejednoznaczności; ładowanie modeli
+i anulowanie; opcje językowe w interfejsie; cache plików pod ścieżką projektu.
+
+13 testów regresji wcześniejszej aktualizacji obrazów Pokémon HD — poprawne.
+Kontrola składni wszystkich zmienionych plików JavaScript — poprawna.
+
+Sześć obrazów katalogowych: Umbreon i Leafeon dla ko, zh-cn, zh-tw.
+Sprawdzono rzeczywisty model rozpoznawania tekstu używany przez aplikację
+na wydzielonych stopkach i nagłówkach oraz dopasowanie jego wyników do bazy.
+Każdy z sześciu przypadków zawiera właściwą kartę bez innego Pokémona w wynikach.
+To test komponentów OCR i dopasowania, nie pomiar skuteczności aparatu telefonu.
+Pełnego skanu z kamery na fizycznym telefonie nie można było tutaj zweryfikować.
+Odbicia na folii, mała ostrość i niewidoczny numer nadal mogą wymagać ponowienia
+lub wskazania języka. Nie deklarujemy stuprocentowej skuteczności.
+
+ŹRÓDŁA
+Katalog koreański: https://pokemoncard.co.kr/cards
+Katalog tradycyjnie chiński: https://asia.pokemon-card.com/tw/card-search/
+Zbiór metadanych tych katalogów: https://github.com/type-null/PTCG-database
+Uzupełnienia katalogu: https://tcgdex.dev/
+Katalog uproszczonego chińskiego:
+https://excaliburtcg.co.uk/pages/pokemon-simplified-chinese-set-list-card-vault
+Informacja o Terastal Gathering:
+https://www.pokemon.cn/tcg/product/21997.html
+Modele rezerwowego OCR: https://github.com/tesseract-ocr/tessdata_fast
+
+Dokładny adres źródła i obrazu zachowano przy każdej pozycji. Żadne zdjęcia
+użytkowników ani dane ich kont nie zostały użyte do budowy katalogów.

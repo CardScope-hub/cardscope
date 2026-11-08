@@ -2,7 +2,7 @@
 globalThis.CardPokemonArt=(()=>{
  'use strict';
  const VERSION='pokemon-hd-1',bindings=new WeakMap(),successful=new Map();
- const languages={en:'Angielski',ja:'Japoński',de:'Niemiecki',fr:'Francuski',es:'Hiszpański',it:'Włoski','pt-br':'Portugalski',pt:'Portugalski'};
+ const languages={en:'Angielski',ja:'Japoński',ko:'Koreański','zh-cn':'Chiński uproszczony','zh-tw':'Chiński tradycyjny',de:'Niemiecki',fr:'Francuski',es:'Hiszpański',it:'Włoski','pt-br':'Portugalski',pt:'Portugalski'};
  let manifest;
  const language=c=>c?.catalogLanguage||Object.keys(languages).find(k=>languages[k]===c?.language)||'en';
  const provider=lang=>lang==='pt-br'?'pt':lang;
@@ -11,7 +11,7 @@ globalThis.CardPokemonArt=(()=>{
   const game=c.catalogGame||c.gameKey||c.game;
   if(game&&!['pokemon','Pokémon','Pokemon'].includes(game))return null;
   const id=c.catalogId||c.id;
-  if(typeof id!=='string'||!/^[a-zA-Z0-9.+]+(?:-[a-zA-Z0-9.+]+)*-[a-zA-Z0-9!?%]+$/.test(id))return null;
+  if(typeof id!=='string'||!/^[a-zA-Z0-9.+_]+(?:-[a-zA-Z0-9.+_]+)*-[a-zA-Z0-9.!?%_+]+$/.test(id))return null;
   return {id,lang:language(c)};
  }
  function data(){
@@ -76,7 +76,7 @@ globalThis.CardPokemonArt=(()=>{
   const same=base.filter(x=>x.source!=='scan'&&provider(x.language)===provider(who.lang));
   out.push(...same);
   out.push(...base.filter(x=>!same.includes(x)));
-  if(exact&&provider(who.lang)!=='ja'&&provider(who.lang)!=='en'&&art?.english[who.id]){
+  if(exact&&['de','fr','es','it','pt'].includes(provider(who.lang))&&art?.english[who.id]){
    add(imageURL(art.english[who.id],size),'en','TCGdex');
    add(imageURL(art.english[who.id],size,'png'),'en','TCGdex');
   }
