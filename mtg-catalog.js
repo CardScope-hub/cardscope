@@ -17,7 +17,7 @@ globalThis.CardMTG=(()=>{
   const q=String(value||'').trim(), key=normalize(q), group=aliases.get(key);
   if(group)return group.length===1?'set:'+group[0]:'('+group.map(c=>'set:'+c).join(' or ')+')';
   if(codes.has(key))return 'set:'+key;
-  const code=q.match(/^([a-z\d]{2,6})\s*[:#/]\s*(\d+[a-z★*]?)$/i);
+  const code=q.match(/^([a-z\d]{2,6})(?:\s*[:#/-]\s*|\s+)(\d+[a-z★*]?)(?:\s*\/\s*\d+)?$/i);
   return code?`set:${code[1].toLowerCase()} cn:${code[2]}`:q;
  }
  const number=s=>String(s||'').toLowerCase().replace(/^0+(?=\d)/,'');

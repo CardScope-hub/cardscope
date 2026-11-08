@@ -18,8 +18,8 @@
  const convert=q=>q.currency===currency?q.amount:fx? q.amount*fx.rates[q.currency]/fx.rates[currency]:null;
  function quote(c){
   const q=c?.quote;
-  if(q&&Number.isFinite(q.amount)&&q.amount>=0&&q.amount<=10000000&&['PLN','EUR','USD'].includes(q.currency))return {amount:q.amount,currency:q.currency,source:safeString(q.source,100),at:q.at};
-  if(c&&Number.isFinite(c.price)&&c.price>=0&&c.price<=10000000&&['PLN','EUR','USD'].includes(c.priceCurrency||'EUR'))return {amount:c.price,currency:c.priceCurrency||'EUR',source:({'tcgplayer':'TCGplayer','tcgrepublic-jp':'TCG Republic · JP','novatcg-jp':'NovaTCG · JP','manual':'Wycena ręczna'}[c.priceSource])||(String(c.priceSource).includes('cardmarket')?'Cardmarket':'Zapisana wycena'),at:c.priceUpdated||c.createdAt};
+  if(q&&Number.isFinite(q.amount)&&q.amount>=0&&q.amount<=10000000&&['PLN','EUR','USD'].includes(q.currency))return {amount:q.amount,currency:q.currency,source:safeString(q.source,100),at:q.at,url:linkURL(q.url)};
+  if(c&&Number.isFinite(c.price)&&c.price>=0&&c.price<=10000000&&['PLN','EUR','USD'].includes(c.priceCurrency||'EUR'))return {amount:c.price,currency:c.priceCurrency||'EUR',source:({'tcgplayer':'TCGplayer','tcgrepublic-jp':'TCG Republic · JP','novatcg-jp':'NovaTCG · JP','manual':'Wycena ręczna'}[c.priceSource])||(String(c.priceSource).includes('cardmarket')?'Cardmarket':'Zapisana wycena'),at:c.priceUpdated||c.createdAt,url:linkURL(c.priceUrl)};
   return null;
  }
  const price=q=>!q?'Brak wyceny':convert(q)===null?raw(q.amount,q.currency)+' · brak kursu':raw(convert(q),currency);
@@ -61,12 +61,12 @@
   $('public-card-meta').textContent=[c.game,c.set,c.number,c.rarity,c.language,c.variant].filter(Boolean).map(v=>safeString(v,120)).join(' · ');
   const img=$('public-card-image');img.hidden=!src;$('public-card-noimage').hidden=!!src;img.alt=safeString(c.name)+(back?' · rewers':'');if(src)img.src=src;else img.removeAttribute('src');img.onerror=()=>{img.hidden=true;$('public-card-noimage').hidden=false;};
   $('public-card-value').textContent=price(q);$('public-card-source').textContent=q?.source||'Źródło nie udostępnia ceny tego wydania.';$('public-card-date').textContent=q?'Data wyceny: '+date(q.at):'';
-  const link=linkURL(c.priceUrl);$('public-card-market').hidden=!link;if(link)$('public-card-market').href=link;else $('public-card-market').removeAttribute('href');
+  globalThis.CardPriceLinks?.render($('public-card-ebay'),c,c.variant);const link=linkURL(quote(c)?.url);$('public-card-market').hidden=!link;if(link)$('public-card-market').href=link;else $('public-card-market').removeAttribute('href');
   $('public-card-flip').hidden=!imageURL(c.backArtwork);$('public-card-flip').textContent=back?'Pokaż przód ↻':'Pokaż drugą stronę ↻';
  }
  function clearPublicData(){
   data=null;selectedCard=null;back=false;$('public-card-dialog').close();$('public-page').replaceChildren();$('public-content').hidden=true;
-  $('public-card-image').removeAttribute('src');$('public-card-image').alt='';$('public-card-market').removeAttribute('href');$('public-card-market').hidden=true;$('public-card-flip').hidden=true;
+  $('public-card-image').removeAttribute('src');$('public-card-image').alt='';$('public-card-market').removeAttribute('href');$('public-card-market').hidden=true;$('public-card-ebay').replaceChildren();$('public-card-flip').hidden=true;
   for(const id of ['public-title','public-subtitle','public-owner','owner-avatar','public-total','public-missing','public-count','public-layout','public-updated','public-card-name','public-card-meta','public-card-value','public-card-source','public-card-date','public-card-owner'])$(id).textContent='';
   $('public-page-select').replaceChildren();$('public-page-title').textContent='Binder';document.title='Udostępniony binder · CardScope';
  }
