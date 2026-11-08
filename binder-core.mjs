@@ -49,7 +49,8 @@ export function placementPlan(binder,selection,collection,{start=0,grow=false,re
 export function swapSlots(binder,from,to){if(!Number.isInteger(from)||!Number.isInteger(to)||from<0||to<0||from>=binder.slots.length||to>=binder.slots.length)throw Error('Wybierz prawidłową kieszonkę.');const slots=[...binder.slots];[slots[from],slots[to]]=[slots[to],slots[from]];const entries={...binder.entries};[entries[from],entries[to]]=[entries[to],entries[from]];for(const key of [from,to])if(!entries[key])delete entries[key];return {...binder,slots,entries,updatedAt:new Date().toISOString()}}
 export function clearSlot(binder,index){if(!Number.isInteger(index)||index<0||index>=binder.slots.length)throw Error('Wybierz prawidłową kieszonkę.');const slots=[...binder.slots];slots[index]=null;const entries={...binder.entries};delete entries[index];return {...binder,slots,entries,updatedAt:new Date().toISOString()}}
 
-export function validateQuote(q){if(q==null)return null;if(!Number.isFinite(q.amount)||q.amount<0||q.amount>10000000||!['PLN','EUR','USD'].includes(q.currency)||!Number.isFinite(Date.parse(q.at)))throw Error('Nieprawidłowa wycena.');return {amount:q.amount,currency:q.currency,at:q.at,source:String(q.source||'Zapisana cena').slice(0,80)};}
+function safeQuoteURL(v){try{const u=new URL(v);return u.protocol==='https:'&&!u.username&&!u.password&&u.href.length<=2048?u.href:null}catch{return null}}
+export function validateQuote(q){if(q==null)return null;if(!Number.isFinite(q.amount)||q.amount<0||q.amount>10000000||!['PLN','EUR','USD'].includes(q.currency)||!Number.isFinite(Date.parse(q.at)))throw Error('Nieprawidłowa wycena.');return {amount:q.amount,currency:q.currency,at:q.at,source:String(q.source||'Zapisana cena').slice(0,80),url:safeQuoteURL(q.url)};}
 // Read legacy prices defensively. A bad quote must never prevent opening cards.
 // Writes still go through validateQuote / validateBinder; stored data is not erased.
 export function readQuote(q){try{return validateQuote(q)}catch{return null}}
@@ -62,7 +63,7 @@ function priceDate(value){
 export function quoteFromCard(card,now=new Date().toISOString()){
  if(!Number.isFinite(card?.price))return null;
  const at=priceDate(card.priceUpdated)||priceDate(card.createdAt)||(!card.priceUpdated&&!card.createdAt?now:null);
- return at?readQuote({amount:card.price,currency:card.priceCurrency||'EUR',at,source:card.priceSource==='manual'?'Cena ręczna':card.priceSource==='tcgrepublic-jp'?'TCG Republic · JP · '+(card.priceMetric==='retail-unavailable'?'cena katalogowa · produkt niedostępny':'cena sklepu'):card.priceSource==='novatcg-jp'?'NovaTCG · JP · cena sklepu':'Zapisana wycena'}):null;
+ return at?readQuote({amount:card.price,currency:card.priceCurrency||'EUR',at,url:card.priceUrl,source:card.priceSource==='manual'?'Cena ręczna':card.priceSource==='tcgrepublic-jp'?'TCG Republic · JP · '+(card.priceMetric==='retail-unavailable'?'cena katalogowa · produkt niedostępny':'cena sklepu'):card.priceSource==='novatcg-jp'?'NovaTCG · JP · cena sklepu':'Zapisana wycena'}):null;
 }
 export function binderQuote(binder,id,card){return readQuote(binder.quotes?.[id])||quoteFromCard(card)}
 export function binderValue(binder,collection){const totals={},byId=new Map(collection.map(c=>[c.id,c]));let missing=0,compared=0;for(const [index,id] of binder.slots.entries()){if(!id)continue;const quote=binderQuote(binder,id,byId.get(id)),base=readQuote(binder.entries?.[index]?.baseline);if(!quote){missing++;continue}const row=totals[quote.currency]||={value:0,change:0,count:0};row.value+=quote.amount;row.count++;if(base&&base.currency===quote.currency){row.change+=quote.amount-base.amount;compared++;}}return {totals,missing,compared};}
