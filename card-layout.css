@@ -1,0 +1,17 @@
+/* Read the card first: artwork, identity and variant, then actions and prices. */
+body[data-view="scan-result"] main{max-width:570px}
+#scan-result{display:block}
+#scan-result[hidden]{display:none!important}
+#scan-result .result-identity{position:static}
+#scan-result .result-art{margin-bottom:14px}
+#scan-result #result-name{margin-top:10px}
+#scan-result .result-options{margin:14px 0 18px}
+#scan-result .result-quick-actions{max-width:430px;margin:0 auto 20px}
+#scan-result .result-pricing{max-width:430px;margin-inline:auto}
+#scan-result .result-options>select{max-width:100%;min-height:44px;font-size:16px}
+#detail .detail-variant-controls{max-width:430px;margin:14px auto 16px}
+#detail .detail-variant-controls>label{display:block;text-align:center;color:var(--muted);font-size:12px;margin-bottom:7px}
+#detail .detail-variant-controls>select{display:block;width:100%;min-height:44px;font-size:16px;margin:0}
+#detail .detail-variant-controls [hidden]{display:none!important}
+#detail .detail-chips{margin:12px 0 16px}
+#b-slot-dialog>#b-slot-title{margin:14px 0 8px;font-size:clamp(23px,5vw,30px);line-height:1.2;overflow-wrap:anywhere}
