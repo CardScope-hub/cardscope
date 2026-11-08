@@ -30,18 +30,49 @@
  const historyButton=button('','life-view',()=>showScreen('history'));historyButton.id='life-history-tab';historyButton.setAttribute('aria-controls','life-history');const historyCount=el('span','life-history-count','0');historyButton.append(icon('history'),el('span','','Historia'),historyCount);views.append(boardButton,historyButton);
  const undo=button('','life-tool',undoLast);undo.id='life-undo';undo.append(icon('undo'),el('span','','Cofnij'));undo.title='Cofnij ostatnią zmianę życia';nav.append(views,undo);
  const board=el('div','life-board');board.id='life-board';const panels=[];
+ let seatFrame=0;
+ const seatObserver=typeof ResizeObserver!=='undefined'?new ResizeObserver(scheduleSeats):null;
+ function setSeatStyle(seat,key,value){if(seat.style.getPropertyValue(key)!==value)seat.style.setProperty(key,value);}
+ function sizeScore(p){
+  if(!p.geometry)return;const {numberWidth,numberHeight}=p.geometry;
+  const length=String(state.players[Number(p.panel.dataset.player)].life).length;
+  const size=Math.max(12,Math.floor(Math.min(180,numberHeight*.95,numberWidth/(length*.66))));
+  setSeatStyle(p.seat,'--seat-score-size',size+'px');
+ }
+ function layoutSeats(){
+  seatFrame=0;if(!state||match.hidden)return;
+  const landscape=window.matchMedia('(orientation: landscape)').matches,count=state.players.length;
+  panels.forEach((p,i)=>{
+   let turn;
+   if(!landscape)turn=count===2?(i===0?180:0):(count%2===1&&i===count-1?0:(i%2===0?90:-90));
+   else if(count===2)turn=i===0?90:-90;
+   else turn=i<(count>=5?3:2)?180:0;
+   p.panel.dataset.facing=String(turn);setSeatStyle(p.seat,'--seat-turn',turn+'deg');
+   const rect=p.panel.getBoundingClientRect(),quarter=Math.abs(turn)===90;
+   if(rect.width<=0||rect.height<=0)return;
+   // Rotate the complete controls, swapping dimensions so corners stay inside the tile.
+   const width=Math.max(1,(quarter?rect.height:rect.width)-2),height=Math.max(1,(quarter?rect.width:rect.height)-2);
+   const pad=Math.round(Math.min(20,Math.max(8,Math.min(width,height)*.055))),front=Math.round(Math.min(34,Math.max(14,height*.18))),gap=6,button=width<184?40:Math.round(Math.min(56,Math.max(44,width*.15)));
+   p.geometry={width,height,numberWidth:Math.max(16,width-2*pad-2*button-2*gap),numberHeight:Math.max(16,height-front-pad-20-2*gap)};
+   const quick=p.geometry.numberHeight<100?32:40,buttonHeight=Math.min(button,Math.max(28,p.geometry.numberHeight-quick));
+   for(const [key,value] of Object.entries({'--seat-width':width+'px','--seat-height':height+'px','--seat-pad':pad+'px','--seat-front':front+'px','--seat-button':button+'px','--seat-button-height':buttonHeight+'px','--seat-quick':quick+'px'}))setSeatStyle(p.seat,key,value);
+   sizeScore(p);p.panel.dataset.seatReady='true';
+  });
+ }
+ function scheduleSeats(){if(!seatFrame)seatFrame=requestAnimationFrame(layoutSeats);}
+
  function buildPlayers(){
-  panels.length=0;board.replaceChildren();board.dataset.count=String(state.players.length);
+  seatObserver?.disconnect();panels.length=0;board.replaceChildren();board.dataset.count=String(state.players.length);
   for(let i=0;i<state.players.length;i++){
-   const panel=el('section','life-player');panel.dataset.player=String(i);panel.setAttribute('aria-labelledby','life-player-name-'+i);
+   const panel=el('section','life-player'),seat=el('div','life-seat');panel.dataset.player=String(i);panel.setAttribute('aria-labelledby','life-player-name-'+i);
    const who=el('div','life-player-heading'),numberTag=el('span','life-player-tag','0'+(i+1)),playerName=el('h3','life-player-name'),badge=el('span','life-starter','START');playerName.id='life-player-name-'+i;badge.hidden=true;who.append(numberTag,playerName,badge);
    const counter=el('div','life-counter'),minus=button('−','life-step',()=>adjust(i,-1)),plus=button('+','life-step',()=>adjust(i,1));minus.dataset.delta='-1';plus.dataset.delta='1';
    const value=el('output','life-number');value.id='life-value-'+i;value.setAttribute('aria-live','off');counter.append(minus,value,plus);
    const quick=el('div','life-quick'),minus5=button('−5','life-step-small',()=>adjust(i,-5)),plus5=button('+5','life-step-small',()=>adjust(i,5));minus5.dataset.delta='-5';plus5.dataset.delta='5';const latest=el('span','life-last-change','PUNKTY ŻYCIA');quick.append(minus5,latest,plus5);
-   panel.append(who,counter,quick);board.append(panel);panels.push({panel,playerName,badge,value,latest,buttons:[minus,plus,minus5,plus5]});
+   seat.append(who,counter,quick);panel.append(seat);board.append(panel);panels.push({panel,seat,playerName,badge,value,latest,buttons:[minus,plus,minus5,plus5],geometry:null});seatObserver?.observe(panel);
   }
   historyFilter.replaceChildren(el('option','','Wszyscy gracze'));historyFilter.firstChild.value='all';
-  state.players.forEach((p,i)=>{const option=el('option','',p.name);option.value=String(i);historyFilter.append(option);});
+  state.players.forEach((p,i)=>{const option=el('option','',p.name);option.value=String(i);historyFilter.append(option);});scheduleSeats();
  }
  const historyView=el('section','life-history');historyView.id='life-history';historyView.hidden=true;historyView.setAttribute('aria-label','Historia partii');
  const historyHeading=el('div','life-history-heading'),historyTitle=el('h3','','Przebieg partii'),historyFilter=el('select');historyFilter.id='life-history-filter';historyFilter.setAttribute('aria-label','Filtruj historię według gracza');historyFilter.onchange=()=>{historyLimit=40;renderHistory();};historyHeading.append(historyTitle,historyFilter);
@@ -86,7 +117,7 @@
  function render(){
   if(!state)return;
   const lastByPlayer=new Map();for(const event of state.events)if(event.kind!=='draw')lastByPlayer.set(event.player,event);
-  panels.forEach((p,i)=>{const data=state.players[i];p.playerName.textContent=data.name;p.value.textContent=String(data.life);p.value.dataset.digits=String(String(data.life).length);p.value.setAttribute('aria-label',data.name+': '+data.life+' pkt życia');p.badge.hidden=state.starter!==i;p.panel.dataset.starts=String(state.starter===i);p.panel.dataset.empty=String(data.life<=0);const latest=lastByPlayer.get(i);p.latest.textContent=latest?(latest.kind==='undo'?'Cofnięcie: ':'Ostatnio: ')+(latest.after>latest.before?'+':'−')+Math.abs(latest.after-latest.before):'PUNKTY ŻYCIA';for(const b of p.buttons){const delta=Number(b.dataset.delta);b.setAttribute('aria-label',(delta>0?'Dodaj ':'Odejmij ')+Math.abs(delta)+' pkt życia: '+data.name);b.disabled=data.life+delta<C.MIN||data.life+delta>C.MAX;}});
+  panels.forEach((p,i)=>{const data=state.players[i];p.playerName.textContent=data.name;p.playerName.title=data.name;p.value.textContent=String(data.life);sizeScore(p);p.value.dataset.digits=String(String(data.life).length);p.value.setAttribute('aria-label',data.name+': '+data.life+' pkt życia');p.badge.hidden=state.starter!==i;p.panel.dataset.starts=String(state.starter===i);p.panel.dataset.empty=String(data.life<=0);const latest=lastByPlayer.get(i);p.latest.textContent=latest?(latest.kind==='undo'?'Cofnięcie: ':'Ostatnio: ')+(latest.after>latest.before?'+':'−')+Math.abs(latest.after-latest.before):'PUNKTY ŻYCIA';for(const b of p.buttons){const delta=Number(b.dataset.delta);b.setAttribute('aria-label',(delta>0?'Dodaj ':'Odejmij ')+Math.abs(delta)+' pkt życia: '+data.name);b.disabled=data.life+delta<C.MIN||data.life+delta>C.MAX;}});
   starts.textContent=state.starter===null?'Kto wykona pierwszy ruch?':'Zaczyna: '+state.players[state.starter].name;rollLabel.textContent=state.starter===null?'Losuj start':'Losuj ponownie';undo.disabled=!C.undoTarget(state);historyCount.textContent=String(state.events.filter(e=>e.kind!=='draw').length);historyCount.hidden=historyCount.textContent==='0';
   fab.dataset.active='true';fab.setAttribute('aria-label','Wróć do licznika życia');if(screen==='history')renderHistory();tickClock();
  }
@@ -110,12 +141,12 @@
  function rollStarter(){if(!state||roll.disabled)return;try{state=C.draw(state,()=>crypto.getRandomValues(new Uint32Array(1))[0]);persist();render();status.textContent=starts.textContent+'.';roll.disabled=true;roll.dataset.rolling='true';rollTimer=setTimeout(clearRoll,460);}catch(e){status.textContent=e.message||'Losowanie jest chwilowo niedostępne.';}}
  setup.addEventListener('submit',event=>{event.preventDefault();try{const next=C.create(lifeInput.value,nameInputs.map(n=>n.value),selectedCount);state=next;persist();showMatch();hub.focus({preventScroll:true});status.textContent='Nowa partia: '+selectedCount+' graczy, po '+state.initial+' pkt życia.';}catch(e){error.textContent=e.message;error.hidden=false;lifeInput.setAttribute('aria-invalid','true');lifeInput.focus({preventScroll:true});}});
  lifeInput.addEventListener('input',()=>{updatePresets();lifeInput.removeAttribute('aria-invalid');error.hidden=true;});
- fab.onclick=()=>{if(dialog.open)return;if(storageAvailable)state=read()||state;if(state)showMatch();else showSetup();dialog.showModal();document.documentElement.classList.add('cs-tabletop-open');fab.setAttribute('aria-expanded','true');syncClock();if(state)hub.focus({preventScroll:true});else countButtons[selectedCount-2].focus({preventScroll:true});};
+ fab.onclick=()=>{if(dialog.open)return;if(storageAvailable)state=read()||state;if(state)showMatch();else showSetup();dialog.showModal();scheduleSeats();document.documentElement.classList.add('cs-tabletop-open');fab.setAttribute('aria-expanded','true');syncClock();if(state)hub.focus({preventScroll:true});else countButtons[selectedCount-2].focus({preventScroll:true});};
  dialog.addEventListener('close',()=>{if(menu.open)menu.close();document.documentElement.classList.remove('cs-tabletop-open');clearRoll();stopClock();fab.setAttribute('aria-expanded','false');fab.focus({preventScroll:true});});
  document.addEventListener('visibilitychange',syncClock);window.addEventListener('pagehide',stopClock);window.addEventListener('pageshow',syncClock);
  function place(){positionFrame=0;const nav=document.querySelector('.nav'),r=nav?.getBoundingClientRect(),height=window.innerHeight,width=window.innerWidth;if(r&&r.width>0&&r.height>0&&r.top>height*.4&&r.top<height){fab.style.bottom=Math.round(height-r.top+12)+'px';fab.style.right=Math.max(16,Math.round(width-r.right+8))+'px';}}
  function schedulePosition(){if(!positionFrame)positionFrame=requestAnimationFrame(place);}
  const mainNav=document.querySelector('.nav');if(mainNav&&typeof ResizeObserver!=='undefined')new ResizeObserver(schedulePosition).observe(mainNav);
- window.addEventListener('resize',schedulePosition,{passive:true});window.addEventListener('orientationchange',schedulePosition,{passive:true});
+ window.addEventListener('resize',()=>{schedulePosition();scheduleSeats();},{passive:true});window.addEventListener('orientationchange',()=>{schedulePosition();scheduleSeats();},{passive:true});window.visualViewport?.addEventListener('resize',scheduleSeats,{passive:true});
  state=read();fab.dataset.active=String(!!state);updatePresets();updateCount();schedulePosition();
 })();
