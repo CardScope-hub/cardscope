@@ -7,6 +7,7 @@ window.CardStore={
   return cloud.ready;
  },
  add:card=>globalThis.CardCloud.write('card',card),
+ setPurchase:(id,purchase)=>globalThis.CardCloud.setPurchase(id,purchase),
  changeQuantity:(id,delta)=>globalThis.CardCloud.changeQuantity(id,delta),
  remove:id=>globalThis.CardCloud.remove('card',id),
  sync:()=>globalThis.CardCloud.sync()

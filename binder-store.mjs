@@ -1,4 +1,4 @@
-import {validateBinder} from './binder-core.mjs?v=search-polish-1';
+import {validateBinder} from './binder-core.mjs?v=purchase-profit-1';
 export function createBinderStore(deps={}){
  const cloud=deps.cloud||globalThis.CardCloud;
  if(cloud)cloud.setValidator('binder',validateBinder);

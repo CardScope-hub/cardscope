@@ -179,6 +179,21 @@
    }).catch(e=>{throw reason||e});
    await notify(ctx);await status(ctx,'Zapisano liczbę kopii na urządzeniu · zmiany czekają na wysłanie');channel?.postMessage({owner:ctx.owner});if(active===ctx)void sync();return payload;
   }
+  async function setPurchase(id,purchase){
+   if(!/^[\w-]{1,100}$/.test(id))throw Error('Nieprawidłowa karta.');
+   if(purchase!==null&&(!purchase||!Number.isFinite(purchase.amount)||purchase.amount<0||purchase.amount>10000000||!['PLN','EUR','USD'].includes(purchase.currency)||!Number.isFinite(Date.parse(purchase.recordedAt))))throw Error('Nieprawidłowa cena zakupu.');
+   const clean=purchase===null?null:{amount:Math.round(purchase.amount*100)/100,currency:purchase.currency,recordedAt:purchase.recordedAt};
+   const ctx=active;ensure(ctx);const key=keyOf('card',id);let reason;
+   const payload=await tx(ctx.db,['records','outbox'],'readwrite',(t,set)=>{
+    t.objectStore('records').get(key).onsuccess=e=>{try{
+     ensure(ctx);const row=e.target.result;if(!row||row.deleted)throw Error('Karta nie jest już dostępna w kolekcji.');
+     const next=validate('card',{...row.payload,purchase:clean});
+     t.objectStore('records').put({...row,payload:next});
+     t.objectStore('outbox').put({key,kind:'card',id,payload:next,deleted:false,baseVersion:row.version||0,mutationId:uuid()});set(next);
+    }catch(e){reason=e;t.abort()}};
+   }).catch(e=>{throw reason||e});
+   await notify(ctx);await status(ctx,'Zapisano cenę zakupu na urządzeniu · zmiany czekają na wysłanie');channel?.postMessage({owner:ctx.owner});if(active===ctx)void sync();return payload;
+  }
   async function legacySnapshot(){
    const oldCards=await open('cardscope-private-v1',true),oldBinders=await open('cardscope-binders-v1',true);let cards=[],binders=[];
    try{
@@ -242,7 +257,7 @@
   // Other tabs share this IndexedDB. Notify the view, without echoing a cloud sync
   // back to the sender (which would otherwise cause an endless broadcast loop).
   if(channel)channel.onmessage=e=>{if(active?.owner===e.data?.owner)void notify(active)};
-  return {get ready(){return ready()},get state(){return latest},subscribeState(f){subscribers.add(f);f(latest);return()=>subscribers.delete(f)},subscribe(kind,f){views[kind].add(f);f(clone(active?.lastViews[kind]||[]));if(active)void notify(active);return()=>views[kind].delete(f)},setValidator(kind,f){validators[kind]=f},write,changeQuantity,remove:(kind,id)=>write(kind,id,true),sync,importLegacy,backup};
+  return {get ready(){return ready()},get state(){return latest},subscribeState(f){subscribers.add(f);f(latest);return()=>subscribers.delete(f)},subscribe(kind,f){views[kind].add(f);f(clone(active?.lastViews[kind]||[]));if(active)void notify(active);return()=>views[kind].delete(f)},setValidator(kind,f){validators[kind]=f},write,changeQuantity,setPurchase,remove:(kind,id)=>write(kind,id,true),sync,importLegacy,backup};
  }
  root.createCardCloud=createCardCloud;
  if(root.CardScopeAuth&&root.indexedDB)root.CardCloud=createCardCloud();
