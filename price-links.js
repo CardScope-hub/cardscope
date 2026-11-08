@@ -20,22 +20,38 @@ globalThis.CardPriceLinks=(()=>{
   // The scanned-card page has a second eBay strip below additional sources.
   // Show the grading panel once, immediately below the primary eBay link.
   if(host.id==='result-offers-ebay')return;
+  if(globalThis.CardGradeSalesUI?.render(host,c,variant))return;
   const panel=document.createElement('section');panel.className='psa-panel';panel.setAttribute('aria-label','Sprzedaże kart z oceną PSA');
   const heading=document.createElement('div');heading.className='psa-panel-heading';
   const title=document.createElement('h3');title.className='psa-panel-title';title.textContent='Sprzedaże kart PSA';
-  const badge=document.createElement('span');badge.className='psa-panel-badge';badge.textContent='eBay';heading.append(title,badge);
+  const badge=document.createElement('span');badge.className='psa-panel-badge';badge.textContent='Źródła zewnętrzne';heading.append(title,badge);
   const grid=document.createElement('div');grid.className='psa-grade-grid';
   for(const grade of [10,9,8]){
    const row=link(psa(c,grade,variant),'');row.className='psa-grade';row.dataset.psaGrade=String(grade);
-   row.setAttribute('aria-label','PSA '+grade+' · brak danych w aplikacji. Sprawdź sprzedane oferty karty '+c.name+' na eBay (nowa karta).');
+   row.setAttribute('aria-label','PSA '+grade+' · sprawdź sprzedane oferty karty '+c.name+' na eBay (nowa karta).');
    const name=document.createElement('span');name.className='psa-grade-label';name.textContent='PSA '+grade;
-   const state=document.createElement('span');state.className='psa-grade-state';state.textContent='brak danych';
-   const action=document.createElement('span');action.className='psa-grade-action';action.append(document.createTextNode('Sprawdź '));
+   const state=document.createElement('span');state.className='psa-grade-state';state.textContent='Sprzedane oferty';
+   const action=document.createElement('span');action.className='psa-grade-action';action.append(document.createTextNode('eBay '));
    const arrow=document.createElement('span');arrow.textContent='↗';arrow.setAttribute('aria-hidden','true');action.append(arrow);
    row.append(name,state,action);grid.append(row);
   }
-  const note=document.createElement('p');note.className='psa-panel-note';note.textContent='Ceny sprzedaży sprawdzisz na eBay. „Brak danych” nie oznacza braku sprzedaży.';
-  panel.append(heading,grid,note);host.append(panel);
+  const note=document.createElement('p');note.className='psa-panel-note';note.textContent='Sprawdź zakończone sprzedaże u źródła. CardScope nie pobiera automatycznie ich cen.';
+  panel.append(heading,grid,note);appendPSASources(panel,c,variant);
+  if(globalThis.CardGradeSalesUI&&['result-ebay','detail-ebay','binder-ebay'].includes(host.id)){const hint=document.createElement('p');hint.className='psa-panel-note';hint.textContent='Własną transakcję zapiszesz po zalogowaniu, w szczegółach karty dodanej do kolekcji, dla jej zapisanego wariantu.';panel.append(hint);}
+  host.append(panel);
+ }
+
+ function appendPSASources(panel,c,variant){
+  const details=document.createElement('details');details.className='psa-sources';
+  const summary=document.createElement('summary');summary.textContent='Sprawdź sprzedaże poza eBay';
+  const links=document.createElement('div');links.className='psa-source-links';
+  links.append(link('https://www.psacard.com/auctionprices','PSA Auction Prices ↗'),link('https://sales-history.fanaticscollect.com/','Fanatics Collect ↗'));
+  const hint=document.createElement('p');hint.className='psa-panel-note';hint.textContent='W serwisie wpisz dane poniżej i ocenę PSA. Porównaj serię, numer, język i wariant. Dostępność wyników zależy od serwisu.';
+  const input=document.createElement('input');input.type='text';input.readOnly=true;input.className='psa-search-identity';input.value=query(c,variant);input.setAttribute('aria-label','Dane karty do wyszukania w zewnętrznym serwisie');
+  const copy=document.createElement('button');copy.type='button';copy.className='psa-small-button';copy.textContent='Kopiuj dane karty';
+  const status=document.createElement('span');status.className='psa-copy-status';status.setAttribute('role','status');
+  copy.onclick=async()=>{try{await navigator.clipboard.writeText(input.value);status.textContent='Skopiowano.';}catch{input.focus();input.select();status.textContent='Zaznaczono tekst — wybierz Kopiuj.';}};
+  details.append(summary,links,hint,input,copy,status);panel.append(details);
  }
 
  function placeNearPrice(host){
@@ -102,5 +118,5 @@ globalThis.CardPriceLinks=(()=>{
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else queueMicrotask(install);
 
- return Object.freeze({safe,query,ebay,psa,source,render});
+ return Object.freeze({safe,query,ebay,psa,source,render,appendPSASources});
 })();

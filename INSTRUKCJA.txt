@@ -1,48 +1,94 @@
-CARDSCOPE — PANEL PSA 10 / PSA 9 / PSA 8
-Aktualizacja 8 listopada 2026 · psa-panel-1
+CARDSCOPE — TRANSAKCJE PSA I DODATKOWE ŹRÓDŁA
+Aktualizacja 8 listopada 2026 · psa-records-1
 
-CO DODAJE PACZKA
-Bezpośrednio pod głównym paskiem eBay pojawia się mały fioletowy panel
-„Sprzedaże kart PSA” z trzema kafelkami: PSA 10, PSA 9 i PSA 8.
-Każdy kafelek prowadzi do sprzedanych ofert aktualnie oglądanej karty na eBay
-z wybraną oceną. Wyszukiwanie zawiera dostępne dane nazwy, numeru, dodatku,
-języka oraz wariantu karty. Sprawdź zgodność wydania w wynikach eBay.
+CO JEST GOTOWE
+Pod paskiem eBay znajdziesz panel PSA 10 / PSA 9 / PSA 8.
+W szczegółach własnej karty w kolekcji i binderze możesz zapisać:
+– ocenę PSA;
+– kwotę za 1 kartę i walutę PLN, EUR lub USD;
+– datę własnego zakończonego zakupu lub sprzedaży;
+– opcjonalny publiczny link do transakcji.
 
-Panel działa w wyniku skanu, szczegółach kolekcji, binderze, tradingu,
-podglądzie karty znajomego i udostępnionym binderze. Nie dodaje osobnej zakładki.
+Kafelki pokazują ostatnią zapisaną własną transakcję dla danej oceny,
+według daty transakcji. Historię możesz rozwinąć, edytować i usuwać.
+Gdy daty są takie same, o kolejności decyduje czas utworzenia wpisu.
+Limit: 50 wpisów na rekord karty. Kwota jest ceną samej karty, bez wysyłki
+i opłat. Zmiana waluty aplikacji przelicza wyświetlaną kwotę przez istniejący
+moduł walut; oryginalna kwota i waluta pozostają zapisane. Bez kursu pokazuje
+się kwota źródłowa, a nie wymyślone przeliczenie.
 
-CO OZNACZA „BRAK DANYCH”
-Ta wersja nie ma podłączonego źródła historii transakcji. Dlatego w aplikacji
-PSA 10, PSA 9 i PSA 8 pokazują „brak danych”; każdy kafelek można kliknąć,
-aby sprawdzić sprzedaże na eBay. To nie jest informacja, że nigdy nie było
-sprzedaży danej karty. Panel nie sprawdza automatycznie, czy eBay znalazł wynik.
+Wpisy dotyczą konkretnego rekordu karty i jej zapisanego wariantu. Gdy
+porównujesz inne wydanie lub wariant, nie pokazujemy cudzej historii PSA.
+Przy wyniku skanu własne wpisy pojawią się, jeśli dokładne wydanie, język
+i wariant jednoznacznie pasują do karty już zapisanej w Twojej kolekcji.
+W przeciwnym razie najpierw dodaj kartę i otwórz ją w Kolekcji.
 
-Nie przenosimy ceny aktywnej oferty ani wyceny karty bez gradingu do PSA.
-Ta paczka nie wyświetla automatycznie kwoty ani daty ostatniej transakcji.
-Do takich danych nadal potrzebne jest osobne źródło sprzedaży, opisane
-w poprzedniej wiadomości. Nie potrzeba klucza API do samych odnośników.
+SPRAWDZANIE SPRZEDAŻY POZA EBAY
+Panel ma rozwijaną sekcję „Sprawdź sprzedaże poza eBay” z odnośnikami do:
+– PSA Auction Prices: https://www.psacard.com/auctionprices
+– Fanatics Collect: https://sales-history.fanaticscollect.com/
+Przycisk kopiuje dane aktualnej karty. W serwisie wklej je do wyszukiwarki,
+dodaj ocenę PSA i sprawdź zgodność numeru, serii, języka i wariantu.
+To odnośniki do zewnętrznych stron; nie osadzamy ich treści w CardScope.
+Warunki dostępu, dostępność wyników i ewentualne logowanie zależą od serwisu.
+
+WAŻNE: TO NIE JEST AUTOMATYCZNA BAZA OSTATNICH SPRZEDAŻY RYNKOWYCH.
+CardScope nie pobiera, nie scrapuje ani nie kopiuje historii tych serwisów.
+Nie przepisuje ceny aktywnej oferty do pola sprzedanej karty PSA.
+Brak własnego wpisu nie oznacza, że karta nigdy się nie sprzedała.
+Nie dodano zewnętrznego API cen PSA i nie trzeba dostarczać klucza.
+Istniejąca synchronizacja Supabase i moduł kursów walut działają jak dotąd.
+
+ZAKRES WŁASNYCH DANYCH
+Formularz służy do prywatnego zapisywania własnych zakończonych transakcji,
+nie do budowania kopii cudzych baz. Nie wklejaj prywatnych potwierdzeń
+płatności, danych innych osób ani linków z hasłem lub tokenem dostępu.
+Jeśli kiedyś zechcesz automatycznie publikować cudze dane cenowe, trzeba
+najpierw ustalić uprawnienia/licencję właściwego źródła. Ta zmiana ogranicza
+ryzyko związane z kopiowaniem baz, ale nie stanowi gwarancji ani opinii prawnej.
+
+ZAPIS I PRYWATNOŚĆ
+Wpisy zapisują się wraz z kartą na koncie przez obecną synchronizację.
+Offline pozostają na urządzeniu do kolejnej udanej synchronizacji.
+Nie zmieniają wartości kolekcji/bindera ani wcześniejszej ceny zakupu.
+Odświeżenie rynkowej ceny karty nie usuwa historii PSA.
+Usunięcie karty usuwa także dostęp do jej wpisów — zsynchronizuj dane
+przed aktualizacją. Możesz użyć istniejącej kopii zapasowej kolekcji.
+
+Wpisów nie pokazujemy znajomym ani w udostępnionych binderach. Obecne
+funkcje SQL udostępniające karty stosują jawną listę publicznych pól,
+która nie zawiera historii PSA. Używaj dotychczasowej konfiguracji RLS
+i skryptów prywatności CardScope; nie udostępniaj całego payload karty
+własnym publicznym zapytaniem do Supabase.
 
 JAK WGRAC
-1. Na dole strony Start w CardScope zsynchronizuj karty i bindery.
-2. Rozpakuj ZIP.
-3. W repozytorium GitHub otwórz folder zawierający obecny app.html.
-4. Wybierz Add file → Upload files i wgraj pliki z paczki bez tworzenia
-   dodatkowego podfolderu. Zastąp pliki o tych samych nazwach:
-   app.html, login.html, binder.html, price-links.js, ebay-card.css i sw.js.
-5. Zatwierdź Commit changes. Poczekaj na zakończenie wdrożenia GitHub Pages.
-6. Otwórz aplikację i kliknij „Wczytaj aktualizację”, jeśli zobaczysz komunikat.
-   Możesz też zamknąć ją całkowicie i uruchomić ponownie.
+1. Na stronie Start zsynchronizuj karty i bindery; poczekaj na zapis.
+2. Rozpakuj ten ZIP. To aktualizacja obecnej aplikacji z bazami Cyberpunk
+   i Lorcana; nie jest osobną kompletną aplikacją.
+3. W GitHub otwórz folder z obecnym app.html i wybierz Add file → Upload files.
+4. Wgraj wszystkie pliki aktualizacji bez dodatkowego podfolderu:
+   app.html, login.html, binder.html, price-links.js, ebay-card.css,
+   graded-sales-core.js, graded-sales-ui.js, cloud-sync.js, storage.js,
+   currency.js, sw.js. Zastąp istniejące pliki o tych samych nazwach.
+5. Zatwierdź Commit changes i poczekaj na zakończenie wdrożenia GitHub Pages.
+6. Otwórz CardScope i zaakceptuj komunikat „Wczytaj aktualizację”.
+   Zamknij i ponownie otwórz także aplikację z ekranu głównego telefonu.
 
-To aktualizacja do obecnej wersji z bazami Cyberpunk i Lorcana. Jeżeli jeszcze
-nie wgrałeś tamtej paczki, zrób to przed tą aktualizacją. Nie usuwaj żadnych
-pozostałych plików. Nie zmieniaj supabase-config.js ani bazy danych Supabase.
+Nie usuwaj pozostałych plików. Nie podmieniaj supabase-config.js.
+Ta aktualizacja nie wymaga nowego SQL ani zmiany kluczy. Nie wyłącza RLS.
+Nie czyść danych aplikacji ani pamięci witryny przy niewysłanych zmianach.
 
-SPRAWDZENIE
-Otwórz kartę i znajdź jej pasek eBay. Pod nim powinien być panel trzech ocen.
-Kliknięcie PSA 9 powinno otworzyć sprzedane oferty ze słowami „PSA 9”.
-Po zmianie karty albo wariantu wszystkie trzy odnośniki powinny dotyczyć
-nowego wyboru. W wyniku skanu panel jest tylko raz, przy górnym pasku eBay.
+SZYBKI TEST PO WGRANIU
+Otwórz swoją kartę → pod eBay rozwiń „Zapisz własną transakcję” → zapisz
+PSA 10, 100 PLN i datę transakcji. Otwórz tę samą kartę w binderze:
+wpis powinien być widoczny. Zsynchronizuj i sprawdź po ponownym wejściu.
+Usuń testowy wpis, jeżeli nie opisuje rzeczywistej transakcji.
 
-Przeszły testy działania panelu, zmian kart, filtrów w odnośnikach, zachowania
-wyceny głównej i zgodności nowych kategorii. Podgląd przeglądarkowy był
-niedostępny w środowisku testowym; wyglądu na fizycznym telefonie nie sprawdzono.
+SPRAWDZENIE PACZKI
+Testy automatyczne: zapis, edycja i usunięcie; synchronizacja na dwóch
+symulowanych urządzeniach; izolacja kont; walidacja; rozdzielenie wariantów,
+języków i ocen; zachowanie wpisów przy odświeżeniu ceny; prywatna projekcja
+SQL; rzeczywisty przepływ skan/katalog → kolekcja → binder; panel i waluty.
+Nie wykonano testu wizualnego w przeglądarce ani testu na fizycznym telefonie
+— środowisko podglądu było niedostępne. Paczka nie została automatycznie
+wgrana do Twojego GitHuba ani na produkcyjną bazę Supabase.

@@ -156,7 +156,11 @@
    const id=deleted?input:input?.id,payload=deleted?null:validate(kind,input);if(!/^[\w-]{1,100}$/.test(id))throw Error('Nieprawidłowy identyfikator.');
    ensure(ctx);const key=keyOf(kind,id);
    await tx(ctx.db,['records','outbox'],'readwrite',t=>{t.objectStore('records').get(key).onsuccess=e=>{
-    const version=e.target.result?.version||0;t.objectStore('records').put({key,kind,id,payload,deleted,version});
+    const existing=e.target.result,version=existing?.version||0;
+    // Price refreshes and ordinary card edits may hold an older card object.
+    // Only the atomic PSA methods may change its independent private ledger.
+    if(kind==='card'&&!deleted){if(existing&&!existing.deleted&&Array.isArray(existing.payload?.gradedSales))payload.gradedSales=clone(existing.payload.gradedSales);else delete payload.gradedSales;}
+    t.objectStore('records').put({key,kind,id,payload,deleted,version});
     t.objectStore('outbox').put({key,kind,id,payload,deleted,baseVersion:version,mutationId:uuid()});
    }});await notify(ctx);await status(ctx,'Zapisano na urządzeniu · zmiany czekają na wysłanie');channel?.postMessage({owner:ctx.owner});if(active===ctx)void sync();return payload;
   }
@@ -194,6 +198,30 @@
    }).catch(e=>{throw reason||e});
    await notify(ctx);await status(ctx,'Zapisano cenę zakupu na urządzeniu · zmiany czekają na wysłanie');channel?.postMessage({owner:ctx.owner});if(active===ctx)void sync();return payload;
   }
+  async function changeGradeSale(id,input,removeId,expectedOwner){
+   if(!/^[\w-]{1,100}$/.test(id))throw Error('Nieprawidłowa karta.');
+   const core=root.CardGradeSales;if(!core)throw Error('Odśwież aplikację, aby wczytać panel PSA.');
+   const ctx=active;ensure(ctx);if(!expectedOwner||ctx.owner!==expectedOwner)throw Error('Konto zmieniło się. Otwórz kartę ponownie.');
+   const clean=removeId?null:core.normalize(input),key=keyOf('card',id);let reason;
+   const payload=await tx(ctx.db,['records','outbox'],'readwrite',(t,set)=>{
+    t.objectStore('records').get(key).onsuccess=e=>{try{
+     ensure(ctx);const row=e.target.result;if(!row||row.deleted)throw Error('Karta nie jest już dostępna w kolekcji.');
+     const all=Array.isArray(row.payload.gradedSales)?row.payload.gradedSales:[],recordId=removeId||input.id||uuid();
+     if(!/^[\w-]{1,100}$/.test(recordId))throw Error('Nieprawidłowy wpis.');
+     const old=all.find(r=>r.id===recordId),scope=core.scope(row.payload);
+     if((removeId||input.id)&&(!old||old.scope!==scope))throw Error('Ten wpis został usunięty lub dotyczy innego wariantu karty.');
+     if(!removeId&&input.scope!==scope)throw Error('Wariant karty zmienił się. Otwórz formularz ponownie.');
+     const gradedSales=all.filter(r=>r.id!==recordId);
+     if(!removeId){if(gradedSales.length>=50)throw Error('Możesz zapisać maksymalnie 50 transakcji dla tej karty.');gradedSales.push({...clean,id:recordId,scope,recordedAt:old?.recordedAt||new Date().toISOString(),updatedAt:new Date().toISOString()});}
+     const next=validate('card',{...row.payload,gradedSales});
+     t.objectStore('records').put({...row,payload:next});
+     t.objectStore('outbox').put({key,kind:'card',id,payload:next,deleted:false,baseVersion:row.version||0,mutationId:uuid()});set(next);
+    }catch(e){reason=e;t.abort()}};
+   }).catch(e=>{throw reason||e});
+   await notify(ctx);await status(ctx,'Zapisano transakcje PSA na urządzeniu · zmiany czekają na wysłanie');channel?.postMessage({owner:ctx.owner});if(active===ctx)void sync();return payload;
+  }
+  const saveGradeSale=(id,input,owner)=>changeGradeSale(id,input,null,owner);
+  const removeGradeSale=(id,recordId,owner)=>changeGradeSale(id,null,recordId,owner);
   async function legacySnapshot(){
    const oldCards=await open('cardscope-private-v1',true),oldBinders=await open('cardscope-binders-v1',true);let cards=[],binders=[];
    try{
@@ -257,7 +285,7 @@
   // Other tabs share this IndexedDB. Notify the view, without echoing a cloud sync
   // back to the sender (which would otherwise cause an endless broadcast loop).
   if(channel)channel.onmessage=e=>{if(active?.owner===e.data?.owner)void notify(active)};
-  return {get ready(){return ready()},get state(){return latest},subscribeState(f){subscribers.add(f);f(latest);return()=>subscribers.delete(f)},subscribe(kind,f){views[kind].add(f);f(clone(active?.lastViews[kind]||[]));if(active)void notify(active);return()=>views[kind].delete(f)},setValidator(kind,f){validators[kind]=f},write,changeQuantity,setPurchase,remove:(kind,id)=>write(kind,id,true),sync,importLegacy,backup};
+  return {get ready(){return ready()},get state(){return latest},subscribeState(f){subscribers.add(f);f(latest);return()=>subscribers.delete(f)},subscribe(kind,f){views[kind].add(f);f(clone(active?.lastViews[kind]||[]));if(active)void notify(active);return()=>views[kind].delete(f)},setValidator(kind,f){validators[kind]=f},write,changeQuantity,setPurchase,saveGradeSale,removeGradeSale,remove:(kind,id)=>write(kind,id,true),sync,importLegacy,backup};
  }
  root.createCardCloud=createCardCloud;
  if(root.CardScopeAuth&&root.indexedDB)root.CardCloud=createCardCloud();
