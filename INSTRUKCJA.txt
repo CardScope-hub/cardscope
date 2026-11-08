@@ -1,41 +1,23 @@
-CARDSCOPE — OSOBNA ZAKŁADKA ZNAJOMI I ROZMIAR X
-Wersja: friends-screen-1
+CARDSCOPE — RÓWNY PASEK NAWIGACJI
+Wersja: nav-aligned-1
 
-JAK WGRAĆ
-1. Rozpakuj ZIP.
-2. W repozytorium GitHub otwórz folder, w którym są obecne app.html i login.html.
-3. Wgraj tam wszystkie 12 plików .html, .css i .js z paczki. Zastąp istniejące pliki o tych samych nazwach; dodaj nowe. Nie twórz dodatkowego podfolderu.
-4. Zapisz zmiany przyciskiem Commit changes i poczekaj na zakończenie publikacji GitHub Pages.
-5. Odśwież stronę. Na telefonie zamknij aplikację i uruchom ją ponownie. Jeśli pojawi się powiadomienie o aktualizacji, zaakceptuj odświeżenie i wykonaj synchronizację zgodnie z komunikatem aplikacji.
-
-To aktualizacja istniejącej aplikacji, a nie pełna instalacja. Nie usuwaj pozostałych plików, baz kart ani folderu vendor. Nie zmieniaj supabase-config.js. Nie trzeba uruchamiać żadnego SQL w Supabase ani kasować danych przeglądarki.
-
-ZMIANY
-- Mały X (28 px) przy usuwaniu karty z kolekcji; dotychczasowe potwierdzenie usunięcia pozostaje.
-- Duży, kontrastowy, kwadratowy X do zamykania okien nadal znajduje się w górnym pasku nad przewijaną treścią.
-- Znajomi to osobny ekran friends.html, bez formularzy logowania i ustawień konta.
-- Na ekranie znajomych jest stały dolny pasek z siedmioma zakładkami; aktywna pozycja to Znajomi.
-- Przycisk Profil otwiera osobno profil i ustawienia konta. Logowanie z ekranu znajomych wraca do znajomych po potwierdzeniu sesji.
-- Nowe linki zaproszeń prowadzą do friends.html. Starsze linki login.html?view=friends nadal kierują do właściwego ekranu.
-- Podgląd kolekcji, binderów i zasady prywatności korzystają z istniejących mechanizmów.
-- Kostka pozostaje tylko na ekranie głównym; wygląd i działanie gry pozostają z poprzedniej aktualizacji.
+Wgraj wszystkie 5 plików z tej paczki do tego samego folderu GitHub Pages, w którym masz app.html i friends.html. Zastąp istniejące pliki i dodaj nowy app-navigation.css. Nie umieszczaj ich w dodatkowym podfolderze.
 
 PLIKI DO WGRANIA
-app-route.js
+app-navigation.css
 app.html
-auth-page.js
-binder.html
 friends-page.css
-friends-page.js
 friends.html
-login.html
-social-page.js
 sw.js
-ui-polish.css
-ui-polish.js
 
-SPRAWDZENIE PO PUBLIKACJI
-Otwórz Znajomi z dolnego paska, następnie przejdź nim do Kolekcji. Przy kartach powinien być mały X. Otwórz okno dodawania znajomego i przewiń jego zawartość — duży X pozostaje nad treścią. Wyloguj się i sprawdź, czy przycisk logowania na ekranie znajomych otwiera osobną stronę konta.
+Po zapisaniu zmian (Commit changes) poczekaj na zakończenie publikacji GitHub Pages. Odśwież stronę. Aplikację na telefonie zamknij i otwórz ponownie po pobraniu aktualizacji.
 
-WERYFIKACJA PACZKI
-Sprawdzono składnię JavaScript oraz zachowanie ekranów w testach DOM: przyciski usuwania/zamykania, 15 kontroli okien, nawigację, stan gościa, sesję, wylogowanie, stare i nowe linki, powrót po logowaniu i ekran odzyskiwania hasła. Testy nie wykonywały zmian na serwerze Supabase. Podgląd wizualny w przeglądarce i na fizycznym telefonie nie był dostępny w środowisku przygotowania paczki.
+To mała poprawka do poprzedniej paczki z osobną zakładką Znajomi. Nie usuwaj innych plików aplikacji. Nie trzeba zmieniać Supabase ani kasować danych przeglądarki.
+
+CO POPRAWIONO
+Pasek aplikacji i zakładki Znajomi korzysta teraz z jednego wspólnego stylu. Ma taką samą wysokość, odstęp od krawędzi, szerokość, wielkość przycisków i uwzględnienie bezpiecznych marginesów telefonu. Usunięto oddzielne reguły położenia paska ze strony Znajomi. Pasek jest przypięty niezależnie od długości listy znajomych. Na telefonie jest na dole, a na szerokim ekranie zachowuje dotychczasowe górne położenie głównej aplikacji.
+
+Zachowano osobny ekran Znajomi, małe X przy kartach i duże X przy zamykaniu okien. Logowanie, zaproszenia, karty i bindery działają przez dotychczasowe pliki.
+
+SPRAWDZENIE
+Porównano kaskadę stylów na sześciu szerokościach (320–1280 px), w sześciu widokach aplikacji i na stronie Znajomi, z przykładowymi bezpiecznymi marginesami telefonu. Wymiary i położenie z reguł CSS były zgodne. Sprawdzono składnię service workera i integralność ZIP. To weryfikacja kodu; podgląd w prawdziwej przeglądarce i na telefonie nie był dostępny w środowisku przygotowania paczki.

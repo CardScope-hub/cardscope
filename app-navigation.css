@@ -1,0 +1,44 @@
+/* Shared geometry for the app and Friends: one dock, independent of content. */
+body[data-view] > nav#cardscope-nav.nav{
+ box-sizing:border-box;position:fixed;top:auto;bottom:max(14px,env(safe-area-inset-bottom));
+ left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));
+ width:auto;max-width:650px;height:77px;min-height:77px;margin:0 auto;padding:8px;
+ display:grid;grid-template-columns:repeat(7,minmax(0,1fr));align-items:stretch;gap:1px;
+ border:1px solid #ffffff1a;border-radius:26px;background:#25212ef5;color:#b6a9c5;
+ box-shadow:inset 0 1px #ffffff08,0 12px 50px #0008;z-index:40;
+ backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
+ transform:none;translate:none;scale:none;rotate:none;animation:none;
+ transition:background .2s,border-color .2s;overflow-anchor:none;
+}
+body[data-view] > nav#cardscope-nav.nav > :is(button,a){
+ box-sizing:border-box;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ width:100%;height:100%;min-width:0;min-height:0;max-height:none;margin:0;padding:10px 2px 8px;
+ gap:7px;border:0;border-radius:18px;background:transparent;color:#b6a9c5;
+ font:500 10px/1.2 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+ text-decoration:none;white-space:nowrap;text-align:center;cursor:pointer;touch-action:manipulation;
+ transform:none;animation:none;transition:background .2s,color .2s;
+}
+body[data-view] > nav#cardscope-nav.nav > :is(button,a):hover{background:#c5a5f416;color:#eadbff}
+body[data-view] > nav#cardscope-nav.nav > .active{color:#eadbff;background:#c5a5f420;box-shadow:inset 0 1px #e4caff0d}
+body[data-view] > nav#cardscope-nav.nav > .active:not(#nav-scanner)::after{content:'';position:absolute;bottom:3px;left:calc(50% - 1.5px);width:3px;height:3px;background:#dab7f7;border-radius:50%}
+body[data-view] > nav#cardscope-nav.nav > #nav-scanner{background:linear-gradient(140deg,#f3be9e,#df9b7e);color:#302018;box-shadow:inset 0 1px #ffe5d577,0 4px 12px #0003}
+body[data-view] > nav#cardscope-nav.nav .ui-icon{box-sizing:border-box;display:block;width:21px;height:21px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+body[data-view] > nav#cardscope-nav.nav > :is(button,a):focus-visible{outline:2px solid #e5c6ff;outline-offset:2px}
+@media(max-width:600px){
+ body[data-view] > nav#cardscope-nav.nav{height:71px;min-height:71px;padding:7px;border-radius:24px}
+ body[data-view] > nav#cardscope-nav.nav > :is(button,a){font-size:9px;gap:6px;padding:9px 1px 7px;border-radius:16px}
+ body[data-view] > nav#cardscope-nav.nav .ui-icon{width:20px;height:20px}
+}
+@media(max-width:420px){
+ body[data-view] > nav#cardscope-nav.nav{left:max(6px,env(safe-area-inset-left));right:max(6px,env(safe-area-inset-right));height:65px;min-height:65px;padding:5px 3px;gap:0;border-radius:21px}
+ body[data-view] > nav#cardscope-nav.nav > :is(button,a){font-size:8px;gap:5px;padding:9px 0 7px;border-radius:14px}
+ body[data-view] > nav#cardscope-nav.nav .ui-icon{width:19px;height:19px}
+}
+/* Keep the existing desktop navigation placement on every app screen. */
+@media(min-width:1000px){
+ body[data-view] > nav#cardscope-nav.nav{top:max(16px,env(safe-area-inset-top));bottom:auto;left:max(42px,env(safe-area-inset-left));right:max(42px,env(safe-area-inset-right));max-width:1196px;height:61px;min-height:61px;padding:7px;gap:1px;border-radius:18px}
+ body[data-view] > nav#cardscope-nav.nav > :is(button,a){flex-direction:row;gap:9px;font-size:12px;padding:11px 8px;border-radius:12px}
+ body[data-view] > nav#cardscope-nav.nav > #nav-scanner{background:linear-gradient(115deg,#d8baff,#b18ae8);color:#271634}
+ body[data-view] > nav#cardscope-nav.nav .ui-icon{width:18px;height:18px}
+}
+@media(prefers-reduced-motion:reduce){body[data-view] > nav#cardscope-nav.nav,body[data-view] > nav#cardscope-nav.nav > :is(button,a){transition:none}}
