@@ -25,3 +25,51 @@ body[data-lookup-mode="catalog"] #catalog-panel{border:0;background:none;padding
 .ebay-links>strong{font-size:15px}.ebay-links>div{display:flex;gap:10px;flex-wrap:wrap}.ebay-links a,.quote-source a{color:#d7b5ff;text-decoration:underline;text-underline-offset:4px;font-size:14px}.ebay-links>small,.quote-source small{color:#ad9cbe;font-size:12px;line-height:1.5}
 .quote-source{margin-top:8px}.trade-card-source a{color:inherit;text-decoration:underline;text-underline-offset:3px}
 @media(max-width:480px){.catalog-filter-grid{grid-template-columns:1fr}dialog.has-viewport-close{max-height:calc(100dvh - 78px - env(safe-area-inset-top));margin-top:max(68px,calc(env(safe-area-inset-top) + 58px))}}
+
+/* Friends: the modal occupies the viewport; only the panel below the X scrolls.
+   Nothing is fixed outside a clipped scrolling dialog or behind its backdrop. */
+dialog.social-modal-shell{
+ position:fixed!important;inset:0!important;box-sizing:border-box!important;
+ width:100%!important;max-width:none!important;height:100%!important;height:100dvh!important;
+ max-height:none!important;min-height:0!important;margin:0!important;padding:0!important;
+ border:0!important;border-radius:0!important;background:transparent!important;
+ box-shadow:none!important;overflow:hidden!important;overscroll-behavior:none;
+ translate:none!important;scale:none!important;rotate:none!important;
+ backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+dialog.social-modal-shell[open]{display:flex!important;flex-direction:column;align-items:center;gap:0}
+dialog.social-modal-shell:not([open]){display:none!important}
+.social-modal-shell>.social-modal-bar{
+ box-sizing:border-box;display:flex;justify-content:flex-end;align-items:center;
+ flex:0 0 auto;align-self:stretch;min-height:72px;
+ padding:max(12px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) 12px max(14px,env(safe-area-inset-left));
+ z-index:2;background:linear-gradient(#110b1cf2,#110b1cd9);
+}
+dialog.social-modal-shell>.social-modal-bar>.viewport-close{
+ position:static!important;inset:auto!important;flex:0 0 48px!important;
+ width:48px!important;height:48px!important;min-width:48px!important;
+ color:#fff!important;background:#442c5b!important;border:2px solid #dab3ff!important;
+ opacity:1!important;visibility:visible!important;box-shadow:0 4px 18px #0008!important;
+ font-size:30px!important;line-height:1!important;
+}
+.social-modal-shell>.social-modal-panel{
+ box-sizing:border-box;flex:0 1 auto;min-height:0;max-height:100%;min-width:0;
+ width:min(1000px,calc(100% - 28px));margin:0 auto max(14px,env(safe-area-inset-bottom));
+ padding:25px 30px;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+ scroll-padding-block:18px;background:#17101f;color:#eee3f7;
+ border:1px solid #b78bdf50;border-radius:25px;box-shadow:0 16px 60px #0007;
+}
+#friends-add-dialog.social-modal-shell>.social-modal-panel,
+#friend-profile-dialog.social-modal-shell>.social-modal-panel{width:min(510px,calc(100% - 24px));padding:0;background:#1a1224}
+#visit-card-dialog.social-modal-shell>.social-modal-panel{width:min(800px,calc(100% - 24px));padding:24px}
+.social-modal-shell .visit-topbar,.social-modal-shell .friends-add-top{padding-right:0}
+@media(max-width:600px){
+ .social-modal-shell>.social-modal-panel{width:calc(100% - 16px);padding:17px 16px;border-radius:20px}
+ #visit-card-dialog.social-modal-shell>.social-modal-panel{padding:19px}
+}
+.ebay-live-prices{display:grid;gap:12px;padding-top:12px;border-top:1px solid #c5a1e835}
+.ebay-live-prices>strong{font-size:15px;color:#f0dfff}.ebay-live-prices>small{font-size:12px;line-height:1.6;color:#baa6ca}
+.ebay-price-tile{display:grid;gap:9px;padding:15px;border:1px solid #c4a0e746;background:#1c1426;border-radius:14px;overflow-wrap:anywhere}
+.ebay-price-tile>b{font-size:25px;line-height:1.2;color:#ead0ff;font-weight:700}
+.ebay-price-tile>a{font-size:13px;line-height:1.6;color:#dbb9ff;text-decoration:underline;text-underline-offset:3px}
+.ebay-price-tile>small{font-size:11px;line-height:1.7;color:#b39bc7}

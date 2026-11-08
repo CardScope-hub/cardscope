@@ -1,0 +1,3 @@
+# Keep platform JWT validation on; the handler also checks Supabase Auth.
+[functions.ebay-prices]
+verify_jwt = true

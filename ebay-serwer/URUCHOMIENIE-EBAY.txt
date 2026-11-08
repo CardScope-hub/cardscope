@@ -1,0 +1,75 @@
+EBAY W CARDSCOPE — URUCHOMIENIE PRZEZ PANEL SUPABASE
+
+A. KLUCZE EBAY
+1. Otwórz https://developer.ebay.com/ i zaloguj się lub załóż konto Developers.
+2. W Application Keys wybierz klucze PRODUCTION, nie Sandbox.
+3. Potrzebujesz App ID (Client ID) oraz Cert ID (Client Secret).
+   Jeśli eBay pokazuje brak aktywacji lub dostępu produkcyjnego, najpierw
+   wykonaj wymagane kroki w tym panelu. Klucze muszą pozwalać na Browse API.
+4. Nie wklejaj Cert ID do plików strony, repozytorium ani wiadomości.
+
+B. LIMIT ZAPYTAŃ W SUPABASE
+1. Wejdź do projektu Supabase używanego przez CardScope.
+2. SQL Editor → New query.
+3. Otwórz dołączony plik 07-EBAY-LIMIT.sql w edytorze tekstowym,
+   skopiuj cały kod do SQL Editor i kliknij Run.
+4. Ten skrypt dodaje prywatny licznik zapytań. Nie zmienia kolekcji,
+   binderów ani uprawnień znajomych. Uruchomienie kolejny raz jest dozwolone.
+
+C. SEKRETY FUNKCJI
+1. Supabase → Edge Functions → Secrets.
+2. Dodaj i zapisz:
+   EBAY_CLIENT_ID     = App ID z eBay (Production)
+   EBAY_CLIENT_SECRET = Cert ID z eBay (Production)
+3. Dla adresu https://cardscope-hub.github.io/cardscope/ nic więcej nie trzeba.
+   Jeżeli używasz własnej domeny, dodaj CARDSCOPE_SITE_ORIGIN, np.:
+   https://twoja-domena.pl
+   Kilka dozwolonych adresów rozdziel przecinkami, np.:
+   https://cardscope-hub.github.io,https://twoja-domena.pl
+   Podawaj protokół i domenę, bez ścieżki /cardscope/ i bez końcowego /.
+4. SUPABASE_URL i SUPABASE_ANON_KEY są standardowymi zmiennymi projektu
+   w Edge Functions. Funkcja używa tokenu zalogowanego użytkownika;
+   nie potrzebuje klucza service_role.
+
+D. UTWÓRZ FUNKCJĘ
+1. Supabase → Edge Functions → Deploy a new function → Via Editor.
+2. Nazwij ją dokładnie: ebay-prices
+3. Otwórz dołączony ebay-prices.ts i skopiuj CAŁĄ zawartość.
+4. W edytorze funkcji zastąp domyślną zawartość index.ts skopiowanym kodem.
+   To gotowa wersja w jednym pliku; nie trzeba dokładać żadnych importów.
+5. Zostaw włączoną walidację JWT (Verify JWT) i kliknij Deploy function.
+6. Nie zmieniaj adresu w kodzie strony. Aplikacja używa istniejącego
+   supabase-config.js i wywołuje /functions/v1/ebay-prices w tym projekcie.
+
+Folder supabase/ zawiera równoważną wersję dla Supabase CLI. Przy opisanym
+powyżej wdrożeniu przez edytor nie musisz z niego korzystać.
+
+E. TEST W APLIKACJI
+1. Wgraj pliki strony według INSTRUKCJA-AKTUALIZACJI.txt.
+2. Zaloguj się w CardScope. Otwórz kartę z pełnym kodem/numerem.
+3. W szczegółach znajdź „Ceny ofert eBay”. Poczekaj na zakończenie pobierania.
+4. Jeżeli eBay zwróci pasujące oferty, pokażą się kwoty i linki.
+   Nie każda karta musi mieć pasującą aktywną ofertę.
+5. Wyniki są buforowane przez 15 minut. W głównej aplikacji kwoty korzystają
+   z istniejącego wyboru waluty. Gdy przelicznik nie jest dostępny w danym
+   podglądzie, widoczna jest kwota z walutą otrzymaną od eBay.
+
+GDY NIE DZIAŁA
+• „Ceny eBay nie są jeszcze uruchomione”: sprawdź nazwę wdrożonej funkcji
+  i oba sekrety eBay. Po konfiguracji odczekaj 2 minuty lub otwórz stronę
+  ponownie — aplikacja ogranicza powtarzanie nieudanych zapytań.
+• Brak połączenia tylko na własnej domenie: sprawdź CARDSCOPE_SITE_ORIGIN.
+• BUDGET_SETUP w odpowiedzi funkcji: uruchom 07-EBAY-LIMIT.sql.
+• 401: zaloguj się ponownie w CardScope. Nie wyłączaj walidacji JWT.
+• 429: limit zapytań; spróbuj później. Moduł dopuszcza 12 zapytań/minutę
+  i 200/dzień na konto oraz 4000/dzień na aplikację. eBay ma własne limity.
+• EBAY_UNAVAILABLE / UPSTREAM_UNAVAILABLE: sprawdź produkcyjne klucze,
+  dostęp do Browse API i status dostawcy. Nie publikuj sekretów w zgłoszeniu.
+• „Nie znaleziono ofert”: uzupełnij pełny numer/serię lub użyj linku Oferty.
+  Wyszukiwanie korzysta z eBay US i tytułów ofert; nie obejmuje całego eBay.
+
+ŹRÓDŁA
+https://developer.ebay.com/develop/api/buy/browse_api
+https://developer.ebay.com/develop/guides/sell/authorization
+https://supabase.com/docs/guides/functions/quickstart-dashboard
+https://supabase.com/docs/guides/functions/secrets
