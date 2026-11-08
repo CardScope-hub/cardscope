@@ -64,7 +64,7 @@ globalThis.CardCatalog=(()=>{
   if(weissSeriesApplied)found=found.filter(r=>r.set===params.weissSeries);
   return {cards:found.slice((page-1)*36,page*36).map(r=>entry(game,r.raw,d)),total:found.length,catalogCount:book.records.length,nextPage:found.length>page*36?page+1:null,weissSeriesApplied,source:d.source,note:'Kopia katalogu: '+date+'. Porównaj numer i ilustrację.'};
  }
- async function search(params){if(['weiss','weiss-jp'].includes(params.game)&&globalThis.CardWeissScan?.codeKey)return searchWeiss(params);const {game,id}=params,q=String(params.q||'').trim(),page=Math.max(1,Number(params.page)||1),ocr=params.ocr==='1';
+ async function search(params){if(globalThis.CardAdditional?.supports(params.game))return CardAdditional.search(params,{json});if(['weiss','weiss-jp'].includes(params.game)&&globalThis.CardWeissScan?.codeKey)return searchWeiss(params);const {game,id}=params,q=String(params.q||'').trim(),page=Math.max(1,Number(params.page)||1),ocr=params.ocr==='1';
   if(!['mtg','swu','riftbound','onepiece','weiss','weiss-jp'].includes(game))throw Error('Wybierz obsługiwaną grę.');
   if(game==='swu')return CardSWU.search(params,{snapshot});
   if(game==='mtg')return CardMTG.search(params,{json,snapshot,mtgCard});

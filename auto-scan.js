@@ -2,8 +2,8 @@
 // Never change the user's scan mode or carry OCR evidence between different frames.
 globalThis.CardAutoScan=(()=>{
  'use strict';
- const games=['pokemon','mtg','swu','onepiece','riftbound','weiss','weiss-jp'];
- const labels={pokemon:'Pokémon',mtg:'Magic: The Gathering',swu:'Star Wars: Unlimited',onepiece:'One Piece',riftbound:'Riftbound',weiss:'Weiß Schwarz · EN','weiss-jp':'Weiß Schwarz · JP'};
+ const games=['pokemon','mtg','swu','onepiece','riftbound','weiss','weiss-jp','lorcana','cyberpunk'];
+ const labels={lorcana:'Disney Lorcana',cyberpunk:'Cyberpunk TCG',pokemon:'Pokémon',mtg:'Magic: The Gathering',swu:'Star Wars: Unlimited',onepiece:'One Piece',riftbound:'Riftbound',weiss:'Weiß Schwarz · EN','weiss-jp':'Weiß Schwarz · JP'};
  const japanese=s=>/[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]/u.test(s||'');
  const primaryNamesCache=new WeakMap();
  const family=g=>g==='weiss-jp'?'weiss':g;
@@ -18,6 +18,9 @@ globalThis.CardAutoScan=(()=>{
   }return out;
  }
  function classify(e){const map=new Map(),text=e.pokemon?.full||'',add=(game,score,reason,code=false)=>{if((map.get(game)?.score||0)<score)map.set(game,{game,score,reason,code});};
+  for(const game of ['lorcana','cyberpunk']){const nums=CardAdditional.reads(game,e[game]).filter(n=>n.code);if(nums.length)add(game,nums.some(n=>!n.uncertain)?100:80,'Numer '+labels[game],true);}
+  if(/lorcana|ravensburger|storyborn|dreamborn|floodborn/i.test(text))add('lorcana',75,'Tekst Disney Lorcana');
+  if(/cyberpunk|weirdco|cd\s*projekt|eddies|night\s*city/i.test(text))add('cyberpunk',75,'Tekst Cyberpunk TCG');
   const ws=CardWeissScan.reads(e.weiss).filter(r=>/\/[SW][A-Z]?[0-9OILSBZ]/.test(r.value));
   for(const r of ws){const en=/-(?:[A-Z]{0,2}E)\d|\/[SW]\w*(?:PE|TE|E)\d/.test(r.value);add(en?'weiss':'weiss-jp',r.uncertain?82:100,'Seria i numer Weiß Schwarz',true);}
   if(!ws.length&&CardWeissScan.seriesReads(e.weiss).length){add('weiss',75,'Seria Weiß Schwarz');add('weiss-jp',75,'Seria Weiß Schwarz');}

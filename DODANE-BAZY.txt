@@ -1,0 +1,95 @@
+DODANE BAZY CARDSCOPE — 8 LISTOPADA 2026
+
+CYBERPUNK TCG — 591 angielskich wydań/ilustracji, 152 podstawowe tożsamości kart.
+Dwa główne wydania Welcome to Night City: Beta i Retail (po 172 pozycje).
+Ponadto startery, karty demo i promocyjne; łącznie 17 grup.
+410 kart z dokładnie dopasowaną dodatnią wyceną TCGplayer.
+Z 591 pozycji: 504 wydane, 29 demo i 58 ujawnionych zapowiedzi promocyjnych.
+Stan wydania zapisano przy każdej pozycji; zapowiedź nie oznacza dostępności w sprzedaży.
+
+- Welcome to Night City — Retail: 172
+- Welcome to Night City — Beta: 172
+- Arasaka Demo Deck: 14
+- Box Toppers — Beta: 6
+- Box Toppers — Retail: 6
+- Edgerunner Open S 1: 53
+- Embracing Power — Beta Starter Deck: 20
+- Embracing Power — Retail Starter Deck: 20
+- Judge Promos: 3
+- Merc Demo Deck: 15
+- Night City Brawl S 1: 37
+- Night City Showdown S1: 5
+- Pre-Release Beta: 11
+- Pre-Release Retail: 11
+- Set 1 Promos: 6
+- The Heist — Beta Starter Deck: 20
+- The Heist — Retail Starter Deck: 20
+
+Zachowano symbole β, numery 005a/005b oraz oddzielne wydania Beta/Retail.
+Wariant Normal/Foil pozostaje nieustalony, gdy źródło go nie potwierdza.
+87 obrazów jest w paczce; pozostałe korzystają ze stałych adresów TCGplayer.
+Braki w źródłach: EOR 028, Set 1 Promos 001–003. Nie utworzono pustych kart.
+Edgerunners: Burn Bright jest zapowiedzianym drugim rozszerzeniem na wiosnę 2027;
+w pobranej oficjalnej bazie nie ma jeszcze jego kart. Nie został dopisany jako gotowy katalog.
+Źródła: https://cyberpunktcg.com/cards · https://tcgcsv.com/docs
+Zapowiedź: https://cyberpunktcg.com/blog/set-2-announcement
+
+DISNEY LORCANA — 3605 angielskich pozycji, 19 grup.
+14 wydanych numerowanych dodatków, 3 zestawy Illumineer’s Quest,
+Format Coconut (Open Beta), Curator’s Collection CC2 i karty promocyjne.
+3556 pozycji z podstawowej bazy + 29 Coconut + 20 sprawdzonych uzupełnień promo.
+Uwzględniono 240 Enchanted, 108 Epic, 12 Iconic i numerowanego złotego Mickeya.
+Liczby dotyczą wydań/ilustracji; nie oznaczają różnych nazw kart.
+Normal i Foil są wariantami tej samej pozycji, a nie sztucznie zdublowanymi kartami.
+
+- 1 · The First Chapter: 248
+- 2 · Rise of the Floodborn: 227
+- 3 · Into the Inklands: 234
+- 4 · Ursula's Return: 237
+- 5 · Shimmering Skies: 236
+- 6 · Azurite Sea: 240
+- 7 · Archazia's Island: 239
+- 8 · The Reign of Jafar: 241
+- 9 · Fabled: 262
+- 10 · Whispers in the Well: 257
+- 11 · Winterspell: 256
+- 12 · Wilds Unknown: 261
+- 13 · Attack of the Vine!: 269
+- 14 · Hyperia City: 259
+- Q1 · Illumineer's Quest: Deep Trouble: 31
+- Q2 · Illumineer's Quest: Palace Heist: 35
+- Q3 · Illumineer's Quest: The Great Hunny Rescue: 38
+- Coconut · Format Coconut (Open Beta): 29
+- CC2 · Curator's Collection: Beauty and the Beast Edition: 6
+
+3486 pozycji ma co najmniej jedną wycenę.
+5890 wycen Cardmarket EUR oraz 927 cen TCGplayer USD za pośrednictwem Lorcast.
+Cardmarket jest wybierany w pierwszej kolejności. Każda wycena ma link do źródła.
+Trend Cardmarket obejmuje języki i stany karty łącznie, a nie tylko EN/Near Mint.
+Wykończenia Normal i Foil pozostają rozdzielone. Brak ceny nie jest ceną zero.
+Lorcast nie podaje daty aktualizacji samej ceny; zapisano osobno datę jej pobrania.
+Baza główna: stan 16 października 2026; uzupełnienia sprawdzono 8 listopada 2026.
+Ceny Cardmarket: stan 7 listopada 2026. To wyceny referencyjne, nie gwarantowane oferty.
+
+ZAKRES I GRANICE KOMPLETNOSCI LORCANY
+Wszystkie 14 numerowanych dodatków ma w źródle status kompletnego katalogu.
+Q3 zawiera numery 1–37 i Vine Tendril, jednak źródło nadal oznacza zestaw
+jako niekompletny. Zachowano tę informację; nie zgadywano brakujących kart.
+Uwzględniono pełny pobrany katalog EN i znalezione pominięcia. Nie jest to
+gwarancja wszystkich regionalnych, pieczątkowanych i turniejowych odmian.
+Wersje językowe DE/FR/IT/JP/ZH nie są osobnymi rekordami w tej aktualizacji.
+Format Coconut jest bazą referencyjną otwartej bety, a nie zwykłym fizycznym dodatkiem.
+Nie dodano przyszłych dodatków 15/16, niewydanych promówek ani znaczników Ink Drop.
+Źródła: https://lorcanajson.org/files/current/en/allCards.json
+https://lorcanajson.org/files/current/en/formatCoconutCards.json
+https://downloads.s3.cardmarket.com/productCatalog/priceGuide/price_guide_19.json
+https://lorcast.com/docs/api/cards
+https://disneylorcana.com/en/news/2026/10/timeless-tales-and-totally-rockin-tunes/
+
+WYSZUKIWANIE I ZAPIS
+Kategorie dodano na Start, w skanerze, katalogu, formularzu karty i po obu
+stronach tradingu. Karty z obu gier zapisują się we wspólnej kolekcji i binderach.
+Nie jest wymagany własny klucz API. Baza pochodzi z dołączonych plików JSON.
+Obrazy zewnętrzne wymagają połączenia z internetem przy pierwszym otwarciu.
+Dodano rozpoznawanie numerów i pasm tekstu dla obu gier w obecnym skanerze.
+Niejednoznaczny numer nie otwiera automatycznie losowego wydania.
