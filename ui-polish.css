@@ -1,7 +1,3 @@
-/* Shared dialog controls, including dialogs created after page load. */
-dialog.has-viewport-close{transform:none!important;filter:none!important;perspective:none!important;contain:none!important;animation:none!important}
-dialog .viewport-close{position:fixed!important;inset:auto!important;top:max(12px,env(safe-area-inset-top))!important;right:max(12px,env(safe-area-inset-right))!important;z-index:2147483000!important;display:grid!important;place-items:center!important;width:46px!important;height:46px!important;min-width:46px!important;padding:0!important;margin:0!important;border:1px solid #bc9ee280!important;border-radius:50%!important;background:#24192ff5!important;color:#f8f2ff!important;font:28px/1 system-ui!important;box-shadow:0 5px 24px #08040d80!important;cursor:pointer;transform:none!important;touch-action:manipulation}
-dialog .viewport-close:focus-visible{outline:3px solid #d7baff;outline-offset:4px}
 body[data-lookup-mode="catalog"] #processing:not([hidden]){display:flex;flex-direction:column}
 body[data-lookup-mode="catalog"] #processing>.detail-top{order:-6}
 body[data-lookup-mode="catalog"] #lookup-title{order:-5;margin-bottom:10px}
@@ -24,52 +20,100 @@ body[data-lookup-mode="catalog"] #catalog-panel{border:0;background:none;padding
 .ebay-links{padding:16px;margin:14px 0;border:1px solid #b393da38;border-radius:16px;background:#251b3280;display:flex;flex-direction:column;gap:10px;clear:both}
 .ebay-links>strong{font-size:15px}.ebay-links>div{display:flex;gap:10px;flex-wrap:wrap}.ebay-links a,.quote-source a{color:#d7b5ff;text-decoration:underline;text-underline-offset:4px;font-size:14px}.ebay-links>small,.quote-source small{color:#ad9cbe;font-size:12px;line-height:1.5}
 .quote-source{margin-top:8px}.trade-card-source a{color:inherit;text-decoration:underline;text-underline-offset:3px}
-@media(max-width:480px){.catalog-filter-grid{grid-template-columns:1fr}dialog.has-viewport-close{max-height:calc(100dvh - 78px - env(safe-area-inset-top));margin-top:max(68px,calc(env(safe-area-inset-top) + 58px))}}
+@media(max-width:480px){.catalog-filter-grid{grid-template-columns:1fr}}
 
-/* Friends: the modal occupies the viewport; only the panel below the X scrolls.
-   Nothing is fixed outside a clipped scrolling dialog or behind its backdrop. */
-dialog.social-modal-shell{
- position:fixed!important;inset:0!important;box-sizing:border-box!important;
- width:100%!important;max-width:none!important;height:100%!important;height:100dvh!important;
- max-height:none!important;min-height:0!important;margin:0!important;padding:0!important;
- border:0!important;border-radius:0!important;background:transparent!important;
- box-shadow:none!important;overflow:hidden!important;overscroll-behavior:none;
- translate:none!important;scale:none!important;rotate:none!important;
- backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
-}
-dialog.social-modal-shell[open]{display:flex!important;flex-direction:column;align-items:center;gap:0}
-dialog.social-modal-shell:not([open]){display:none!important}
-.social-modal-shell>.social-modal-bar{
- box-sizing:border-box;display:flex;justify-content:flex-end;align-items:center;
- flex:0 0 auto;align-self:stretch;min-height:72px;
- padding:max(12px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) 12px max(14px,env(safe-area-inset-left));
- z-index:2;background:linear-gradient(#110b1cf2,#110b1cd9);
-}
-dialog.social-modal-shell>.social-modal-bar>.viewport-close{
- position:static!important;inset:auto!important;flex:0 0 48px!important;
- width:48px!important;height:48px!important;min-width:48px!important;
- color:#fff!important;background:#442c5b!important;border:2px solid #dab3ff!important;
- opacity:1!important;visibility:visible!important;box-shadow:0 4px 18px #0008!important;
- font-size:30px!important;line-height:1!important;
-}
-.social-modal-shell>.social-modal-panel{
- box-sizing:border-box;flex:0 1 auto;min-height:0;max-height:100%;min-width:0;
- width:min(1000px,calc(100% - 28px));margin:0 auto max(14px,env(safe-area-inset-bottom));
- padding:25px 30px;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
- scroll-padding-block:18px;background:#17101f;color:#eee3f7;
- border:1px solid #b78bdf50;border-radius:25px;box-shadow:0 16px 60px #0007;
-}
-#friends-add-dialog.social-modal-shell>.social-modal-panel,
-#friend-profile-dialog.social-modal-shell>.social-modal-panel{width:min(510px,calc(100% - 24px));padding:0;background:#1a1224}
-#visit-card-dialog.social-modal-shell>.social-modal-panel{width:min(800px,calc(100% - 24px));padding:24px}
-.social-modal-shell .visit-topbar,.social-modal-shell .friends-add-top{padding-right:0}
-@media(max-width:600px){
- .social-modal-shell>.social-modal-panel{width:calc(100% - 16px);padding:17px 16px;border-radius:20px}
- #visit-card-dialog.social-modal-shell>.social-modal-panel{padding:19px}
-}
 .ebay-live-prices{display:grid;gap:12px;padding-top:12px;border-top:1px solid #c5a1e835}
 .ebay-live-prices>strong{font-size:15px;color:#f0dfff}.ebay-live-prices>small{font-size:12px;line-height:1.6;color:#baa6ca}
 .ebay-price-tile{display:grid;gap:9px;padding:15px;border:1px solid #c4a0e746;background:#1c1426;border-radius:14px;overflow-wrap:anywhere}
 .ebay-price-tile>b{font-size:25px;line-height:1.2;color:#ead0ff;font-weight:700}
 .ebay-price-tile>a{font-size:13px;line-height:1.6;color:#dbb9ff;text-decoration:underline;text-underline-offset:3px}
 .ebay-price-tile>small{font-size:11px;line-height:1.7;color:#b39bc7}
+
+/* One visible close control for every modal, including dynamically added dialogs.
+   The full-height shell never scrolls or clips a fixed child outside its bounds. */
+dialog.cs-modal-shell{
+ position:fixed!important;inset:auto!important;
+ top:var(--cs-viewport-top,0px)!important;left:var(--cs-viewport-left,0px)!important;
+ width:var(--cs-viewport-width,100%)!important;max-width:none!important;
+ height:100%!important;height:var(--cs-viewport-height,100dvh)!important;
+ min-height:0!important;max-height:none!important;box-sizing:border-box!important;
+ margin:0!important;padding:0!important;border:0!important;border-radius:0!important;
+ overflow:hidden!important;background:transparent!important;box-shadow:none!important;
+ transform:none!important;translate:none!important;scale:none!important;rotate:none!important;
+ filter:none!important;perspective:none!important;contain:none!important;animation:none!important;
+ backdrop-filter:none!important;-webkit-backdrop-filter:none!important;overscroll-behavior:none;
+}
+dialog.cs-modal-shell[open]{display:flex!important;flex-direction:column!important;align-items:center!important;gap:0!important}
+dialog.cs-modal-shell:not([open]){display:none!important}
+dialog.cs-modal-shell::backdrop{background:#090611d9;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.cs-modal-shell>.cs-modal-bar{
+ box-sizing:border-box;display:flex;align-items:center;justify-content:flex-end;
+ flex:0 0 auto;align-self:stretch;position:relative;z-index:5;
+ padding:max(10px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) 10px max(14px,env(safe-area-inset-left));
+ background:#171020;min-height:68px;
+}
+.cs-close-control{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ box-sizing:border-box!important;flex:0 0 44px!important;
+ width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;
+ max-width:none!important;max-height:none!important;padding:0!important;margin:0!important;
+ border:2px solid #efddff!important;border-radius:6px!important;
+ background:#d8b8ff!important;color:#24102f!important;opacity:1!important;visibility:visible!important;
+ font:700 26px/1 system-ui!important;text-indent:0!important;overflow:visible!important;
+ box-shadow:0 3px 12px #0006!important;cursor:pointer;touch-action:manipulation;
+ -webkit-tap-highlight-color:transparent;transform:none!important;filter:none!important;
+ mix-blend-mode:normal!important;isolation:isolate;
+}
+dialog.cs-modal-shell>.cs-modal-bar>.viewport-close{
+ position:static!important;inset:auto!important;float:none!important;order:0!important;
+ flex:0 0 48px!important;width:48px!important;height:48px!important;
+ min-width:48px!important;min-height:48px!important;z-index:6!important;
+ clip:auto!important;clip-path:none!important;
+}
+.cs-close-control svg{display:block!important;width:24px!important;height:24px!important;fill:none!important;stroke:currentColor!important;stroke-width:3!important;stroke-linecap:round!important;pointer-events:none!important;flex:none!important;opacity:1!important}
+.cs-close-control::before,.cs-close-control::after{content:none!important;display:none!important}
+.cs-close-control:hover{background:#ebd7ff!important}
+.cs-close-control:active{background:#cba0fa!important}
+.cs-close-control:disabled{cursor:wait!important}
+.cs-close-control[hidden]{display:none!important}
+.cs-close-control:focus-visible{outline:3px solid #fff!important;outline-offset:3px!important;box-shadow:0 0 0 7px #24102f!important}
+.cs-modal-shell>.cs-modal-panel{
+ box-sizing:border-box;flex:0 1 auto;min-height:0;min-width:0;max-height:100%;
+ width:min(var(--cs-panel-width,780px),calc(100% - 28px));
+ margin:0 auto max(14px,env(safe-area-inset-bottom));padding:var(--cs-panel-padding,27px);
+ overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+ scroll-padding-block:18px;scrollbar-width:thin;scrollbar-color:#9574b5 #19121f;
+ background:#19121f;color:#f3e8fc;border:1px solid #c9a3ef45;border-radius:24px;
+ box-shadow:0 16px 60px #0007;
+}
+.cs-modal-shell.b-picker-dialog{--cs-panel-width:840px}
+.cs-modal-shell.b-slot-dialog{--cs-panel-width:410px}
+.cs-modal-shell.b-choose-dialog{--cs-panel-width:440px}
+.cs-modal-shell.profile-dialog{--cs-panel-width:510px;--cs-panel-padding:0px}
+.cs-modal-shell.trade-dialog{--cs-panel-width:820px;--cs-panel-padding:24px}
+.cs-modal-shell.share-dialog{--cs-panel-width:520px;--cs-panel-padding:28px}
+.cs-modal-shell.binder-privacy-dialog{--cs-panel-width:480px;--cs-panel-padding:25px}
+#friend-view.cs-modal-shell{--cs-panel-width:1000px;--cs-panel-padding:25px 30px}
+#visit-card-dialog.cs-modal-shell,#public-card-dialog.cs-modal-shell{--cs-panel-width:800px;--cs-panel-padding:24px}
+#ctr-camera-dialog.cs-modal-shell{--cs-panel-width:620px;--cs-panel-padding:22px}
+.cs-modal-shell .visit-topbar,.cs-modal-shell .friends-add-top{padding-right:0}
+.b-picker-dialog>.cs-modal-panel>.secondary{margin-top:16px;font-size:11px}
+.b-choose-dialog>.cs-modal-panel>.secondary{margin-top:18px;font-size:11px}
+.b-slot-dialog>.cs-modal-panel>img{display:block;max-width:65%;max-height:34svh;object-fit:contain;border-radius:10px;margin:10px auto 20px;filter:drop-shadow(0 12px 15px #0005)}
+.b-slot-dialog>.cs-modal-panel>p:not(.b-footnote){font-size:11px;text-align:center;line-height:1.8;color:#a78ab9}
+#b-slot-dialog>.cs-modal-panel>#b-slot-title{margin:14px 0 8px;font-size:clamp(23px,5vw,30px);line-height:1.2;overflow-wrap:anywhere}
+@media(max-width:600px){
+ .cs-modal-shell>.cs-modal-panel{width:calc(100% - 16px);border-radius:20px}
+ .cs-modal-shell.b-dialog{--cs-panel-padding:21px}
+ .cs-modal-shell.b-slot-dialog{--cs-panel-width:370px}
+ .cs-modal-shell.b-choose-dialog{--cs-panel-width:400px}
+ .cs-modal-shell.trade-dialog{--cs-panel-padding:18px}
+ .cs-modal-shell.binder-privacy-dialog{--cs-panel-padding:21px}
+ #friend-view.cs-modal-shell{--cs-panel-padding:17px 16px}
+ #visit-card-dialog.cs-modal-shell,#public-card-dialog.cs-modal-shell{--cs-panel-padding:19px}
+ .b-slot-dialog>.cs-modal-panel>img{max-height:32svh}
+}
+@media(forced-colors:active){
+ .cs-close-control{forced-color-adjust:none!important;background:ButtonFace!important;color:ButtonText!important;border-color:ButtonText!important}
+ .cs-close-control:focus-visible{outline-color:Highlight!important}
+}
