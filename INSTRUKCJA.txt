@@ -1,61 +1,53 @@
-CARDSCOPE — LICZNIK ŻYCIA, HISTORIA I 6 GRACZY
-Wersja: tabletop-2
+CARDSCOPE — PEŁNY EKRAN GRY I MENU POD KOSTKĄ
+Wersja: tabletop-3
 
-CO SIĘ ZMIENIŁO
-• Od 2 do 6 graczy. Liczbę osób wybierasz przed rozpoczęciem partii.
-• Czytelniejszy fioletowy interfejs, kolory graczy i duże wyniki.
-• Historia dodawania i odejmowania punktów, z filtrem gracza.
-• Przy każdym ruchu: zmiana punktów, wynik przed i po oraz czas ruchu.
-• Cofnięcie zostawia wpis w historii i oznacza cofnięty ruch.
-• Zegar pokazuje czas od rozpoczęcia partii, także po zamknięciu okna
-  i ponownym otwarciu aplikacji. Format po godzinie: GG:MM:SS.
-• Usunięto obracanie graczy. Wszystkie pola wyświetlają się prosto.
-• Nadal dostępne: wybór życia, +1, −1, +5, −5, cofanie i losowanie startu.
-• Kwadratowa kostka pozostaje po prawej, nad dolną nawigacją.
-• Kontrastowe, kwadratowe X pozostają przypięte u góry okien.
+ZMIANY
+• Plansza zajmuje cały dostępny ekran aplikacji, bez ramki okna i listy kafelków.
+• Duże, kolorowe pola graczy; przy 6 osobach układ 2 × 3 w pionie i 3 × 2 w poziomie.
+• Przy 3 i 5 osobach ostatnie pole w pionie wykorzystuje wolną szerokość.
+• Kostka na środku planszy otwiera wyśrodkowane menu nad grą.
+• W menu: historia z filtrem gracza, cofanie punktów, losowanie startu i nowa partia.
+• „Wróć do gry” lub X menu zamyka tylko menu. Wyniki i czas zostają.
+• Zegar pozostaje widoczny na planszy i w menu.
+• Jasny kwadratowy X w prawym górnym rogu pozostaje dostępny.
+• Obsługa 2–6 graczy, wszystkie punkty, historia i zapis partii są zachowane.
+• Nie ma opcji obracania pól graczy.
 
-JAK WGRYWAĆ
-To aktualizacja istniejącej aplikacji, a nie kompletna aplikacja od zera.
+WGRYWANIE
+To paczka aktualizacyjna do istniejącego CardScope.
 1. Rozpakuj ZIP.
 2. W repozytorium GitHub otwórz katalog z app.html.
-3. Wgraj do tego katalogu wszystkie 9 plików kodu z paczki:
+3. Wgraj do tego katalogu wszystkie 9 plików kodu:
    app.html, login.html, binder.html, sw.js,
    ui-polish.css, ui-polish.js,
    tabletop-core.js, tabletop.js, tabletop.css.
-4. Zastąp pliki o tych samych nazwach i zapisz commit.
-   Pozostałe pliki aplikacji zostaw na miejscu.
+4. Zastąp pliki o tych samych nazwach, zostaw pozostałe pliki aplikacji
+   i zapisz commit. Nie umieszczaj aktualizacji w dodatkowym podfolderze.
 5. Poczekaj na zakończenie publikacji GitHub Pages.
-6. Otwórz stronę z internetem i zastosuj aktualizację, jeśli pojawi się
-   komunikat. Odśwież stronę; aplikację z ekranu głównego zamknij
-   i uruchom ponownie.
+6. Otwórz stronę z internetem i zastosuj aktualizację, jeśli pojawi się komunikat.
+   Odśwież stronę; aplikację dodaną do ekranu głównego zamknij i otwórz ponownie.
 
-Pliki muszą leżeć bezpośrednio obok app.html, bez dodatkowego podfolderu.
-INSTRUKCJA.txt i SUMY-SHA256.txt są pomocnicze; nie musisz ich wgrywać.
+INSTRUKCJA.txt i SUMY-SHA256.txt są pomocnicze i nie trzeba ich wgrywać.
 Nie trzeba zmieniać Supabase, wykonywać SQL ani dodawać kluczy API.
 
 OBSŁUGA
-Kostka → liczba graczy → życie → opcjonalne nazwy → „Rozpocznij partię”.
-Każdy gracz ma własne przyciski zmiany życia.
-„Historia” pokazuje najnowsze zdarzenia na górze. Wybierz gracza w filtrze,
-aby zobaczyć tylko jego ruchy. „Pokaż wcześniejsze” odsłania starsze wpisy.
-„Cofnij” odwraca ostatnią niecofniętą zmianę życia, zachowując ślad w historii.
-„Losuj start” działa dla wszystkich uczestników i nie resetuje wyniku ani czasu.
-X zamyka okno. Wyniki i historia zostają, a czas partii nadal biegnie.
-„Nowa partia” otwiera ustawienia. Dopiero rozpoczęcie nowej partii zastępuje
-poprzedni wynik i historię oraz zeruje zegar. Możesz wcześniej wrócić do gry.
+Kostka nad nawigacją CardScope otwiera licznik lub ustawienia nowej partii.
+Po rozpoczęciu gry dotknij kostki na środku planszy, aby otworzyć menu.
+„Opcje” pozwalają losować rozpoczynającego albo rozpocząć nową partię.
+„Historia” pokazuje zmiany punktów, cofnięcia i czas każdego ruchu.
+Przycisk „Cofnij” odwraca ostatnią niecofniętą zmianę punktów.
+X menu wraca do planszy. X planszy wraca do CardScope i zachowuje partię.
+Zegar liczy czas także po zamknięciu okna gry.
+Nowa partia zastępuje poprzednie wyniki i historię dopiero po jej rozpoczęciu.
 
-ZAPIS I STARE PARTIE
-Wyniki, historia i moment startu są zapisywane lokalnie w przeglądarce/aplikacji.
-Nie są synchronizowane z kontem. Wyczyszczenie danych witryny usuwa ten zapis.
-Nowa wersja zachowuje wyniki i dostępną historię zapisanej partii z poprzedniej
-wersji licznika. Starsza wersja przechowywała do 100 zmian i nie zapisywała czasu.
-Dlatego przy takiej partii zegar jest opisany „Czas od aktualizacji”, a starsze
-ruchy mają oznaczenie „wcześniej”. Nowe partie mają czas od rozpoczęcia.
-Zegar korzysta z czasu urządzenia; ręczna zmiana zegara systemowego może go zmienić.
+Zapis jest lokalny w tej przeglądarce/aplikacji. Aktualizacja zachowuje trwającą
+partię, także zapis z wersji tabletop-2. Dla zapisu najstarszego licznika,
+który nie przechowywał czasu startu, zegar nadal pokazuje czas od aktualizacji.
+Pełny ekran oznacza dostępny obszar aplikacji. Paski Safari/Chrome są kontrolowane
+przez przeglądarkę; aplikacja dodana do ekranu głównego nie ma paska adresu.
 
 WERYFIKACJA
-Testy funkcjonalne przeszły: 2–6 graczy, historia ruchów i cofnięć, filtrowanie,
-wyświetlanie starszych wpisów, zegar, zapis i wznowienie, migracja starej partii,
-losowanie, błędy zapisu oraz istniejące okna z przyciskiem X.
-Zegar zmienia tylko swój tekst, bez przebudowy wyników ani historii co sekundę.
-Podgląd w przeglądarce testowej był niedostępny; wyglądu na telefonie nie zweryfikowano.
+Testy funkcjonalne przeszły: otwieranie i zamykanie środkowego menu, powrót
+do gry, nowa partia, 2–6 graczy, historia, cofanie, losowanie, zegar, zapis
+i wznowienie oraz istniejące przyciski X w innych oknach CardScope.
+Nie było dostępnego podglądu przeglądarkowego; wyglądu na telefonie nie zweryfikowano.

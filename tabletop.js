@@ -7,10 +7,10 @@
  let state=null,storageAvailable=true,rollTimer=0,clockTimer=0,positionFrame=0,selectedCount=2,screen='board',historyLimit=40;
  const fab=button('','life-fab');fab.id='tabletop-open';fab.append(icon('dice'));fab.title='Licznik życia';fab.setAttribute('aria-label','Otwórz licznik życia');fab.setAttribute('aria-haspopup','dialog');fab.setAttribute('aria-controls','tabletop-dialog');fab.setAttribute('aria-expanded','false');
  const dialog=el('dialog','life-dialog');dialog.id='tabletop-dialog';dialog.setAttribute('aria-labelledby','life-title');
- const close=button('×','life-close',()=>dialog.close());close.id='tabletop-close';close.setAttribute('aria-label','Zamknij licznik życia');
+ const close=button('×','life-close',()=>{if(menu.open)menu.close();dialog.close();});close.id='tabletop-close';close.setAttribute('aria-label','Zamknij licznik życia');
  const header=el('header','life-heading'),headingText=el('div','life-heading-text'),kicker=el('span','life-kicker','CARDSCOPE / PRZY STOLE'),title=el('h2','','Wasza gra. Wasze zasady.');title.id='life-title';
  const intro=el('p','life-intro','Od pierwszego ruchu do ostatniego punktu.');headingText.append(kicker,title,intro);
- const timerBox=el('div','life-timer'),timerCopy=el('div'),timerLabel=el('span','life-timer-label','CZAS PARTII'),timer=el('output','life-timer-value','00:00');timer.id='life-timer';timer.setAttribute('role','timer');timer.setAttribute('aria-live','off');timer.setAttribute('aria-label','Czas od rozpoczęcia partii');timerCopy.append(timerLabel,timer);timerBox.append(icon('clock'),timerCopy);timerBox.hidden=true;header.append(headingText,timerBox);
+ const timerBox=el('div','life-timer'),timerCopy=el('div'),timerLabel=el('span','life-timer-label','CZAS PARTII'),timer=el('output','life-timer-value','00:00');timer.id='life-timer';timer.setAttribute('role','timer');timer.setAttribute('aria-live','off');timer.setAttribute('aria-label','Czas od rozpoczęcia partii');timerCopy.append(timerLabel,timer);timerBox.append(icon('clock'),timerCopy);timerBox.hidden=true;header.append(headingText);
  const setup=el('form','life-setup');setup.id='life-setup';setup.noValidate=true;
  const countField=el('fieldset','life-field'),countLegend=el('legend','life-label','01 / Ilu was gra?'),countOptions=el('div','life-count-options'),countButtons=[];countField.append(countLegend,countOptions);
  for(let n=2;n<=6;n++){const b=button(String(n),'life-count',()=>{selectedCount=n;updateCount();});b.dataset.count=String(n);b.setAttribute('aria-label',n+' graczy');countOptions.append(b);countButtons.push(b);}
@@ -26,7 +26,7 @@
  setup.append(countField,pointsField,namesField,error,setupActions,el('p','life-local-note','Wynik i historia zapisują się na tym urządzeniu. Możesz zamknąć licznik i wrócić do gry.'));
  const match=el('div','life-match');match.id='life-match';match.hidden=true;
  const nav=el('div','life-match-nav'),views=el('div','life-view-switch');views.setAttribute('role','group');views.setAttribute('aria-label','Widok partii');
- const boardButton=button('','life-view',()=>showScreen('board'));boardButton.id='life-board-tab';boardButton.setAttribute('aria-controls','life-board');boardButton.append(icon('grid'),el('span','','Licznik'));
+ const boardButton=button('','life-view',()=>showScreen('board'));boardButton.id='life-board-tab';boardButton.setAttribute('aria-controls','life-menu-options');boardButton.append(icon('grid'),el('span','','Opcje'));
  const historyButton=button('','life-view',()=>showScreen('history'));historyButton.id='life-history-tab';historyButton.setAttribute('aria-controls','life-history');const historyCount=el('span','life-history-count','0');historyButton.append(icon('history'),el('span','','Historia'),historyCount);views.append(boardButton,historyButton);
  const undo=button('','life-tool',undoLast);undo.id='life-undo';undo.append(icon('undo'),el('span','','Cofnij'));undo.title='Cofnij ostatnią zmianę życia';nav.append(views,undo);
  const board=el('div','life-board');board.id='life-board';const panels=[];
@@ -50,26 +50,39 @@
  historyView.append(historyHeading,historyNote,historyList,historyMore);
  const footer=el('div','life-match-footer'),drawBlock=el('div','life-draw-block'),starts=el('p','life-start-result','Kto zaczyna?');starts.id='life-starter-result';
  const roll=button('','life-roll',rollStarter);roll.id='life-roll';const rollLabel=el('span','','Losuj start');roll.append(icon('dice'),rollLabel);drawBlock.append(starts,roll);
- const newGame=button('','life-tool life-new',()=>showSetup(true));newGame.id='life-new';newGame.append(icon('plus'),el('span','','Nowa partia'));footer.append(drawBlock,newGame);
- match.append(nav,board,historyView,footer);
+ const newGame=button('','life-tool life-new',()=>{menu.close();showSetup(true);});newGame.id='life-new';newGame.append(icon('plus'),el('span','','Nowa partia'));footer.append(drawBlock,newGame);
+ const arena=el('div','life-arena');arena.id='life-arena';
+ const hub=button('','life-menu-trigger',openMenu);hub.id='life-menu-open';hub.setAttribute('aria-label','Otwórz menu partii');hub.setAttribute('aria-haspopup','dialog');hub.setAttribute('aria-controls','tabletop-menu');hub.setAttribute('aria-expanded','false');hub.append(icon('dice'),el('span','','MENU'));
+ const hud=el('div','life-hud'),gameLabel=el('span','life-game-label');hud.append(timerBox,gameLabel);arena.append(board,hub);match.append(hud,arena);
+ const menu=el('dialog','life-dialog life-menu-dialog');menu.id='tabletop-menu';menu.setAttribute('aria-labelledby','life-menu-title');
+ const menuClose=button('×','life-close',()=>menu.close());menuClose.id='life-menu-close';menuClose.setAttribute('aria-label','Zamknij menu partii');
+ const menuHeading=el('header','life-menu-heading'),menuBrand=el('div','life-menu-brand');menuBrand.append(icon('dice'),el('span','life-kicker','CARDSCOPE / PRZY STOLE'));
+ const menuTitle=el('h2','','Wasza partia');menuTitle.id='life-menu-title';
+ const menuSummary=el('p','life-menu-summary'),menuTimer=el('output','','00:00');menuTimer.id='life-menu-timer';menuTimer.setAttribute('role','timer');menuTimer.setAttribute('aria-live','off');menuTimer.setAttribute('aria-label','Czas partii');menuHeading.append(menuBrand,menuTitle,menuSummary,menuTimer);
+ const options=el('div','life-menu-options');options.id='life-menu-options';options.append(footer);
+ const backToGame=button('Wróć do gry','life-primary',()=>menu.close());backToGame.id='life-menu-resume';
+ menu.append(menuClose,menuHeading,nav,options,historyView,backToGame);
+ menu.addEventListener('close',()=>{clearRoll();hub.setAttribute('aria-expanded','false');if(dialog.open&&!match.hidden)hub.focus({preventScroll:true});});
+ function openMenu(){if(!state||menu.open||match.hidden)return;showScreen('board');menuSummary.textContent=state.players.length+' graczy · '+state.initial+' życia na start';tickClock();menu.showModal();hub.setAttribute('aria-expanded','true');backToGame.focus({preventScroll:true});}
+
  const status=el('p','life-status');status.id='life-status';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
  const storageNote=el('p','life-storage-note');storageNote.id='life-storage-note';storageNote.setAttribute('role','status');storageNote.hidden=true;
- dialog.append(close,header,setup,match,status,storageNote);document.body.append(fab,dialog);
+ dialog.append(close,header,setup,match,status,storageNote);document.body.append(fab,dialog,menu);
  function read(){try{const raw=localStorage.getItem(KEY);if(!raw)return null;const parsed=JSON.parse(raw),restored=C.restore(parsed);if(restored&&parsed.version===1){state=restored;persist();}return restored;}catch{return null;}}
  function persist(){try{localStorage.setItem(KEY,JSON.stringify(state));storageAvailable=true;}catch{storageAvailable=false;}storageNote.hidden=storageAvailable;storageNote.textContent=storageAvailable?'':'Nie udało się zapisać partii na urządzeniu. Licznik nadal działa. Nie odświeżaj strony, jeśli chcesz zachować tę grę.';fab.dataset.active=String(!!state);}
  function updatePresets(){for(const b of presetButtons)b.setAttribute('aria-pressed',String(lifeInput.value===b.dataset.life));}
  function updateCount(){for(const b of countButtons)b.setAttribute('aria-pressed',String(selectedCount===Number(b.dataset.count)));nameLabels.forEach((label,i)=>{label.hidden=i>=selectedCount;nameInputs[i].disabled=i>=selectedCount;});}
  function clearRoll(){clearTimeout(rollTimer);rollTimer=0;roll.disabled=false;delete roll.dataset.rolling;}
- function tickClock(){if(!state)return;const text=C.formatDuration(C.elapsed(state));if(timer.textContent!==text)timer.textContent=text;}
+ function tickClock(){if(!state)return;const text=C.formatDuration(C.elapsed(state));if(timer.textContent!==text)timer.textContent=text;if(menuTimer.textContent!==text)menuTimer.textContent=text;}
  function stopClock(){clearInterval(clockTimer);clockTimer=0;}
  function syncClock(){stopClock();if(dialog.open&&!match.hidden&&!document.hidden){tickClock();clockTimer=setInterval(tickClock,1000);}}
  function showSetup(newMatch=false){
-  clearRoll();stopClock();dialog.dataset.lifeStage='setup';setup.hidden=false;match.hidden=true;timerBox.hidden=true;title.textContent=state?'Nowe rozdanie.':'Wasza gra. Wasze zasady.';intro.textContent=state?'Obecny wynik i historię zastąpisz dopiero po rozpoczęciu nowej partii.':'Od pierwszego ruchu do ostatniego punktu.';
+  if(menu.open)menu.close();clearRoll();stopClock();dialog.dataset.lifeStage='setup';setup.hidden=false;match.hidden=true;timerBox.hidden=true;title.textContent=state?'Nowe rozdanie.':'Wasza gra. Wasze zasady.';intro.textContent=state?'Obecny wynik i historię zastąpisz dopiero po rozpoczęciu nowej partii.':'Od pierwszego ruchu do ostatniego punktu.';
   selectedCount=state?.players.length||2;lifeInput.value=String(state?.initial||30);nameInputs.forEach((input,i)=>input.value=state?.players[i]?.name||'');resume.hidden=!state;start.textContent=state?'Rozpocznij nową partię':'Rozpocznij partię';error.hidden=true;error.textContent='';lifeInput.removeAttribute('aria-invalid');status.textContent='';updatePresets();updateCount();resetScroll();if(newMatch)countButtons[selectedCount-2].focus({preventScroll:true});
  }
- function showMatch(){if(!state)return;setup.hidden=true;match.hidden=false;timerBox.hidden=false;dialog.dataset.lifeStage='match';title.textContent='Partia w toku';intro.textContent=state.players.length+' graczy · '+state.initial+' życia na start';timerLabel.textContent=state.timerEstimated?'CZAS OD AKTUALIZACJI':'CZAS PARTII';error.hidden=true;buildPlayers();showScreen('board');render();syncClock();}
- function resetScroll(){const panel=dialog.querySelector(':scope > .cs-modal-panel');if(panel)panel.scrollTop=0;dialog.scrollTop=0;}
- function showScreen(next){screen=next;board.hidden=next!=='board';historyView.hidden=next!=='history';boardButton.setAttribute('aria-pressed',String(next==='board'));historyButton.setAttribute('aria-pressed',String(next==='history'));dialog.dataset.lifeView=next;if(next==='history'){historyLimit=40;renderHistory();}resetScroll();}
+ function showMatch(){if(!state)return;setup.hidden=true;match.hidden=false;timerBox.hidden=false;dialog.dataset.lifeStage='match';gameLabel.textContent=state.players.length+' GRACZY';title.textContent='Partia w toku';intro.textContent=state.players.length+' graczy · '+state.initial+' życia na start';timerLabel.textContent=state.timerEstimated?'CZAS OD AKTUALIZACJI':'CZAS PARTII';error.hidden=true;buildPlayers();showScreen('board');render();syncClock();}
+ function resetScroll(){const target=menu.open?menu:dialog,panel=target.querySelector(':scope > .cs-modal-panel');if(panel)panel.scrollTop=0;target.scrollTop=0;}
+ function showScreen(next){screen=next;board.hidden=false;options.hidden=next!=='board';historyView.hidden=next!=='history';boardButton.setAttribute('aria-pressed',String(next==='board'));historyButton.setAttribute('aria-pressed',String(next==='history'));menu.dataset.lifeView=next;if(next==='history'){historyLimit=40;renderHistory();}resetScroll();}
  function render(){
   if(!state)return;
   const lastByPlayer=new Map();for(const event of state.events)if(event.kind!=='draw')lastByPlayer.set(event.player,event);
@@ -95,10 +108,10 @@
  function adjust(player,delta){if(!state)return;try{state=C.change(state,player,delta);persist();render();status.textContent=state.players[player].name+': '+state.players[player].life+' pkt życia.';}catch(e){status.textContent=e.message;}}
  function undoLast(){if(!state)return;const target=C.undoTarget(state);if(!target)return;state=C.undo(state);persist();render();status.textContent='Cofnięto zmianę. '+state.players[target.player].name+': '+state.players[target.player].life+' pkt życia.';}
  function rollStarter(){if(!state||roll.disabled)return;try{state=C.draw(state,()=>crypto.getRandomValues(new Uint32Array(1))[0]);persist();render();status.textContent=starts.textContent+'.';roll.disabled=true;roll.dataset.rolling='true';rollTimer=setTimeout(clearRoll,460);}catch(e){status.textContent=e.message||'Losowanie jest chwilowo niedostępne.';}}
- setup.addEventListener('submit',event=>{event.preventDefault();try{const next=C.create(lifeInput.value,nameInputs.map(n=>n.value),selectedCount);state=next;persist();showMatch();boardButton.focus({preventScroll:true});status.textContent='Nowa partia: '+selectedCount+' graczy, po '+state.initial+' pkt życia.';}catch(e){error.textContent=e.message;error.hidden=false;lifeInput.setAttribute('aria-invalid','true');lifeInput.focus({preventScroll:true});}});
+ setup.addEventListener('submit',event=>{event.preventDefault();try{const next=C.create(lifeInput.value,nameInputs.map(n=>n.value),selectedCount);state=next;persist();showMatch();hub.focus({preventScroll:true});status.textContent='Nowa partia: '+selectedCount+' graczy, po '+state.initial+' pkt życia.';}catch(e){error.textContent=e.message;error.hidden=false;lifeInput.setAttribute('aria-invalid','true');lifeInput.focus({preventScroll:true});}});
  lifeInput.addEventListener('input',()=>{updatePresets();lifeInput.removeAttribute('aria-invalid');error.hidden=true;});
- fab.onclick=()=>{if(dialog.open)return;if(storageAvailable)state=read()||state;if(state)showMatch();else showSetup();dialog.showModal();fab.setAttribute('aria-expanded','true');syncClock();if(state)boardButton.focus({preventScroll:true});else countButtons[selectedCount-2].focus({preventScroll:true});};
- dialog.addEventListener('close',()=>{clearRoll();stopClock();fab.setAttribute('aria-expanded','false');fab.focus({preventScroll:true});});
+ fab.onclick=()=>{if(dialog.open)return;if(storageAvailable)state=read()||state;if(state)showMatch();else showSetup();dialog.showModal();document.documentElement.classList.add('cs-tabletop-open');fab.setAttribute('aria-expanded','true');syncClock();if(state)hub.focus({preventScroll:true});else countButtons[selectedCount-2].focus({preventScroll:true});};
+ dialog.addEventListener('close',()=>{if(menu.open)menu.close();document.documentElement.classList.remove('cs-tabletop-open');clearRoll();stopClock();fab.setAttribute('aria-expanded','false');fab.focus({preventScroll:true});});
  document.addEventListener('visibilitychange',syncClock);window.addEventListener('pagehide',stopClock);window.addEventListener('pageshow',syncClock);
  function place(){positionFrame=0;const nav=document.querySelector('.nav'),r=nav?.getBoundingClientRect(),height=window.innerHeight,width=window.innerWidth;if(r&&r.width>0&&r.height>0&&r.top>height*.4&&r.top<height){fab.style.bottom=Math.round(height-r.top+12)+'px';fab.style.right=Math.max(16,Math.round(width-r.right+8))+'px';}}
  function schedulePosition(){if(!positionFrame)positionFrame=requestAnimationFrame(place);}
