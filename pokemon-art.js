@@ -1,7 +1,7 @@
 // Image recovery is separate from card identity, language, pricing and account data.
 globalThis.CardPokemonArt=(()=>{
  'use strict';
- const VERSION='maintenance-20261107-1',bindings=new WeakMap(),successful=new Map();
+ const VERSION='pokemon-hd-1',bindings=new WeakMap(),successful=new Map();
  const languages={en:'Angielski',ja:'Japoński',de:'Niemiecki',fr:'Francuski',es:'Hiszpański',it:'Włoski','pt-br':'Portugalski',pt:'Portugalski'};
  let manifest;
  const language=c=>c?.catalogLanguage||Object.keys(languages).find(k=>languages[k]===c?.language)||'en';
@@ -11,7 +11,7 @@ globalThis.CardPokemonArt=(()=>{
   const game=c.catalogGame||c.gameKey||c.game;
   if(game&&!['pokemon','Pokémon','Pokemon'].includes(game))return null;
   const id=c.catalogId||c.id;
-  if(typeof id!=='string'||!/^[a-zA-Z0-9.+]+(?:-[A-Z])?-[a-zA-Z0-9!?%]+$/.test(id))return null;
+  if(typeof id!=='string'||!/^[a-zA-Z0-9.+]+(?:-[a-zA-Z0-9.+]+)*-[a-zA-Z0-9!?%]+$/.test(id))return null;
   return {id,lang:language(c)};
  }
  function data(){
@@ -23,14 +23,26 @@ globalThis.CardPokemonArt=(()=>{
  function imageLanguage(url,fallback){
   const u=String(url||'');return u.match(/assets\.tcgdex\.net\/([a-z-]+)\//)?.[1]||(/images\.pokemontcg\.io\//.test(u)?'en':null)||(/_JP(?:_|\.)/.test(u)?'ja':null)||(u.match(/_(EN|DE|FR|ES|IT|PT-BR)_/)?.[1]?.toLowerCase())||fallback;
  }
- const imageURL=(value,size='high',format='webp')=>!value?null:/\.(?:png|jpe?g|webp)(?:[?#]|$)/i.test(value)||/^(data:|blob:)/.test(value)?value:value.replace(/\/$/,'')+'/'+size+'.'+format;
+ function imageURL(value,size='high',format='webp'){
+  if(!value)return null;const text=String(value);
+  if(/^https:\/\/assets\.tcgdex\.net\//i.test(text))return text.replace(/\/(?:low|high)\.(?:webp|png|jpg)(?:[?#].*)?$/i,'').replace(/\/$/,'')+'/'+size+'.'+format;
+  if(size==='high'){
+   const tcg=text.match(/^https:\/\/tcgplayer-cdn\.tcgplayer\.com\/product\/(\d+(?:_\d+)?)_(?:\d+w|in_\d+x\d+)\.jpg(?:[?#].*)?$/i)||text.match(/^https:\/\/product-images\.tcgplayer\.com\/fit-in\/\d+x\d+\/(\d+(?:_\d+)?)\.jpg(?:[?#].*)?$/i);
+   if(tcg)return 'https://product-images.tcgplayer.com/'+tcg[1]+'.jpg';
+   if(/^https:\/\/images\.pokemontcg\.io\//i.test(text))return text.replace(/(?:_hi)?\.png(?=[?#]|$)/i,'_hi.png');
+   if(/^https:\/\/limitlesstcg\.nyc3\.cdn\.digitaloceanspaces\.com\//i.test(text))return text.replace(/_SM\.png(?=[?#]|$)/,'_LG.png');
+  }
+  return /\.(?:png|jpe?g|webp)(?:[?#]|$)/i.test(text)||/^(data:|blob:)/.test(text)?text:text.replace(/\/$/,'')+'/'+size+'.'+format;
+ }
  function baseSources(c,size='high'){
   if(!c)return [];
   const lang=language(c),out=[];
   const add=(url,source,known)=>{if(url)out.push({url,language:known||imageLanguage(url,lang),source})};
-  add(c.artworkUrl||c.artwork,'saved',c.artworkLanguage);
+  const saved=c.artworkUrl||c.artwork;
+  if(identity(c))add(imageURL(saved,size),'saved',c.artworkLanguage);
+  add(saved,'saved',c.artworkLanguage);
   if(c.image){add(imageURL(c.image,size),'TCGdex');add(imageURL(c.image,size,'png'),'TCGdex');if(size==='low')add(imageURL(c.image,'high'),'TCGdex')}
-  if(c.photo&&(c.photo!==c.artwork))add(c.photo,'scan',c.artworkLanguage);
+  if(c.photo&&(c.photo!==c.artwork)){if(identity(c))add(imageURL(c.photo,size),'scan',c.artworkLanguage);add(c.photo,'scan',c.artworkLanguage);}
   return out;
  }
  function official(id,lang){
@@ -50,8 +62,11 @@ globalThis.CardPokemonArt=(()=>{
   const [art,snapshot]=await Promise.all([data().catch(()=>null),CardPokemon.snapshot(who.lang).catch(()=>null)]);
   const exact=snapshot?.byId.get(who.id);
   const out=[];const add=(url,lang,source)=>{if(url)out.push({url,language:lang,source})};
+  const verified=art?.highResolution?.[provider(who.lang)]?.[who.id];
+  if(verified)add(size==='low'&&verified.thumbnailUrl||verified.url,who.lang,verified.source);
   // Confirm the catalog ID. Never search by name or copy a Japanese card's number into an English set.
   if(exact){
+   if(exact.artworkUrl)add(imageURL(exact.artworkUrl,size),who.lang,exact.source||'catalog');
    if(exact.image){add(imageURL(exact.image,size),who.lang,'TCGdex');add(imageURL(exact.image,size,'png'),who.lang,'TCGdex')}
    const jp=provider(who.lang)==='ja'&&art?.japanese[who.id];
    if(jp){add(size==='low'?jp:jp.replace('_SM.png','_LG.png'),who.lang,'Limitless');add(jp,who.lang,'Limitless')}
@@ -59,7 +74,7 @@ globalThis.CardPokemonArt=(()=>{
   }
   // An earlier English reference must not outrank available native-language art.
   const same=base.filter(x=>x.source!=='scan'&&provider(x.language)===provider(who.lang));
-  out.unshift(...same);
+  out.push(...same);
   out.push(...base.filter(x=>!same.includes(x)));
   if(exact&&provider(who.lang)!=='ja'&&provider(who.lang)!=='en'&&art?.english[who.id]){
    add(imageURL(art.english[who.id],size),'en','TCGdex');
@@ -81,15 +96,17 @@ globalThis.CardPokemonArt=(()=>{
    let choices;try{choices=await sources(c,size)}catch{choices=baseSources(c,size)}
    if(!valid())return;
    const cached=cacheKey&&successful.get(cacheKey);
-   if(cached)choices=[cached,...choices.filter(x=>x.url!==cached.url)];
-   let i=0;
+   // A small fallback must never become a permanent preferred image for a large preview.
+   if(cached&&size!=='high'&&choices.some(x=>x.url===cached.url))choices=[cached,...choices.filter(x=>x.url!==cached.url)];
+   let i=0,bestSmall=null;
+   const display=entry=>{if(!valid())return;img.onload=null;img.onerror=()=>{if(valid())next()};img.src=entry.url;show(entry)};
    const next=()=>{
     if(!valid())return;clearTimeout(timer);
-    const entry=choices[i++];if(!entry){fail();return}
+    const entry=choices[i++];if(!entry){if(bestSmall){const fallback=bestSmall;bestSmall=null;display(fallback)}else fail();return}
     // A fresh loader isolates late events from an earlier URL or a different card.
     const probe=new Image();let settled=false;
     const advance=()=>{if(settled)return;settled=true;clearTimeout(timer);probe.onload=null;probe.onerror=null;next()};
-    probe.onload=()=>{if(settled||!valid())return;settled=true;clearTimeout(timer);img.onload=()=>show(entry);img.onerror=()=>{if(valid())next()};img.src=entry.url;show(entry)};
+    probe.onload=()=>{if(settled||!valid())return;settled=true;clearTimeout(timer);probe.onload=null;probe.onerror=null;const loaded={...entry,width:probe.naturalWidth,height:probe.naturalHeight};if(size==='high'&&loaded.width>0&&loaded.width<480){if(!bestSmall||loaded.width>bestSmall.width)bestSmall=loaded;next();return}display(loaded)};
     probe.onerror=advance;timer=setTimeout(advance,6500);probe.src=entry.url;
    };next();
   }

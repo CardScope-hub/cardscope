@@ -4,14 +4,14 @@ globalThis.CardPokemon = (() => {
  const provider=lang=>lang==='pt-br'?'pt':lang;
  function snapshot(lang){
   lang=provider(lang);if(!['en','ja','de','fr','es','it','pt'].includes(lang))return Promise.reject(Error('Nieobsługiwany język.'));
-  if(!snapshots.has(lang))snapshots.set(lang,raw('catalog-pokemon-'+lang+'.json?v=maintenance-20261107-1',{ttl:86400000}).then(d=>{
+  if(!snapshots.has(lang))snapshots.set(lang,raw('catalog-pokemon-'+lang+'.json?v=pokemon-hd-1',{ttl:86400000}).then(d=>{
    if(d.schema!==1||!Array.isArray(d.cards)||!Array.isArray(d.sets))throw Error('Nieprawidłowy katalog językowy.');
    return {...d,byId:new Map(d.cards.map(c=>[c.id,c])),bySet:new Map(d.sets.map(s=>[s.id,s]))};
   }).catch(e=>{snapshots.delete(lang);throw e}));return snapshots.get(lang);
  }
  const raw = (url, options) => CardCatalog.json(url, options);
  function additions() {
-  if (!pending) pending = raw('catalog-pokemon-latest.json?v=maintenance-20261107-1', {ttl:86400000}).then(d => {
+  if (!pending) pending = raw('catalog-pokemon-latest.json?v=pokemon-hd-1', {ttl:86400000}).then(d => {
    if(d.schema!==1||!Array.isArray(d.cards)||!Array.isArray(d.sets))throw Error('Nieprawidłowy katalog dodatków.');
    return {...d, byId:new Map(d.cards.map(c=>[c.id,c]))};
   }).catch(e=>{pending=null;throw e});
@@ -21,17 +21,18 @@ globalThis.CardPokemon = (() => {
   const requested=lang;lang=provider(lang);
   const bundled=await snapshot(lang).catch(()=>null);
   const extra = lang==='en' ? await additions().catch(()=>null) : null;
-  let cards, sets, note='';
+  let cards, sets, note='',liveIndex=true;
   try {
    [cards,sets]=await Promise.all(['cards','sets'].map(kind=>raw('https://api.tcgdex.net/v2/'+lang+'/'+kind,{ttl:3600000,timeout:4500})));
    if(!Array.isArray(cards)||!Array.isArray(sets))throw Error('Nie udało się odczytać katalogu.');
   } catch(e) {
+   liveIndex=false;
    if(bundled){cards=bundled.cards;sets=bundled.sets;note='Katalog językowy: '+bundled.preparedAt+'.';}
    else {if(!extra)throw e;
    cards=[];sets=[];note='Katalog częściowy: 30th Celebration i Classic Collection. Pełna baza chwilowo niedostępna.';}
   }
   if(bundled){
-   const rows=new Map(bundled.cards.map(c=>[c.id,c]));for(const c of cards)rows.set(c.id,{...rows.get(c.id),...c,image:c.image||rows.get(c.id)?.image});cards=[...rows.values()].map(c=>({...c,catalogLanguage:requested}));
+   const rows=new Map(bundled.cards.map(c=>[c.id,c]));for(const c of cards){const id=(liveIndex&&bundled.sourceAliases?.[c.id])||c.id;rows.set(id,{...rows.get(id),...c,id,image:c.image||rows.get(id)?.image});}cards=[...rows.values()].map(c=>({...c,catalogLanguage:requested}));
    const setMap=new Map(bundled.sets.map(s=>[s.id,s]));for(const s of sets)setMap.set(s.id,{...setMap.get(s.id),...s});sets=[...setMap.values()];
   }
   if(extra) {
@@ -49,11 +50,12 @@ globalThis.CardPokemon = (() => {
   if(localized){
    const requested=localized[1],lang=provider(requested),id=decodeURIComponent(localized[2]);
    const bundled=await snapshot(lang).catch(()=>null),brief=bundled?.byId.get(id);
-   let live;try{live=await raw('https://api.tcgdex.net/v2/'+lang+'/cards/'+encodeURIComponent(id),{ttl:300000,timeout:6500,fallback:true})}catch(e){if(!brief)throw e}
-   if(live?.id&&live.id!==id)throw Error('Katalog zwrócił inne wydanie karty.');
+   const sourceId=brief?.sourceId||id;
+   let live;if(!brief?.catalogIdentityLegacy)try{live=await raw('https://api.tcgdex.net/v2/'+lang+'/cards/'+encodeURIComponent(sourceId),{ttl:300000,timeout:6500,fallback:true})}catch(e){if(!brief)throw e}
+   if(live?.id&&live.id!==sourceId)throw Error('Katalog zwrócił inne wydanie karty.');
    if(!live&&!brief)throw Error('Nie znaleziono tego wydania.');
-   const set=bundled?.bySet.get(id.slice(0,id.lastIndexOf('-')));
-   return {...brief,...live,image:live?.image||brief?.image,catalogLanguage:requested,set:{name:set?.name||id.slice(0,id.lastIndexOf('-')),cardCount:{},...set,...live?.set},...(!live?{variants:{},variantsList:['Nieustalony']}:{} )};
+   const set=bundled?.bySet.get(brief?.setId||id.slice(0,id.lastIndexOf('-')));
+   return {...brief,...live,id,image:live?.image||brief?.image,catalogLanguage:requested,set:{name:set?.name||id.slice(0,id.lastIndexOf('-')),cardCount:{},...set,...live?.set},...(!live?{variants:{},variantsList:['Nieustalony']}:{} )};
   }
   const match=String(url).match(/^https:\/\/api\.tcgdex\.net\/v2\/en\/cards\/([^/?]+)$/);
   const extra=match ? await additions().catch(()=>null) : null;
