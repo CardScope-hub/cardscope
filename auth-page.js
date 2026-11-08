@@ -2,6 +2,9 @@
   'use strict';
   const $=id=>document.getElementById(id),auth=window.CardScopeAuth;
   if(!auth){$('auth-config').hidden=false;$('auth-config').textContent='Nie wczytano logowania. Sprawdź pliki auth-client.js oraz vendor.';return;}
+  // Favorite game is independent of card catalog language.
+  const favoriteGame=game=>game==='weiss-jp'?'weiss':game;
+  const favoriteGameLabel=game=>favoriteGame(game)==='weiss'?'Weiß Schwarz':CardProfile.games[favoriteGame(game)]||CardProfile.games[''];
   let mode='login',busy=false,lastError='';
   const content={
     login:{title:'Dobrze Cię widzieć.',intro:'Zaloguj się e-mailem i hasłem do konta CardScope.',submit:'Zaloguj się ↗'},
@@ -90,13 +93,12 @@
   let pane=new URLSearchParams(window.location.search).get('view')==='login'?'login':'profile';
   let profileOwner=null,profileGeneration=0,profileSaving=false,profileDirty=false,baseline=null,draft=CardProfile.read(null);
   const profileValue=()=>({displayName:$('profile-name').value,bio:$('profile-bio').value,game:$('profile-game').value,avatar:draft.avatar,theme:draft.theme,discoverable:$('profile-discoverable').checked,accountPrivate:$('profile-private').checked,version:baseline?.version||0,...window.CardMedia.get()});
-  const comparable=p=>JSON.stringify([p.displayName,p.bio,p.game,p.avatar,p.theme,p.avatarPath||null,p.bannerPath||null,!!p.discoverable,p.accountPrivate!==false,p.version||0]);
+  const comparable=p=>JSON.stringify([p.displayName,p.bio,favoriteGame(p.game),p.avatar,p.theme,p.avatarPath||null,p.bannerPath||null,!!p.discoverable,p.accountPrivate!==false,p.version||0]);
   function profileMessage(value='',kind='info'){$('profile-message').textContent=value;$('profile-message').dataset.kind=kind;$('profile-message').hidden=!value;}
-  function loadProfile(user){draft=CardProfile.read(user);baseline={...draft};window.CardMedia.reset(draft);$('profile-discoverable').checked=!!draft.discoverable;$('profile-private').checked=draft.accountPrivate!==false;$('profile-name').value=draft.displayName;$('profile-bio').value=draft.bio;$('profile-game').value=draft.game;profileDirty=false;profileMessage();}
+  function loadProfile(user){draft=CardProfile.read(user);baseline={...draft};window.CardMedia.reset(draft);$('profile-discoverable').checked=!!draft.discoverable;$('profile-private').checked=draft.accountPrivate!==false;$('profile-name').value=draft.displayName;$('profile-bio').value=draft.bio;$('profile-game').value=favoriteGame(draft.game);profileDirty=false;profileMessage();}
   function previewProfile(){
     const p=profileOwner?profileValue():CardProfile.read(null);window.CardMedia.preview(p);$('profile-cover').dataset.theme=p.theme;
-    $('profile-preview-name').textContent=p.displayName.trim()||'Twój nick';$('profile-preview-game').textContent=CardProfile.games[p.game]||CardProfile.games[''];$('profile-preview-bio').textContent=p.bio.trim();$('profile-preview-bio').hidden=!p.bio.trim();$('profile-bio-count').textContent=Array.from(p.bio).length+' / 160';
-    for(const button of $('profile-avatar-options').children){button.setAttribute('aria-pressed',String(!p.avatarPath&&!window.CardMedia.blobs.avatar&&button.dataset.value===p.avatar));CardProfile.paint(button,{avatar:button.dataset.value,theme:p.theme})}
+    $('profile-preview-name').textContent=p.displayName.trim()||'Twój nick';$('profile-preview-game').textContent=favoriteGameLabel(p.game);$('profile-preview-bio').textContent=p.bio.trim();$('profile-preview-bio').hidden=!p.bio.trim();$('profile-bio-count').textContent=Array.from(p.bio).length+' / 160';
     for(const button of $('profile-theme-options').children){const selected=button.dataset.value===p.theme;button.setAttribute('aria-pressed',String(selected));button.textContent=selected?'✓':'';}
     $('profile-discard').hidden=!profileDirty;$('profile-save').textContent=profileSaving?'Zapisuję…':baseline?.version?'Zapisz zmiany ↗':'Utwórz profil ↗';
     $('profile-save').disabled=profileSaving||busy||window.CardSocial.state.status!=='ready'||(!!baseline?.version&&!profileDirty);
@@ -120,9 +122,8 @@
     $('account-tab-'+name).onclick=()=>switchPane(name);
     $('account-tab-'+name).onkeydown=event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();switchPane(event.key==='Home'?'profile':event.key==='End'?'login':['profile','login'][(['profile','login'].indexOf(name)+(event.key==='ArrowRight'?1:1))%2],true);};
   }
-  for(const [key,avatar]of Object.entries(CardProfile.avatars)){const button=document.createElement('button');button.type='button';button.className='profile-avatar-choice';button.dataset.value=key;button.title=avatar.label;button.setAttribute('aria-label',avatar.label);button.setAttribute('aria-pressed','false');CardProfile.paint(button,{avatar:key,theme:'amethyst'});button.onclick=()=>{draft.avatar=key;window.CardMedia.remove('avatar');profileEdited()};$('profile-avatar-options').append(button);}
   for(const [key,label]of Object.entries(CardProfile.themes)){const button=document.createElement('button');button.type='button';button.className='profile-theme-choice';button.dataset.value=key;button.dataset.theme=key;button.title=label;button.setAttribute('aria-label',label);button.setAttribute('aria-pressed','false');button.onclick=()=>{draft.theme=key;profileEdited()};$('profile-theme-options').append(button);}
-  for(const [key,label]of Object.entries(CardProfile.games)){const option=document.createElement('option');option.value=key;option.textContent=label;$('profile-game').append(option);}
+  for(const key of Object.keys(CardProfile.games)){if(key==='weiss-jp')continue;const option=document.createElement('option');option.value=key;option.textContent=favoriteGameLabel(key);$('profile-game').append(option);}
   function profileEdited(){if(!profileOwner||profileSaving)return;profileDirty=window.CardMedia.dirty||comparable(profileValue())!==comparable(baseline);profileMessage();previewProfile();}
   $('profile-name').oninput=$('profile-bio').oninput=$('profile-game').onchange=$('profile-discoverable').onchange=$('profile-private').onchange=profileEdited;document.addEventListener('profile-media-change',profileEdited);
   $('profile-login').onclick=()=>changeMode('login');$('profile-register').onclick=()=>changeMode('register');$('profile-account-settings').onclick=()=>switchPane('login');$('auth-edit-profile').onclick=()=>switchPane('profile');
