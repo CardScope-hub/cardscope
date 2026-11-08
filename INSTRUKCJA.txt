@@ -1,33 +1,61 @@
-CARDSCOPE — UKŁAD KARTY BEZ PANELU PSA
-Wersja: card-layout-1
+CARDSCOPE — LICZNIK ŻYCIA, HISTORIA I 6 GRACZY
+Wersja: tabletop-2
 
-ZMIANY
-– Usunięty panel PSA 10 / 9 / 8, formularz transakcji i dodatkowe linki PSA.
-– Po skanowaniu: obraz karty, nazwa i seria, wybór wariantu (np. Nonfoil,
-  Foil lub rzadkość Weiß Schwarz), przycisk dodania, ceny i reszta informacji.
-– W szczegółach kolekcji wybór wariantu jest pod nazwą i przed cenami.
-– W podglądzie karty w binderze nazwa znajduje się pod obrazkiem.
-– Kolejność po skanowaniu jest taka sama na telefonie i komputerze.
+CO SIĘ ZMIENIŁO
+• Od 2 do 6 graczy. Liczbę osób wybierasz przed rozpoczęciem partii.
+• Czytelniejszy fioletowy interfejs, kolory graczy i duże wyniki.
+• Historia dodawania i odejmowania punktów, z filtrem gracza.
+• Przy każdym ruchu: zmiana punktów, wynik przed i po oraz czas ruchu.
+• Cofnięcie zostawia wpis w historii i oznacza cofnięty ruch.
+• Zegar pokazuje czas od rozpoczęcia partii, także po zamknięciu okna
+  i ponownym otwarciu aplikacji. Format po godzinie: GG:MM:SS.
+• Usunięto obracanie graczy. Wszystkie pola wyświetlają się prosto.
+• Nadal dostępne: wybór życia, +1, −1, +5, −5, cofanie i losowanie startu.
+• Kwadratowa kostka pozostaje po prawej, nad dolną nawigacją.
+• Kontrastowe, kwadratowe X pozostają przypięte u góry okien.
 
-JAK WGRAC
+JAK WGRYWAĆ
+To aktualizacja istniejącej aplikacji, a nie kompletna aplikacja od zera.
 1. Rozpakuj ZIP.
-2. W repozytorium GitHub otwórz folder z obecnym app.html.
-3. Add file → Upload files: wgraj pliki z tej paczki bez tworzenia podfolderu.
-   Zastąp app.html, login.html, binder.html, price-links.js, ebay-card.css,
-   currency.js, recognition.js i sw.js. Dodaj nowy plik card-layout.css.
-4. Zatwierdź Commit changes i poczekaj na ukończenie wdrożenia GitHub Pages.
-5. Otwórz CardScope i wybierz „Wczytaj aktualizację”, jeżeli pokaże się
-   komunikat. Zamknij i ponownie uruchom także aplikację na telefonie.
+2. W repozytorium GitHub otwórz katalog z app.html.
+3. Wgraj do tego katalogu wszystkie 9 plików kodu z paczki:
+   app.html, login.html, binder.html, sw.js,
+   ui-polish.css, ui-polish.js,
+   tabletop-core.js, tabletop.js, tabletop.css.
+4. Zastąp pliki o tych samych nazwach i zapisz commit.
+   Pozostałe pliki aplikacji zostaw na miejscu.
+5. Poczekaj na zakończenie publikacji GitHub Pages.
+6. Otwórz stronę z internetem i zastosuj aktualizację, jeśli pojawi się
+   komunikat. Odśwież stronę; aplikację z ekranu głównego zamknij
+   i uruchom ponownie.
 
-To aktualizacja do obecnej aplikacji, nie osobny kompletny projekt.
-Pasek eBay, wyceny, kolekcja i bindery pozostają dostępne. Nie zmieniaj
-supabase-config.js ani SQL. Aktualizacja nie usuwa danych konta; wcześniejsze
-własne wpisy PSA pozostają zapisane, ale ich panel nie jest wyświetlany.
-Nie trzeba ręcznie usuwać dawnych plików graded-sales — nie są już wczytywane.
+Pliki muszą leżeć bezpośrednio obok app.html, bez dodatkowego podfolderu.
+INSTRUKCJA.txt i SUMY-SHA256.txt są pomocnicze; nie musisz ich wgrywać.
+Nie trzeba zmieniać Supabase, wykonywać SQL ani dodawać kluczy API.
 
-SPRAWDZENIE
-Sprawdzono kolejność elementów i brak panelu PSA we wszystkich sześciu
-widokach kart, składnię skryptów, wybór i zapis karty, jej cenę i wariant,
-liczbę kopii, dodanie do bindera oraz wcześniejsze obliczenia zysku/straty.
-Podgląd przeglądarkowy był niedostępny; wygląd na fizycznym telefonie nie
-został tutaj przetestowany. Paczka wymaga wgrania na Twój GitHub.
+OBSŁUGA
+Kostka → liczba graczy → życie → opcjonalne nazwy → „Rozpocznij partię”.
+Każdy gracz ma własne przyciski zmiany życia.
+„Historia” pokazuje najnowsze zdarzenia na górze. Wybierz gracza w filtrze,
+aby zobaczyć tylko jego ruchy. „Pokaż wcześniejsze” odsłania starsze wpisy.
+„Cofnij” odwraca ostatnią niecofniętą zmianę życia, zachowując ślad w historii.
+„Losuj start” działa dla wszystkich uczestników i nie resetuje wyniku ani czasu.
+X zamyka okno. Wyniki i historia zostają, a czas partii nadal biegnie.
+„Nowa partia” otwiera ustawienia. Dopiero rozpoczęcie nowej partii zastępuje
+poprzedni wynik i historię oraz zeruje zegar. Możesz wcześniej wrócić do gry.
+
+ZAPIS I STARE PARTIE
+Wyniki, historia i moment startu są zapisywane lokalnie w przeglądarce/aplikacji.
+Nie są synchronizowane z kontem. Wyczyszczenie danych witryny usuwa ten zapis.
+Nowa wersja zachowuje wyniki i dostępną historię zapisanej partii z poprzedniej
+wersji licznika. Starsza wersja przechowywała do 100 zmian i nie zapisywała czasu.
+Dlatego przy takiej partii zegar jest opisany „Czas od aktualizacji”, a starsze
+ruchy mają oznaczenie „wcześniej”. Nowe partie mają czas od rozpoczęcia.
+Zegar korzysta z czasu urządzenia; ręczna zmiana zegara systemowego może go zmienić.
+
+WERYFIKACJA
+Testy funkcjonalne przeszły: 2–6 graczy, historia ruchów i cofnięć, filtrowanie,
+wyświetlanie starszych wpisów, zegar, zapis i wznowienie, migracja starej partii,
+losowanie, błędy zapisu oraz istniejące okna z przyciskiem X.
+Zegar zmienia tylko swój tekst, bez przebudowy wyników ani historii co sekundę.
+Podgląd w przeglądarce testowej był niedostępny; wyglądu na telefonie nie zweryfikowano.
