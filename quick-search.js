@@ -1,6 +1,6 @@
 // Manual lookup only: OCR confidence and scanner matching remain independent.
 globalThis.CardQuickSearch=(()=>{
- const games=['pokemon','mtg','onepiece','weiss','weiss-jp','riftbound','swu'];
+ const games=['pokemon','mtg','onepiece','weiss','weiss-jp','riftbound','swu','lorcana','cyberpunk'];
  const clean=q=>String(q||'').normalize('NFKC').replace(/[‐‑–—−]/g,'-').trim();
  const pokemonAliases={SSH:'swsh1',RCL:'swsh2',DAA:'swsh3',CPA:'swsh3.5',VIV:'swsh4',SHF:'swsh4.5',BST:'swsh5',CRE:'swsh6',EVS:'swsh7',FST:'swsh8',BRS:'swsh9',ASR:'swsh10',PGO:'swsh10.5',LOR:'swsh11',SIT:'swsh12',CRZ:'swsh12.5',SVI:'sv01',PAL:'sv02',OBF:'sv03',MEW:'sv03.5',PAR:'sv04',PAF:'sv04.5',TEF:'sv05',TWM:'sv06',SFA:'sv06.5',SCR:'sv07',SSP:'sv08',PRE:'sv08.5',JTG:'sv09',DRI:'sv10',BLK:'sv10.5b',WHT:'sv10.5w',MEG:'me01',PFL:'me02',ASC:'me02.5',POR:'me03',CRI:'me04',PBL:'me05'};
  function canonical(game,value){const q=clean(value);
@@ -10,6 +10,8 @@ globalThis.CardQuickSearch=(()=>{
   return q;
  }
  function gamesFor(value){const q=clean(value);
+  if(/^β\s*\d|^(?:WNC|WTNC|WNCB|WNCR|BETA|RETAIL)\s*[:#-]?\s*\d/i.test(q))return ['cyberpunk'];
+  if(/^\d{1,3}[a-z]?\s*(?:\/\s*(?:\d{1,3}|P\d+))?\s+[•· ]*(?:EN|ENG)\s+[•· ]*(?:\d{1,2}|Q\d)$/i.test(q))return ['lorcana'];
   if(/^[\w-]+\s*\/\s*[SW]\w*\s*-\s*(?:E[N]?)?\d/i.test(q))return ['weiss','weiss-jp'];
   if(/^(OP|EB|ST|PRB)\s*\d{2}\s*[- ]\s*\d{3}/i.test(q))return ['onepiece'];
   // POR is both Pokémon Perfect Order and Magic's Portal; keep both catalogs.

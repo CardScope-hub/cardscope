@@ -1,7 +1,7 @@
 // Pure trade values: unknown prices and currencies never become zero quotes.
 globalThis.CardTradeCore=(()=>{
  'use strict';
- const games=['pokemon','mtg','onepiece','weiss','weiss-jp','riftbound','swu'];
+ const games=['pokemon','mtg','onepiece','weiss','weiss-jp','riftbound','swu','lorcana','cyberpunk'];
  const currencies=['PLN','EUR','USD'];
  const text=(v,n=200)=>typeof v==='string'?v.slice(0,n):'';
  function safeURL(v){try{const u=new URL(v);return u.protocol==='https:'&&!u.username&&!u.password?u.href:''}catch{return ''}}

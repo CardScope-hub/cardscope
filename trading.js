@@ -3,7 +3,7 @@
  'use strict';
  const C=globalThis.CardTradeCore,$=id=>document.getElementById(id);
  if(!C||!$('trading'))return;
- const labels={auto:'Wszystkie gry',pokemon:'Pokémon',mtg:'Magic: The Gathering',onepiece:'One Piece',weiss:'Weiß Schwarz · EN','weiss-jp':'Weiß Schwarz · JP',riftbound:'Riftbound',swu:'Star Wars: Unlimited'};
+ const labels={lorcana:'Disney Lorcana',cyberpunk:'Cyberpunk TCG',auto:'Wszystkie gry',pokemon:'Pokémon',mtg:'Magic: The Gathering',onepiece:'One Piece',weiss:'Weiß Schwarz · EN','weiss-jp':'Weiß Schwarz · JP',riftbound:'Riftbound',swu:'Star Wars: Unlimited'};
  const names=['Twoja strona','Druga strona'];
  let sides=[[],[]],owner=null,epoch=0,scanTarget=null,detailId=null,detailOpener=null,noticeTimer=null;
  const imageBindings=new Map();

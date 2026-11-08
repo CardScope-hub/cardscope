@@ -16,7 +16,7 @@ globalThis.CardPrices=(()=>{
    if(saved?.schema===1)return saved;throw Error('Baza cen jest chwilowo niedostępna. Ponów odświeżenie.');
   })();pending.set(file,state);state.promise.then(()=>{state.loading=false},()=>pending.delete(file));return state.promise;
  }
- function cmOffer(c,v,row,updated,suffix='',url,via='TCGdex',pid){const m=chooseMetric(row,suffix);if(!m)return null;return {...m,source:'Cardmarket',via,currency:'EUR',variant:v,name:c.name,set:c.set?.name||'',number:c.localId,updated:stamp(updated),productId:pid?String(pid):null,url:url||'https://www.cardmarket.com/en/'+({mtg:'Magic',riftbound:'Riftbound',weiss:'WeissSchwarz',onepiece:'OnePiece'}[c.gameKey]||'Pokemon')+'/Products/Search?searchString='+encodeURIComponent(c.name+' '+c.localId),match:'exact',low:positive(row['low'+suffix])?row['low'+suffix]:null,avg7:positive(row['avg7'+suffix])?row['avg7'+suffix]:null}}
+ function cmOffer(c,v,row,updated,suffix='',url,via='TCGdex',pid){const m=chooseMetric(row,suffix);if(!m)return null;return {...m,source:'Cardmarket',via,currency:'EUR',variant:v,name:c.name,set:c.set?.name||'',number:c.localId,updated:stamp(updated),productId:pid?String(pid):null,url:url||'https://www.cardmarket.com/en/'+({mtg:'Magic',riftbound:'Riftbound',weiss:'WeissSchwarz',onepiece:'OnePiece',lorcana:'Lorcana'}[c.gameKey]||'Pokemon')+'/Products/Search?searchString='+encodeURIComponent(c.name+' '+c.localId),match:'exact',low:positive(row['low'+suffix])?row['low'+suffix]:null,avg7:positive(row['avg7'+suffix])?row['avg7'+suffix]:null}}
  function nativeVariants(c){if(globalThis.CardWeiss?.is(c))return [CardWeiss.rarity(c.rarity)];const list=(c.variantsList||[]).filter(x=>x!=='Nieustalony').map(variant);for(const [k,v] of Object.entries(c.variants||{}))if(v&&['normal','holo','reverse'].includes(k))list.push(c.gameKey==='mtg'&&k==='holo'?'Foil':variant(k));for(const d of c.variants_detailed||[])if(!d.size||d.size==='standard')list.push(variant(d.type));return [...new Set(list)]}
  function detail(c,v){const d=(c.variants_detailed||[]).filter(x=>(!x.size||x.size==='standard')&&variant(x.type)===v);return d.length===1?d[0]:null}
  function cmSuffix(c,v){if(v==='Reverse Holo')return '-holo';if(v==='Foil')return c.gameKey==='mtg'?'-holo':'-foil';if(v==='Holo')return c.variants?.normal?'-holo':'';if(v==='Normal')return '';return null}
@@ -67,6 +67,7 @@ globalThis.CardPrices=(()=>{
     const d=await snapshot('onepiece',force);for(const s of Object.values(d.sections||{})){const r=s.rows?.[c.id];if(!r||!positive(r.amount))continue;out.push({source:'OPTCG API',via:'Rynek angielski',amount:r.amount,currency:'USD',variant:'Wydanie z ilustracji',metric:'market',name:c.name,set:c.set?.name,number:c.localId,updated:stamp(r.updated),productId:c.id,url:'https://optcgapi.com/',match:'exact'})}
    }
   }catch(e){warning=e.message}
+  if(game==='lorcana'&&out.some(o=>o.source==='Cardmarket'&&o.isAggregate))warning='Cardmarket: trend ceny obejmuje wszystkie języki danego wydania. Normal i Foil są wyceniane osobno.';
   return {offers:unique(out),note:warning};
  }
  async function savedCard(card){const game=card.catalogGame||'pokemon';if(!card.catalogId)return null;

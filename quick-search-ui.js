@@ -1,6 +1,6 @@
 (()=>{
  const $=id=>document.getElementById(id),Q=CardQuickSearch;
- const labels={pokemon:'Pokémon',mtg:'Magic: The Gathering',onepiece:'One Piece',weiss:'Weiß Schwarz · EN','weiss-jp':'Weiß Schwarz · JP',riftbound:'Riftbound',swu:'Star Wars: Unlimited'};
+ const labels={lorcana:'Disney Lorcana',cyberpunk:'Cyberpunk TCG',pokemon:'Pokémon',mtg:'Magic: The Gathering',onepiece:'One Piece',weiss:'Weiß Schwarz · EN','weiss-jp':'Weiß Schwarz · JP',riftbound:'Riftbound',swu:'Star Wars: Unlimited'};
  let generation=0,groups=[];
  function invalidate(){generation++;scanId++;$('catalog-submit').disabled=false;$('matches').replaceChildren();$('more-matches').hidden=true;$('catalog-count').textContent='';}
  function filters(){const game=$('catalog-game').value;$('catalog-language').disabled=!['auto','pokemon'].includes(game);$('catalog-query').placeholder='Nazwa lub kod, np. ASC 271/217';}
