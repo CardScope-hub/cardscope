@@ -1,0 +1,46 @@
+CARDSCOPE — PASEK EBAY I PROSTSZA STRONA GŁÓWNA
+Wersja: ebay-home-2
+
+CO ZMIENIONO
+• Wąski pasek „Sprawdź cenę na eBay” jest zapisany bezpośrednio pod
+  kafelkami cen. Pojawia się także bez zapisanej wyceny i bez logowania
+  do eBay. Link szuka wybranej karty z jej kodem i wariantem.
+• W wyniku skanu pasek jest pod główną ceną, a jeśli są dodatkowe
+  kafelki wycen — również bezpośrednio pod nimi.
+• Pasek jest też w szczegółach kolekcji, bindera, tradingu, karty
+  znajomego i udostępnionego bindera.
+• Krótszy tekst strony głównej, spokojniejsze tło, mniejsze sekcje
+  i instrukcje instalacji rozwijane osobno dla iOS oraz Androida.
+• Prezentacja pokazuje tylko wybrane rzadkie karty: 16 ilustracji
+  z 8 serii, w tym japoński Weiß Schwarz. Lista jest w pliku
+  KARTY-NA-STRONIE.txt. Przewijanie nie zmienia prezentacji.
+• Zachowano kompaktowy wynik zysku/straty i ukrywanie porównań bez danych.
+
+JAK WGRAĆ NA GITHUB PAGES
+1. Rozpakuj ZIP.
+2. Wgraj wszystkie pliki aplikacji z paczki do tego samego miejsca
+   w repozytorium, w którym znajduje się app.html. Zastąp istniejące
+   pliki o tych samych nazwach. Nie wgrywaj samego ZIP.
+3. Do istniejącego folderu assets dołącz folder showcase-rare z paczki.
+   Zachowaj pozostałe podfoldery i pliki assets.
+4. Zatwierdź zmiany (Commit changes) i zaczekaj na zakończenie wdrożenia
+   GitHub Pages. Paczka nie publikuje strony automatycznie.
+5. Otwórz stronę ponownie. Gdy pojawi się „Wczytaj aktualizację”, użyj
+   tej opcji. W aplikacji z ekranu głównego zamknij ją i otwórz ponownie.
+
+WAŻNE
+• Wgraj także nowe CSS, JavaScript, obrazy oraz sw.js — samo app.html
+  nie wystarczy. Nowe pliki są oznaczone wersją ebay-home-2, aby stary
+  cache nie przesłaniał poprawki.
+• Do linku wyszukiwania eBay nie potrzeba kluczy ani konfiguracji
+  Supabase. Opcjonalne pobieranie ceny liczbowej eBay korzysta nadal
+  z wcześniej skonfigurowanej funkcji serwerowej.
+• Ta aktualizacja nie wymaga nowego SQL ani zmiany supabase-config.js.
+• To aktualizacja istniejącej aplikacji, nie pełny instalator.
+  Nie usuwaj pozostałych plików repozytorium.
+
+SPRAWDZENIE
+Przeszły testy działania pasków i linków, zmiany karty, ukrywania pustych
+porównań, zapisu ceny zakupu, rotacji ilustracji i kompletności plików.
+Sprawdzono wszystkie pobrane obrazy. Podgląd przeglądarkowy i test
+na fizycznym telefonie nie były dostępne w tym środowisku.

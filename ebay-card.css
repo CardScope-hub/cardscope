@@ -1,0 +1,13 @@
+/* A single quiet action directly below the price tiles. */
+.ebay-strip{display:block;width:100%;min-width:0;margin:10px 0 16px;box-sizing:border-box;grid-column:1/-1;clear:both}
+.ebay-strip[hidden]{display:none!important}
+.ebay-strip .ebay-strip-link{display:flex;align-items:center;gap:10px;box-sizing:border-box;width:100%;min-height:44px;padding:10px 14px;border:1px solid #bba0d447;border-radius:11px;background:#b794db12;color:#d9c7ed;text-decoration:none;font-size:13px;line-height:1.5;text-align:left;transition:background .18s,border-color .18s}
+.ebay-strip .ebay-strip-label b{font-size:14px;font-weight:650;color:#eee1ff;letter-spacing:-.4px}
+.ebay-strip .ebay-strip-label{flex:1;min-width:0}
+.ebay-strip .ebay-strip-price{flex:0 1 auto;max-width:45%;color:#e6d5f5;font-size:12px;font-weight:600;overflow-wrap:anywhere;text-align:right}
+.ebay-strip .ebay-strip-arrow{flex:0 0 auto;font-size:17px;color:#b79bce}
+.ebay-strip .ebay-strip-link:hover{background:#b794db14;border-color:#bba0d45c}
+.ebay-strip .ebay-strip-link:focus-visible{outline:2px solid #cda7ef;outline-offset:3px}
+#scan-result .result-quick-actions>.ebay-strip{margin:0}
+#b-slot-dialog .ebay-strip,#trade-card-dialog .ebay-strip,#visit-card-dialog .ebay-strip,#public-card-dialog .ebay-strip{margin-top:10px}
+@media(prefers-reduced-motion:reduce){.ebay-strip .ebay-strip-link{transition:none}}
