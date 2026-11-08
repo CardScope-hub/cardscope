@@ -1,0 +1,36 @@
+/* An app tab with its own content and the persistent main navigation. */
+.friends-page{padding: max(24px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) calc(140px + env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left));overflow-x:hidden}
+.friends-page [hidden]{display:none!important}
+.friends-page .cs-login-header{max-width:1080px;margin:0 auto 42px}
+.friends-account-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 18px;border:1px solid #c7a4e630;border-radius:14px;background:#291e3680;font-size:13px;font-weight:600}
+.friends-account-link:hover{background:#3c2854}
+.friends-page #friends-main{width:100%;max-width:1080px;margin:auto;min-height:50vh;outline:none}
+.friends-page #friends-pane{padding:30px;border:1px solid #c6a8ef20;border-radius:28px;background:linear-gradient(145deg,#241c30c9,#15121c);box-shadow:0 18px 60px #0002}
+.friends-page .friends-heading{margin-bottom:28px}
+.friends-page .friends-heading h2{font-size:clamp(32px,5vw,48px);letter-spacing:-1.4px;line-height:1.1;margin:12px 0 10px}
+.friends-page .friends-heading p{font-size:14px}
+.friends-page #friends-session-status{margin:20px 0}
+.friends-page #friends-session-retry{margin-bottom:20px}
+.friends-page .friends-add-icon{flex-shrink:0}
+.friends-page .social-private-note{line-height:1.8;max-width:720px}
+.friends-page>nav.nav{position:fixed;z-index:40;left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;max-width:650px;margin:0 auto;padding:8px;border:1px solid #ffffff1a;border-radius:26px;background:#25212ef5;box-shadow:inset 0 1px #ffffff08,0 12px 50px #0008;backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px)}
+body.friends-page>nav.nav:has(#nav-friends){grid-template-columns:repeat(7,minmax(0,1fr))}
+.friends-page>nav.nav>a{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;min-height:59px;padding:10px 2px 8px;gap:7px;border-radius:18px;font:500 10px/1.2 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#b6a9c5;text-decoration:none;transition:background .18s,color .18s}
+.friends-page>nav.nav>a:hover{background:#c5a5f416;color:#eadbff}
+.friends-page>nav.nav>a.active{color:#eadbff;background:#c5a5f420;box-shadow:inset 0 1px #e4caff0d}
+.friends-page>nav.nav>a.active::after{content:'';position:absolute;bottom:3px;left:calc(50% - 1.5px);width:3px;height:3px;background:#dab7f7;border-radius:50%}
+.friends-page>nav.nav>a#nav-scanner{margin:0 3px;background:linear-gradient(140deg,#f3be9e,#df9b7e);color:#302018;box-shadow:inset 0 1px #ffe5d577,0 4px 12px #0003}
+.friends-page>nav.nav .ui-icon{width:21px;height:21px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:600px){
+ .friends-page{padding-left:16px;padding-right:16px}
+ .friends-page .cs-login-header{margin-bottom:28px;gap:10px}
+ .friends-page #friends-pane{padding:22px 17px;border-radius:23px}
+ .friends-page .friends-heading .profile-eyebrow{font-size:8px;letter-spacing:1.1px}
+ .friends-page .friends-heading p{font-size:12px}
+ .friends-page .friends-heading{gap:12px}
+ .friends-page>nav.nav{padding:7px;gap:2px;max-width:550px;border-radius:24px}
+ .friends-page>nav.nav>a{min-height:55px;font-size:9px;gap:6px;padding:9px 1px 7px;border-radius:16px}
+ .friends-page>nav.nav .ui-icon{width:20px;height:20px}
+}
+@media(max-width:370px){.friends-page>nav.nav{left:7px;right:7px;gap:0;padding:6px 4px}.friends-page>nav.nav>a{font-size:8px}.friends-page .cs-login-brand{font-size:21px}.friends-page .friends-account-link{padding:10px 12px}}
+@media(prefers-reduced-motion:reduce){.friends-page>nav.nav>a{transition:none}}

@@ -117,3 +117,8 @@ dialog.cs-modal-shell>.cs-modal-bar>.viewport-close{
  .cs-close-control{forced-color-adjust:none!important;background:ButtonFace!important;color:ButtonText!important;border-color:ButtonText!important}
  .cs-close-control:focus-visible{outline-color:Highlight!important}
 }
+
+/* Card removal is a small local action, not a screen close control. */
+#list .card>button.delete{width:28px;height:28px;min-width:28px;min-height:28px;max-width:28px;max-height:28px;padding:0;border-radius:6px;font:500 20px/1 system-ui;display:grid;place-items:center;color:#d1bddf;background:#231b2dea;border:1px solid #bfa0db36;touch-action:manipulation}
+#list .card>button.delete:hover{color:#ffe0de;background:#492b3a;border-color:#edb1b780}
+#list .card>button.delete:focus-visible{outline:2px solid #e5c6ff;outline-offset:3px}

@@ -67,10 +67,10 @@
     try{
       if(action==='login'){
         await auth.signIn($('auth-email').value,$('auth-password').value);
-        if(auth.state.user){pane=window.CardInvite?.pending?'friends':'profile';message('Zalogowano pomyślnie.','success');}
+        if(auth.state.user){pane='profile';message('Zalogowano pomyślnie.','success');}
       }else if(action==='register'){
         const data=await auth.signUp($('auth-email').value,$('auth-password').value,$('auth-name').value);
-        if(data.session&&auth.state.user){pane=window.CardInvite?.pending?'friends':'profile';message('Konto jest gotowe.','success');}
+        if(data.session&&auth.state.user){pane='profile';message('Konto jest gotowe.','success');}
         else {mode='login';message('Sprawdź pocztę i potwierdź adres, jeśli otrzymasz wiadomość. Jeśli masz już konto, zaloguj się lub odzyskaj hasło.','success');}
       }else if(action==='reset'){
         await auth.reset($('auth-email').value);message('Jeśli istnieje konto dla tego adresu, otrzymasz link do zmiany hasła. Sprawdź również spam.','success');
@@ -87,7 +87,7 @@
     finally{busy=false;clearPasswords();render(auth.state);}
   };
   // Profile and login share the existing callback URL; URL fragments remain with Auth.
-  let pane=['login','friends'].includes(new URLSearchParams(window.location.search).get('view'))?new URLSearchParams(window.location.search).get('view'):'profile';
+  let pane=new URLSearchParams(window.location.search).get('view')==='login'?'login':'profile';
   let profileOwner=null,profileGeneration=0,profileSaving=false,profileDirty=false,baseline=null,draft=CardProfile.read(null);
   const profileValue=()=>({displayName:$('profile-name').value,bio:$('profile-bio').value,game:$('profile-game').value,avatar:draft.avatar,theme:draft.theme,discoverable:$('profile-discoverable').checked,accountPrivate:$('profile-private').checked,version:baseline?.version||0,...window.CardMedia.get()});
   const comparable=p=>JSON.stringify([p.displayName,p.bio,p.game,p.avatar,p.theme,p.avatarPath||null,p.bannerPath||null,!!p.discoverable,p.accountPrivate!==false,p.version||0]);
@@ -109,16 +109,16 @@
     if(owner!==profileOwner){profileGeneration++;profileOwner=owner;profileSaving=false;loadProfile(user);}
     else if(!profileDirty&&!profileSaving&&comparable(CardProfile.read(user))!==comparable(baseline||{}))loadProfile(user);
     if(state.recovery||(state.status==='guest'&&state.error))pane='login';document.querySelector('.cs-login-layout').dataset.accountView=pane;
-    for(const name of ['profile','friends','login']){const selected=name===pane,tab=$('account-tab-'+name);tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1;tab.disabled=busy||profileSaving||(name!=='login'&&state.recovery);$(name+'-pane').hidden=!selected;}
+    for(const name of ['profile','login']){const selected=name===pane,tab=$('account-tab-'+name);tab.setAttribute('aria-selected',String(selected));tab.tabIndex=selected?0:-1;tab.disabled=busy||profileSaving||(name!=='login'&&state.recovery);$(name+'-pane').hidden=!selected;}
     $('profile-loading').hidden=state.status!=='loading';$('profile-guest').hidden=state.status!=='guest';$('profile-form').hidden=!user;
     $('profile-error').hidden=!['error','unconfigured'].includes(state.status);$('profile-error-text').textContent=state.error||'Nie udało się wczytać konta.';$('profile-retry').hidden=state.status==='unconfigured';
     $('profile-fields').disabled=profileSaving||busy||!user;$('profile-account-settings').disabled=profileSaving||busy;
     $('profile-email').textContent=user?.email||'';previewProfile();window.dispatchEvent(new CustomEvent('cardscope-pane',{detail:pane}));
   }
-  function switchPane(next,focus=false){if(busy||profileSaving||(auth.state.recovery&&next!=='login'))return;pane=next;render(auth.state);if(focus)$('account-tab-'+next).focus();}
-  for(const name of ['profile','friends','login']){
+  function switchPane(next,focus=false){if(!['profile','login'].includes(next))return;if(busy||profileSaving||(auth.state.recovery&&next!=='login'))return;pane=next;render(auth.state);if(focus)$('account-tab-'+next).focus();}
+  for(const name of ['profile','login']){
     $('account-tab-'+name).onclick=()=>switchPane(name);
-    $('account-tab-'+name).onkeydown=event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();switchPane(event.key==='Home'?'profile':event.key==='End'?'login':['profile','friends','login'][(['profile','friends','login'].indexOf(name)+(event.key==='ArrowRight'?1:2))%3],true);};
+    $('account-tab-'+name).onkeydown=event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();switchPane(event.key==='Home'?'profile':event.key==='End'?'login':['profile','login'][(['profile','login'].indexOf(name)+(event.key==='ArrowRight'?1:1))%2],true);};
   }
   for(const [key,avatar]of Object.entries(CardProfile.avatars)){const button=document.createElement('button');button.type='button';button.className='profile-avatar-choice';button.dataset.value=key;button.title=avatar.label;button.setAttribute('aria-label',avatar.label);button.setAttribute('aria-pressed','false');CardProfile.paint(button,{avatar:key,theme:'amethyst'});button.onclick=()=>{draft.avatar=key;window.CardMedia.remove('avatar');profileEdited()};$('profile-avatar-options').append(button);}
   for(const [key,label]of Object.entries(CardProfile.themes)){const button=document.createElement('button');button.type='button';button.className='profile-theme-choice';button.dataset.value=key;button.dataset.theme=key;button.title=label;button.setAttribute('aria-label',label);button.setAttribute('aria-pressed','false');button.onclick=()=>{draft.theme=key;profileEdited()};$('profile-theme-options').append(button);}
@@ -141,4 +141,18 @@
   window.CardAccountUI=Object.freeze({switchPane,changeMode,get pane(){return pane}});
   window.CardSocial.subscribe(s=>{$('profile-service-status').textContent=s.status==='loading'?'Wczytuję zapis profilu…':s.error||'';render(auth.state)});
   auth.subscribe(render);
+  // Keep old invitations working; Auth consumes its callback before routing.
+  const route=new URL(location.href),legacyFriends=route.searchParams.get('view')==='friends'||route.searchParams.has('invite');
+  const returning=route.searchParams.get('return')==='friends'&&route.searchParams.get('view')==='login';
+  if(route.searchParams.get('return')==='friends'){const back=document.querySelector('.cs-login-back');back.href='./friends.html';back.textContent='← Wróć do znajomych';}
+  const recoveryLink=new URLSearchParams(route.hash.slice(1)).get('type')==='recovery';
+  let leaving=false;
+  function returnToFriends(state){
+    if(leaving||recoveryLink||state.recovery||state.error||!['guest','signed-in'].includes(state.status))return;
+    if(!legacyFriends&&!(returning&&state.status==='signed-in'))return;
+    leaving=true;const target=new URL('friends.html',auth.loginUrl),invite=route.searchParams.get('invite');
+    if(invite&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(invite))target.searchParams.set('invite',invite);
+    location.replace(target.href);
+  }
+  Promise.resolve(auth.ready).then(()=>auth.subscribe(returnToFriends));
 })();

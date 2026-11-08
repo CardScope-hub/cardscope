@@ -1,24 +1,41 @@
-CARDSCOPE — KOSTKA TYLKO NA EKRANIE GŁÓWNYM
-Wersja: tabletop-home-1
+CARDSCOPE — OSOBNA ZAKŁADKA ZNAJOMI I ROZMIAR X
+Wersja: friends-screen-1
 
-Ikona otwierająca licznik jest widoczna wyłącznie w zakładce „Start”.
-Po przejściu do kolekcji, binderów, tradingu, skanera i pozostałych widoków
-znika; po powrocie na Start pojawia się ponownie.
-Kostka otwierająca menu wewnątrz trwającej gry działa jak dotychczas.
-
-To mała poprawka do ostatniej wersji z obróconymi punktami
-i zaokrąglonymi polami (tabletop-4).
-
+JAK WGRAĆ
 1. Rozpakuj ZIP.
-2. W repozytorium GitHub podmień 3 pliki obok dotychczasowego app.html:
-   app.html, tabletop.css, sw.js.
-3. Zapisz commit i poczekaj na zakończenie publikacji GitHub Pages.
-4. Otwórz stronę z internetem, zastosuj aktualizację, jeżeli się pojawi,
-   i odśwież stronę. Aplikację z ekranu głównego zamknij i uruchom ponownie.
+2. W repozytorium GitHub otwórz folder, w którym są obecne app.html i login.html.
+3. Wgraj tam wszystkie 12 plików .html, .css i .js z paczki. Zastąp istniejące pliki o tych samych nazwach; dodaj nowe. Nie twórz dodatkowego podfolderu.
+4. Zapisz zmiany przyciskiem Commit changes i poczekaj na zakończenie publikacji GitHub Pages.
+5. Odśwież stronę. Na telefonie zamknij aplikację i uruchom ją ponownie. Jeśli pojawi się powiadomienie o aktualizacji, zaakceptuj odświeżenie i wykonaj synchronizację zgodnie z komunikatem aplikacji.
 
-Nie twórz dodatkowego podfolderu ani nie usuwaj innych plików aplikacji.
-INSTRUKCJA.txt i SUMY-SHA256.txt są pomocnicze; nie musisz ich wgrywać.
+To aktualizacja istniejącej aplikacji, a nie pełna instalacja. Nie usuwaj pozostałych plików, baz kart ani folderu vendor. Nie zmieniaj supabase-config.js. Nie trzeba uruchamiać żadnego SQL w Supabase ani kasować danych przeglądarki.
 
-Sprawdzono widoczność kostki podczas przełączania widoków, jej powrót na
-ekran główny oraz zachowanie kostki menu gry. Zaktualizowano wersję pamięci
-podręcznej aplikacji, żeby poprawka mogła zostać pobrana na telefonie.
+ZMIANY
+- Mały X (28 px) przy usuwaniu karty z kolekcji; dotychczasowe potwierdzenie usunięcia pozostaje.
+- Duży, kontrastowy, kwadratowy X do zamykania okien nadal znajduje się w górnym pasku nad przewijaną treścią.
+- Znajomi to osobny ekran friends.html, bez formularzy logowania i ustawień konta.
+- Na ekranie znajomych jest stały dolny pasek z siedmioma zakładkami; aktywna pozycja to Znajomi.
+- Przycisk Profil otwiera osobno profil i ustawienia konta. Logowanie z ekranu znajomych wraca do znajomych po potwierdzeniu sesji.
+- Nowe linki zaproszeń prowadzą do friends.html. Starsze linki login.html?view=friends nadal kierują do właściwego ekranu.
+- Podgląd kolekcji, binderów i zasady prywatności korzystają z istniejących mechanizmów.
+- Kostka pozostaje tylko na ekranie głównym; wygląd i działanie gry pozostają z poprzedniej aktualizacji.
+
+PLIKI DO WGRANIA
+app-route.js
+app.html
+auth-page.js
+binder.html
+friends-page.css
+friends-page.js
+friends.html
+login.html
+social-page.js
+sw.js
+ui-polish.css
+ui-polish.js
+
+SPRAWDZENIE PO PUBLIKACJI
+Otwórz Znajomi z dolnego paska, następnie przejdź nim do Kolekcji. Przy kartach powinien być mały X. Otwórz okno dodawania znajomego i przewiń jego zawartość — duży X pozostaje nad treścią. Wyloguj się i sprawdź, czy przycisk logowania na ekranie znajomych otwiera osobną stronę konta.
+
+WERYFIKACJA PACZKI
+Sprawdzono składnię JavaScript oraz zachowanie ekranów w testach DOM: przyciski usuwania/zamykania, 15 kontroli okien, nawigację, stan gościa, sesję, wylogowanie, stare i nowe linki, powrót po logowaniu i ekran odzyskiwania hasła. Testy nie wykonywały zmian na serwerze Supabase. Podgląd wizualny w przeglądarce i na fizycznym telefonie nie był dostępny w środowisku przygotowania paczki.

@@ -2,6 +2,8 @@
 (()=>{
  const closeSelector='button[aria-label^="Zamknij"],button[data-b-close],button.modal-close,button.social-close';
  const cross=/^[×✕✖xX]$/;
+ const isRemoval=button=>button.matches('.delete,[data-remove],[aria-label^="Usuń"],[aria-label^="Remove"]');
+ const isClose=button=>!isRemoval(button)&&(button.matches(closeSelector)||(!button.hasAttribute('aria-label')&&cross.test(button.textContent.trim())));
  const glyph='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg>';
  let frame=0;
  function decorate(button,modal=false){
@@ -26,7 +28,7 @@
  }
  const scheduleViewport=()=>{if(!frame)frame=requestAnimationFrame(viewport);};
  function prepare(dialog){
-  let button=[...dialog.querySelectorAll('button')].find(b=>b.closest('dialog')===dialog&&(b.matches(closeSelector)||cross.test(b.textContent.trim())));
+  let button=[...dialog.querySelectorAll('button')].find(b=>b.closest('dialog')===dialog&&isClose(b));
   // Cropping already has a cancellation action; expose the very same action above it.
   if(!button&&dialog.id==='profile-crop-dialog'&&dialog.querySelector('#profile-crop-cancel')){
    button=document.createElement('button');button.id='profile-crop-close';button.type='button';button.setAttribute('aria-label','Zamknij kadrowanie zdjęcia');
@@ -51,7 +53,7 @@
   for(const d of root.querySelectorAll?.('dialog')||[])dialogs.add(d);
   const buttons=[];if(root.matches?.('button'))buttons.push(root);
   buttons.push(...(root.querySelectorAll?.('button')||[]));
-  for(const b of buttons)if(!b.closest('dialog')&&cross.test(b.textContent.trim()))decorate(b);
+  for(const b of buttons)if(!b.closest('dialog')&&!isRemoval(b)&&b.matches(closeSelector))decorate(b);
   return dialogs;
  }
  function start(){

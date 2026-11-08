@@ -17,7 +17,7 @@
  const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n;};
  const button=(text,action,cls='social-button')=>{const b=el('button',cls,text);b.type='button';b.onclick=action;return b;};
  function same(id,run){return owner===id&&version===run&&auth.state.user?.id===id}
- function link(value){const url=new URL(auth.loginUrl);url.searchParams.set('view','friends');url.searchParams.set('invite',value);return url.href;}
+ function link(value){const url=new URL('friends.html',auth.loginUrl);url.searchParams.set('invite',value);return url.href;}
  function paintLink(){const has=!!token;$('friend-link').hidden=!has;$('friend-link').value=has?link(token):'';$('friend-link-create').hidden=has;for(const n of ['copy','rotate','revoke'])$('friend-link-'+n).hidden=!has;$('friend-link-share').hidden=!has||!navigator.share;}
  function busy(value){working=value;for(const root of [$('friends-content'),addDialog])for(const b of root.querySelectorAll('button'))if(b.id!=='friends-add-close')b.disabled=value;}
  async function act(action,target){if(working||!owner)return;const id=owner,run=version;busy(true);message();try{await social.rpc(action,{p_target:target});if(!same(id,run))return;message(({request:'Zaproszenie wysłane.',accept:'Dodano do znajomych.',decline:'Zaproszenie odrzucone.',cancel:'Zaproszenie anulowane.',remove:'Usunięto ze znajomych.'})[action],'success');await refresh();if(modalProfile?.id===target){try{modalProfile=await social.rpc('profile',{p_target:target});paintModal()}catch{closeModal()}}if($('friends-search').value.trim().length>=2)void search();}catch(e){if(same(id,run))message(social.errorText(e),'error')}finally{if(same(id,run))busy(false)}}
@@ -58,7 +58,7 @@
  $('friends-search').oninput=()=>{clearTimeout(timer);searchRun++;timer=setTimeout(()=>void search(),450)};
  $('friends-refresh').onclick=()=>{message();void refresh()};$('friends-login').onclick=()=>ui.changeMode('login');$('friends-edit-profile').onclick=()=>ui.switchPane('profile');
  function render(){const s=auth.state,id=s.status==='signed-in'&&!s.recovery?s.user?.id:null;if(id!==owner){owner=id||null;version++;searchRun++;homeRun++;clearTimeout(timer);home=null;token=null;loaded=false;busy(false);inviteProfile=null;closeAdd();closeModal();$('friends-count').textContent='0';$('friends-incoming-section').hidden=$('friends-outgoing-section').hidden=$('friends-pending-badge').hidden=true;$('friends-results').replaceChildren();$('friends-search').value='';for(const k of ['incoming','accepted','outgoing'])$('friends-'+k).replaceChildren();paintInvite();paintLink();message();}
-  $('friends-guest').hidden=!!owner||s.recovery;$('friends-content').hidden=!owner;
+  $('friends-guest').hidden=!!owner||s.recovery||s.status!=='guest';$('friends-content').hidden=!owner;
   if(owner&&visible&&!loaded&&social.state.status==='ready'){loaded=true;void refresh()}
   if(owner&&visible&&social.state.status==='error')message(social.state.error,'error');
  }
