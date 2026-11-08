@@ -17,17 +17,10 @@ function offers(items,c,observedAt){const out=[];for(const item of items||[]){co
  const v=norm(c.variant);if(v==='normal'&&/\b(foil|holo|etched)\b/.test(text)&&!/\b(non foil|non holo)\b/.test(text))continue;if(v.includes('reverse')&&/\b(non holo|non foil)\b/.test(text))continue;if(['foil','holo'].includes(v)&&/\b(non foil|non holo|reverse)\b/.test(text))continue;
  if(['weiss','weiss-jp'].includes(c.game)){const rarity=text.match(/\b(ssp|sp|sec|rrr|rr|sr|ofr|r)\b/i)?.[1];if(rarity&&/^(ssp|sp|sec|rrr|rr|sr|ofr|r)$/.test(v)&&v!==rarity)continue;}
  const amount=Number(item.price?.value),currency=item.price?.currency;let url;try{url=new URL(item.itemWebUrl)}catch{continue}if(url.protocol!=='https:'||url.username||url.password||!/^([a-z0-9-]+\.)?ebay\.(com|de|co\.uk|pl|fr|it|es|ca|com\.au)$/i.test(url.hostname)||!Number.isFinite(amount)||amount<=0||amount>1e7||!['USD','EUR','PLN','GBP'].includes(currency))continue;
- out.push({source:'eBay',amount,currency,title:title.slice(0,250),condition:String(item.condition||'Stan: sprawdź ofertę').slice(0,100),url:url.href,observedAt,metric:'asking',match:'candidate'});
+ out.push({source:'eBay',amount,currency,title:title.slice(0,250),condition:String(item.condition||'Stan: sprawdź ofertę').slice(0,100),url:url.href,observedAt,metric:'asking',match:'candidate'});if(out.length===5)break;
  }return out;}
-// Compare only the card price, not shipping. Mixed currencies require live FX.
-function highestOffer(rows,rates){
- if(!rows.length)return null;const currencies=new Set(rows.map(x=>x.currency));
- if(currencies.size>1&&[...currencies].some(c=>!Number.isFinite(rates?.[c])||rates[c]<=0))throw Error('FX_UNAVAILABLE');
- const score=q=>q.amount*(currencies.size===1?1:rates[q.currency]);
- return rows.reduce((best,q)=>!best||score(q)>score(best)?q:best,null);
-}
 function createHandler({env,fetcher=fetch,now=Date.now}){
- let token=null,tokenUntil=0,tokenPromise=null,fx=null,fxUntil=0;const cache=new Map();
+ let token=null,tokenUntil=0,tokenPromise=null;const cache=new Map();
  const get=async(url,opts={})=>fetcher(url,{...opts,signal:AbortSignal.timeout(6000)});
  async function accessToken(){if(token&&now()<tokenUntil)return token;if(tokenPromise)return tokenPromise;tokenPromise=(async()=>{const r=await get('https://api.ebay.com/identity/v1/oauth2/token',{method:'POST',headers:{Authorization:'Basic '+btoa(env('EBAY_CLIENT_ID')+':'+env('EBAY_CLIENT_SECRET')),'Content-Type':'application/x-www-form-urlencoded'},body:'grant_type=client_credentials&scope=https%3A%2F%2Fapi.ebay.com%2Foauth%2Fapi_scope'});if(!r.ok)throw Error('EBAY_AUTH');const d=await r.json();if(typeof d.access_token!=='string'||!Number.isFinite(d.expires_in))throw Error('EBAY_AUTH');token=d.access_token;tokenUntil=now()+Math.max(0,d.expires_in-120)*1000;return token})().finally(()=>{tokenPromise=null});return tokenPromise;}
  return async req=>{
@@ -43,10 +36,8 @@ function createHandler({env,fetcher=fetch,now=Date.now}){
   const key=JSON.stringify(c),hit=cache.get(key);if(hit&&now()-hit.at<900000)return reply(200,hit.data);
   // Durable per-account + app-wide budgets; the RPC uses the verified user JWT.
   const budget=await get(supabase+'/rest/v1/rpc/cardscope_ebay_allow_v1',{method:'POST',headers,body:'{}'});if(!budget.ok)return reply(503,{code:'BUDGET_SETUP'});if(await budget.json()!==true)return reply(429,{code:'RATE_LIMIT'});
-  const bearer=await accessToken(),url='https://api.ebay.com/buy/browse/v1/item_summary/search?'+new URLSearchParams({q:query(c),limit:'200',sort:'-price',filter:'buyingOptions:{FIXED_PRICE}'});const r=await get(url,{headers:{Authorization:'Bearer '+bearer,'X-EBAY-C-MARKETPLACE-ID':'EBAY_US'}});
-  if(r.status===401){token=null;tokenUntil=0}if(!r.ok)return reply(r.status===429?429:502,{code:'EBAY_UNAVAILABLE'});const result=await r.json(),candidates=offers(result.itemSummaries,c,new Date(now()).toISOString());
-  if(new Set(candidates.map(q=>q.currency)).size>1&&(!fx||now()>=fxUntil)){const response=await get('https://api.nbp.pl/api/exchangerates/tables/A/?format=json');if(!response.ok)throw Error('FX_UNAVAILABLE');const rows=await response.json();fx={PLN:1,...Object.fromEntries((rows[0]?.rates||[]).map(row=>[row.code,row.mid]))};fxUntil=now()+3600000;}
-  const highest=highestOffer(candidates,fx),data={selection:'highest-asking-v1',offers:highest?[highest]:[],scope:{marketplace:'EBAY_US',examined:result.itemSummaries?.length||0,total:Number(result.total)||0,limit:200},note:'Najwyższa cena samej karty spośród pasujących ofert w maksymalnie 200 wynikach eBay US, pobranych od najdroższych. To cena wystawienia, nie potwierdzona cena sprzedaży.'};cache.set(key,{at:now(),data});if(cache.size>300)cache.delete(cache.keys().next().value);return reply(200,data);
+  const bearer=await accessToken(),url='https://api.ebay.com/buy/browse/v1/item_summary/search?'+new URLSearchParams({q:query(c),limit:'20',filter:'buyingOptions:{FIXED_PRICE}'});const r=await get(url,{headers:{Authorization:'Bearer '+bearer,'X-EBAY-C-MARKETPLACE-ID':'EBAY_US'}});
+  if(r.status===401){token=null;tokenUntil=0}if(!r.ok)return reply(r.status===429?429:502,{code:'EBAY_UNAVAILABLE'});const result=await r.json(),data={offers:offers(result.itemSummaries,c,new Date(now()).toISOString())};cache.set(key,{at:now(),data});if(cache.size>300)cache.delete(cache.keys().next().value);return reply(200,data);
  }catch{return reply(502,{code:'UPSTREAM_UNAVAILABLE'})}
  };
 }

@@ -47,9 +47,8 @@ powyżej wdrożeniu przez edytor nie musisz z niego korzystać.
 E. TEST W APLIKACJI
 1. Wgraj pliki strony według INSTRUKCJA-AKTUALIZACJI.txt.
 2. Zaloguj się w CardScope. Otwórz kartę z pełnym kodem/numerem.
-3. W szczegółach znajdź „Najwyższa znaleziona oferta eBay”. Poczekaj na zakończenie pobierania.
-4. Jeżeli eBay zwróci pasujące oferty, pokaże się jedna najwyższa znaleziona
-   cena samej karty i link. Sprawdzamy do 200 wyników eBay US.
+3. W szczegółach znajdź „Ceny ofert eBay”. Poczekaj na zakończenie pobierania.
+4. Jeżeli eBay zwróci pasujące oferty, pokażą się kwoty i linki.
    Nie każda karta musi mieć pasującą aktywną ofertę.
 5. Wyniki są buforowane przez 15 minut. W głównej aplikacji kwoty korzystają
    z istniejącego wyboru waluty. Gdy przelicznik nie jest dostępny w danym
