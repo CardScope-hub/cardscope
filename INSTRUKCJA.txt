@@ -1,23 +1,36 @@
-CARDSCOPE — RÓWNY PASEK NAWIGACJI
-Wersja: nav-aligned-1
+CARDSCOPE — ZNAJOMI BEZ PRZEŁADOWANIA PASKA
+Wersja: friends-inline-1
 
-Wgraj wszystkie 5 plików z tej paczki do tego samego folderu GitHub Pages, w którym masz app.html i friends.html. Zastąp istniejące pliki i dodaj nowy app-navigation.css. Nie umieszczaj ich w dodatkowym podfolderze.
+JAK WGRAĆ
+1. Rozpakuj ZIP.
+2. W repozytorium GitHub otwórz folder z obecnymi app.html i login.html.
+3. Wgraj do niego wszystkie 12 plików .html, .css i .js z tej paczki. Zastąp istniejące pliki i dodaj nowe. Nie twórz osobnego podfolderu.
+4. Zapisz wszystkie zmiany jednym Commit changes i poczekaj na zakończenie publikacji GitHub Pages.
+5. Odśwież stronę, a na telefonie zamknij aplikację i otwórz ponownie po pobraniu aktualizacji.
 
-PLIKI DO WGRANIA
+PLIKI
 app-navigation.css
+app-route.js
 app.html
-friends-page.css
+auth-page.js
+friend-view.js
+friends-entry.js
+friends-page.js
+friends-screen.css
 friends.html
+login.html
+social-page.js
 sw.js
 
-Po zapisaniu zmian (Commit changes) poczekaj na zakończenie publikacji GitHub Pages. Odśwież stronę. Aplikację na telefonie zamknij i otwórz ponownie po pobraniu aktualizacji.
+CO ZMIENIONO
+Zakładka Znajomi znajduje się teraz wewnątrz app.html, tak jak Kolekcja, Bindery i pozostałe zakładki. Przejście do Znajomych nie ładuje osobnej strony friends.html. Pasek pozostaje tym samym elementem, z tymi samymi wymiarami i położeniem; zmienia się jedynie aktywna zakładka i treść ekranu.
 
-To mała poprawka do poprzedniej paczki z osobną zakładką Znajomi. Nie usuwaj innych plików aplikacji. Nie trzeba zmieniać Supabase ani kasować danych przeglądarki.
+Formularze logowania i ustawienia konta pozostają na oddzielnym ekranie. Nowe linki zaproszeń i powrót po logowaniu prowadzą bezpośrednio do widoku Znajomi w aplikacji. Starsze linki friends.html oraz login.html?view=friends są nadal obsługiwane.
 
-CO POPRAWIONO
-Pasek aplikacji i zakładki Znajomi korzysta teraz z jednego wspólnego stylu. Ma taką samą wysokość, odstęp od krawędzi, szerokość, wielkość przycisków i uwzględnienie bezpiecznych marginesów telefonu. Usunięto oddzielne reguły położenia paska ze strony Znajomi. Pasek jest przypięty niezależnie od długości listy znajomych. Na telefonie jest na dole, a na szerokim ekranie zachowuje dotychczasowe górne położenie głównej aplikacji.
+Poprzednie małe X przy kartach, duże kwadratowe X w oknach, prywatność kont i binderów, skaner oraz gra z kostką pozostają zachowane. Dane w Supabase nie wymagają żadnych zmian. Nie kasuj danych przeglądarki ani innych plików aplikacji. Starszy friends-page.css może pozostać na serwerze, ale nowy ekran już go nie używa.
 
-Zachowano osobny ekran Znajomi, małe X przy kartach i duże X przy zamykaniu okien. Logowanie, zaproszenia, karty i bindery działają przez dotychczasowe pliki.
+SPRAWDZENIE PO WGRANIU
+Przejdź: Start → Znajomi → Kolekcja → Znajomi → Bindery. Pasek ma pozostać na miejscu, bez przeładowania strony. Przy zwykłym kliknięciu zakładki Znajomi adres powinien pozostać w app.html. Widok powinien pokazać listę znajomych lub komunikat dla niezalogowanej osoby.
 
-SPRAWDZENIE
-Porównano kaskadę stylów na sześciu szerokościach (320–1280 px), w sześciu widokach aplikacji i na stronie Znajomi, z przykładowymi bezpiecznymi marginesami telefonu. Wymiary i położenie z reguł CSS były zgodne. Sprawdzono składnię service workera i integralność ZIP. To weryfikacja kodu; podgląd w prawdziwej przeglądarce i na telefonie nie był dostępny w środowisku przygotowania paczki.
+WERYFIKACJA
+Sprawdzono rzeczywistą funkcję przełączania widoków i obsługę przycisków aplikacji: 12 przejść zachowało ten sam dokument, pasek i jego przyciski. Sprawdzono stan gościa, sesję, wylogowanie, otwieranie/zamykanie okien, podgląd kolekcji, linki zaproszeń, powrót po logowaniu oraz odzyskiwanie hasła. Testy nie wykonywały zmian w Supabase. Podgląd w prawdziwej przeglądarce i na fizycznym telefonie nie był dostępny; zachowanie Safari/PWA wymaga sprawdzenia po publikacji.

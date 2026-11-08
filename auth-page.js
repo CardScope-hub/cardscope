@@ -144,13 +144,13 @@
   // Keep old invitations working; Auth consumes its callback before routing.
   const route=new URL(location.href),legacyFriends=route.searchParams.get('view')==='friends'||route.searchParams.has('invite');
   const returning=route.searchParams.get('return')==='friends'&&route.searchParams.get('view')==='login';
-  if(route.searchParams.get('return')==='friends'){const back=document.querySelector('.cs-login-back');back.href='./friends.html';back.textContent='← Wróć do znajomych';}
+  if(route.searchParams.get('return')==='friends'){const back=document.querySelector('.cs-login-back');back.href='./app.html?view=friends';back.textContent='← Wróć do znajomych';}
   const recoveryLink=new URLSearchParams(route.hash.slice(1)).get('type')==='recovery';
   let leaving=false;
   function returnToFriends(state){
     if(leaving||recoveryLink||state.recovery||state.error||!['guest','signed-in'].includes(state.status))return;
     if(!legacyFriends&&!(returning&&state.status==='signed-in'))return;
-    leaving=true;const target=new URL('friends.html',auth.loginUrl),invite=route.searchParams.get('invite');
+    leaving=true;const target=new URL('app.html?view=friends',auth.loginUrl),invite=route.searchParams.get('invite');
     if(invite&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(invite))target.searchParams.set('invite',invite);
     location.replace(target.href);
   }

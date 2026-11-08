@@ -17,7 +17,7 @@
  const el=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n;};
  const button=(text,action,cls='social-button')=>{const b=el('button',cls,text);b.type='button';b.onclick=action;return b;};
  function same(id,run){return owner===id&&version===run&&auth.state.user?.id===id}
- function link(value){const url=new URL('friends.html',auth.loginUrl);url.searchParams.set('invite',value);return url.href;}
+ function link(value){const url=new URL('app.html',auth.loginUrl);url.searchParams.set('view','friends');url.searchParams.set('invite',value);return url.href;}
  function paintLink(){const has=!!token;$('friend-link').hidden=!has;$('friend-link').value=has?link(token):'';$('friend-link-create').hidden=has;for(const n of ['copy','rotate','revoke'])$('friend-link-'+n).hidden=!has;$('friend-link-share').hidden=!has||!navigator.share;}
  function busy(value){working=value;for(const root of [$('friends-content'),addDialog])for(const b of root.querySelectorAll('button'))if(b.id!=='friends-add-close')b.disabled=value;}
  async function act(action,target){if(working||!owner)return;const id=owner,run=version;busy(true);message();try{await social.rpc(action,{p_target:target});if(!same(id,run))return;message(({request:'Zaproszenie wysłane.',accept:'Dodano do znajomych.',decline:'Zaproszenie odrzucone.',cancel:'Zaproszenie anulowane.',remove:'Usunięto ze znajomych.'})[action],'success');await refresh();if(modalProfile?.id===target){try{modalProfile=await social.rpc('profile',{p_target:target});paintModal()}catch{closeModal()}}if($('friends-search').value.trim().length>=2)void search();}catch(e){if(same(id,run))message(social.errorText(e),'error')}finally{if(same(id,run))busy(false)}}
@@ -48,7 +48,7 @@
  }
  function paintModal(){if(!modalProfile)return;const p=modalProfile,root=$('friend-profile-view'),cover=el('div','profile-cover');cover.dataset.theme=p.theme;const banner=el('div','profile-banner-image'),avatar=el('div','profile-avatar'),h=el('h2','',p.displayName);h.id='friend-profile-title';social.paintBanner(banner,p);social.paintAvatar(avatar,p);cover.append(banner,avatar,h,el('p','social-profile-game',CardProfile.games[p.game]||''));root.replaceChildren(cover,el('p','social-profile-bio',p.bio||'Kolekcjoner CardScope'),el('p','profile-field-help','#'+p.friendCode),actions(p));
   const browse=el('div','friend-browse-actions');if(p.canViewCollection){browse.append(button('▦ Kolekcja kart',()=>window.CardFriendView.open(p,'cards')),button('▣ Bindery',()=>window.CardFriendView.open(p,'binders')))}else browse.append(el('p','social-private-note','Konto prywatne — kolekcję i bindery mogą przeglądać zaakceptowani znajomi.'));root.append(browse);}
- async function openProfile(p){const id=owner,run=version;try{const result=await social.rpc('profile',{p_target:p.id});if(!same(id,run)||!result)return;modalProfile=result;modalOpener=document.activeElement;paintModal();$('friend-profile-dialog').showModal();$('friend-profile-close').focus()}catch(e){if(same(id,run))message(social.errorText(e),'error')}}
+ async function openProfile(p){const id=owner,run=version;try{const result=await social.rpc('profile',{p_target:p.id});if(!same(id,run)||!result||!visible)return;modalProfile=result;modalOpener=document.activeElement;paintModal();$('friend-profile-dialog').showModal();$('friend-profile-close').focus()}catch(e){if(same(id,run))message(social.errorText(e),'error')}}
  function closeModal(){$('friend-profile-dialog').close();modalProfile=null;$('friend-profile-view').replaceChildren();window.CardFriendView?.close();modalOpener?.focus()}
  $('friend-profile-close').onclick=closeModal;$('friend-profile-dialog').addEventListener('cancel',e=>{e.preventDefault();closeModal()});
  async function tokenAction(action){if(working||!owner)return;const id=owner,run=version;busy(true);try{const data=await social.rpc(action);if(!same(id,run))return;token=data.token||null;paintLink();message(action==='invite_revoke'?'Link wyłączony. Poprzednie linki już nie działają.':action==='invite_rotate'?'Nowy link jest gotowy. Poprzedni już nie działa.':'Link gotowy do wysłania.','success')}catch(e){if(same(id,run))message(social.errorText(e),'error')}finally{if(same(id,run))busy(false)}}
@@ -62,8 +62,8 @@
   if(owner&&visible&&!loaded&&social.state.status==='ready'){loaded=true;void refresh()}
   if(owner&&visible&&social.state.status==='error')message(social.state.error,'error');
  }
- window.addEventListener('cardscope-pane',e=>{const was=visible;visible=e.detail==='friends';if(visible&&!was)loaded=false;if(!visible&&addDialog.open)closeAdd();render()});
+ window.addEventListener('cardscope-pane',e=>{const was=visible;visible=e.detail==='friends';if(visible&&!was)loaded=false;if(!visible){searchRun++;clearTimeout(timer);if(addDialog.open)closeAdd();if($('friend-profile-dialog').open)closeModal();if($('friend-view')?.open)window.CardFriendView?.close()}render()});
  auth.subscribe(render);social.subscribe(render);visible=ui.pane==='friends';
  window.addEventListener('pagehide',()=>{if(addDialog.open)closeAdd()});
- if(invite&&!auth.state.recovery)ui.switchPane('friends');render();
+ if(invite&&new URLSearchParams(location.search).has('invite')&&!auth.state.recovery)ui.switchPane('friends');render();
 })();

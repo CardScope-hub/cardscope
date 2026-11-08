@@ -1,6 +1,6 @@
-// Restore the selected tab when returning from the standalone Friends screen.
+// Restore a deep link inside the existing app document.
 (()=>{
- const allowed=new Set(['scan','trading','collection','scanner','binders','centering']);
+ const allowed=new Set(['scan','trading','collection','scanner','binders','centering','friends']);
  function enter(){
   const url=new URL(location.href),view=url.searchParams.get('view');if(!allowed.has(view))return;
   const button=document.querySelector('nav.nav button[data-view="'+view+'"]');if(!button)return;

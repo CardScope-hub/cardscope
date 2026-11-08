@@ -1,0 +1,25 @@
+/* Only Friends content is styled here. The app owns the single navigation bar. */
+body[data-view="friends"]>main{max-width:1080px}
+#friends{--login-ink:#f7f3ff;--login-muted:#ada3be;--login-violet:#c6a8ff;min-width:0;overflow-anchor:none}
+#friends[hidden],#friends [hidden]{display:none!important}
+#friends-main{width:100%;max-width:1080px;margin:0 auto;min-height:55svh}
+#friends #friends-pane{padding:30px;border:1px solid #c6a8ef20;border-radius:28px;background:linear-gradient(145deg,#241c30c9,#15121c);box-shadow:0 18px 60px #0002}
+#friends .friends-heading{margin:0 0 28px;gap:20px}
+#friends .friends-heading h2{font-size:clamp(32px,5vw,48px);letter-spacing:-1.4px;line-height:1.1;margin:12px 0 10px}
+#friends .friends-heading p{font-size:14px;line-height:1.7}
+#friends .friends-add-icon{flex-shrink:0}
+#friends .social-private-note{line-height:1.8;max-width:720px}
+#friends #friends-session-status{margin:20px 0}
+#friends #friends-session-retry{margin-bottom:20px}
+#friends .cs-login-primary{display:flex;align-items:center;justify-content:center;min-height:48px;margin:16px auto 0;padding:13px 18px;border:1px solid #e4caff;border-radius:14px;background:linear-gradient(110deg,#dbc1ff,#b592ed);color:#24132f;font:700 13px/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;cursor:pointer}
+:is(#friends,#friends-add-dialog,#friend-profile-dialog) .auth-link{min-height:44px;padding:10px 13px;border:0;background:none;color:#c9acdf;font-size:12px;text-align:center;cursor:pointer}
+:is(#friends,#friends-add-dialog) .auth-notice{font-size:12px;line-height:1.7;padding:13px 15px;background:#a17bc816;border:1px solid #b897dc35;border-radius:12px;color:#d9c8ec;margin-bottom:18px;overflow-wrap:anywhere}
+:is(#friends,#friends-add-dialog) .auth-notice[data-kind=error]{background:#d66f8312;border-color:#ed9aac40;color:#f1bdc9}
+:is(#friends,#friends-add-dialog) .auth-notice[data-kind=success]{background:#86bf9e10;border-color:#9fc9b030;color:#c1e5ce}
+#friends :focus-visible{outline:2px solid #e5c6ff;outline-offset:3px}
+@media (max-width:600px){
+ #friends #friends-pane{padding:22px 17px;border-radius:23px}
+ #friends .friends-heading{gap:12px}
+ #friends .friends-heading .profile-eyebrow{font-size:8px;letter-spacing:1.1px}
+ #friends .friends-heading p{font-size:12px}
+}
