@@ -1,46 +1,48 @@
-CARDSCOPE — PASEK EBAY I PROSTSZA STRONA GŁÓWNA
-Wersja: ebay-home-2
+CARDSCOPE — PANEL PSA 10 / PSA 9 / PSA 8
+Aktualizacja 8 listopada 2026 · psa-panel-1
 
-CO ZMIENIONO
-• Wąski pasek „Sprawdź cenę na eBay” jest zapisany bezpośrednio pod
-  kafelkami cen. Pojawia się także bez zapisanej wyceny i bez logowania
-  do eBay. Link szuka wybranej karty z jej kodem i wariantem.
-• W wyniku skanu pasek jest pod główną ceną, a jeśli są dodatkowe
-  kafelki wycen — również bezpośrednio pod nimi.
-• Pasek jest też w szczegółach kolekcji, bindera, tradingu, karty
-  znajomego i udostępnionego bindera.
-• Krótszy tekst strony głównej, spokojniejsze tło, mniejsze sekcje
-  i instrukcje instalacji rozwijane osobno dla iOS oraz Androida.
-• Prezentacja pokazuje tylko wybrane rzadkie karty: 16 ilustracji
-  z 8 serii, w tym japoński Weiß Schwarz. Lista jest w pliku
-  KARTY-NA-STRONIE.txt. Przewijanie nie zmienia prezentacji.
-• Zachowano kompaktowy wynik zysku/straty i ukrywanie porównań bez danych.
+CO DODAJE PACZKA
+Bezpośrednio pod głównym paskiem eBay pojawia się mały fioletowy panel
+„Sprzedaże kart PSA” z trzema kafelkami: PSA 10, PSA 9 i PSA 8.
+Każdy kafelek prowadzi do sprzedanych ofert aktualnie oglądanej karty na eBay
+z wybraną oceną. Wyszukiwanie zawiera dostępne dane nazwy, numeru, dodatku,
+języka oraz wariantu karty. Sprawdź zgodność wydania w wynikach eBay.
 
-JAK WGRAĆ NA GITHUB PAGES
-1. Rozpakuj ZIP.
-2. Wgraj wszystkie pliki aplikacji z paczki do tego samego miejsca
-   w repozytorium, w którym znajduje się app.html. Zastąp istniejące
-   pliki o tych samych nazwach. Nie wgrywaj samego ZIP.
-3. Do istniejącego folderu assets dołącz folder showcase-rare z paczki.
-   Zachowaj pozostałe podfoldery i pliki assets.
-4. Zatwierdź zmiany (Commit changes) i zaczekaj na zakończenie wdrożenia
-   GitHub Pages. Paczka nie publikuje strony automatycznie.
-5. Otwórz stronę ponownie. Gdy pojawi się „Wczytaj aktualizację”, użyj
-   tej opcji. W aplikacji z ekranu głównego zamknij ją i otwórz ponownie.
+Panel działa w wyniku skanu, szczegółach kolekcji, binderze, tradingu,
+podglądzie karty znajomego i udostępnionym binderze. Nie dodaje osobnej zakładki.
 
-WAŻNE
-• Wgraj także nowe CSS, JavaScript, obrazy oraz sw.js — samo app.html
-  nie wystarczy. Nowe pliki są oznaczone wersją ebay-home-2, aby stary
-  cache nie przesłaniał poprawki.
-• Do linku wyszukiwania eBay nie potrzeba kluczy ani konfiguracji
-  Supabase. Opcjonalne pobieranie ceny liczbowej eBay korzysta nadal
-  z wcześniej skonfigurowanej funkcji serwerowej.
-• Ta aktualizacja nie wymaga nowego SQL ani zmiany supabase-config.js.
-• To aktualizacja istniejącej aplikacji, nie pełny instalator.
-  Nie usuwaj pozostałych plików repozytorium.
+CO OZNACZA „BRAK DANYCH”
+Ta wersja nie ma podłączonego źródła historii transakcji. Dlatego w aplikacji
+PSA 10, PSA 9 i PSA 8 pokazują „brak danych”; każdy kafelek można kliknąć,
+aby sprawdzić sprzedaże na eBay. To nie jest informacja, że nigdy nie było
+sprzedaży danej karty. Panel nie sprawdza automatycznie, czy eBay znalazł wynik.
+
+Nie przenosimy ceny aktywnej oferty ani wyceny karty bez gradingu do PSA.
+Ta paczka nie wyświetla automatycznie kwoty ani daty ostatniej transakcji.
+Do takich danych nadal potrzebne jest osobne źródło sprzedaży, opisane
+w poprzedniej wiadomości. Nie potrzeba klucza API do samych odnośników.
+
+JAK WGRAC
+1. Na dole strony Start w CardScope zsynchronizuj karty i bindery.
+2. Rozpakuj ZIP.
+3. W repozytorium GitHub otwórz folder zawierający obecny app.html.
+4. Wybierz Add file → Upload files i wgraj pliki z paczki bez tworzenia
+   dodatkowego podfolderu. Zastąp pliki o tych samych nazwach:
+   app.html, login.html, binder.html, price-links.js, ebay-card.css i sw.js.
+5. Zatwierdź Commit changes. Poczekaj na zakończenie wdrożenia GitHub Pages.
+6. Otwórz aplikację i kliknij „Wczytaj aktualizację”, jeśli zobaczysz komunikat.
+   Możesz też zamknąć ją całkowicie i uruchomić ponownie.
+
+To aktualizacja do obecnej wersji z bazami Cyberpunk i Lorcana. Jeżeli jeszcze
+nie wgrałeś tamtej paczki, zrób to przed tą aktualizacją. Nie usuwaj żadnych
+pozostałych plików. Nie zmieniaj supabase-config.js ani bazy danych Supabase.
 
 SPRAWDZENIE
-Przeszły testy działania pasków i linków, zmiany karty, ukrywania pustych
-porównań, zapisu ceny zakupu, rotacji ilustracji i kompletności plików.
-Sprawdzono wszystkie pobrane obrazy. Podgląd przeglądarkowy i test
-na fizycznym telefonie nie były dostępne w tym środowisku.
+Otwórz kartę i znajdź jej pasek eBay. Pod nim powinien być panel trzech ocen.
+Kliknięcie PSA 9 powinno otworzyć sprzedane oferty ze słowami „PSA 9”.
+Po zmianie karty albo wariantu wszystkie trzy odnośniki powinny dotyczyć
+nowego wyboru. W wyniku skanu panel jest tylko raz, przy górnym pasku eBay.
+
+Przeszły testy działania panelu, zmian kart, filtrów w odnośnikach, zachowania
+wyceny głównej i zgodności nowych kategorii. Podgląd przeglądarkowy był
+niedostępny w środowisku testowym; wyglądu na fizycznym telefonie nie sprawdzono.
