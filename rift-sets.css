@@ -1,0 +1,67 @@
+/* Scoped checklist styles: no transforms or positioning on the app/navigation. */
+#collection .b-collection-tabs{display:flex;flex-wrap:wrap;gap:8px}
+#collection .b-collection-tabs button{white-space:nowrap}
+#collection-sets[hidden],#collection-owned[hidden]{display:none!important}
+#collection-sets{min-width:0;margin-top:24px;color:#f5efff}
+#collection-sets *,dialog.rs-preview *{box-sizing:border-box}
+.rs-kicker{font-size:11px;letter-spacing:.14em;font-weight:650;color:#c0a3e6;margin:0 0 10px}
+.rs-intro h2,.rs-set-header h2{font-size:clamp(23px,4vw,34px);letter-spacing:-.7px;margin:0 0 12px;line-height:1.2}
+.rs-muted{color:#bcb1cb;font-size:14px;line-height:1.6;max-width:630px}
+.rs-shelf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:26px}
+#collection-sets button.rs-set{isolation:isolate;position:relative;min-height:217px;overflow:hidden;text-align:left;padding:25px 22px;border:1px solid #574269;border-radius:22px;background:linear-gradient(135deg,#30213f,#1a1525);color:#fff;transition:border-color .2s,box-shadow .2s}
+#collection-sets button.rs-set:hover{border-color:#c39dee;box-shadow:0 8px 28px #06030d55}
+.rs-set-art{position:absolute;right:-18px;top:15px;width:48%;height:240px;transform:rotate(12deg);z-index:-1;opacity:.3;mask-image:linear-gradient(90deg,transparent,#000 30%);pointer-events:none}
+.rs-set-art img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+.rs-set-text{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:9px;width:100%}
+.rs-set-code{font-size:10px;letter-spacing:.18em;color:#cebae9;border:1px solid #a286ba66;border-radius:6px;padding:4px 7px;background:#21192c}
+.rs-set-name{display:block;font-size:21px;line-height:1.2;font-weight:650;max-width:90%;min-height:26px}
+.rs-set-text strong{font-size:22px;font-weight:500;margin-top:10px;font-variant-numeric:tabular-nums}
+.rs-set-caption{font-size:11px;color:#c2b4d1;margin-top:-6px}
+.rs-set-arrow{position:absolute;right:20px;top:25px;font-size:18px;color:#d0b7ee}
+#collection-sets progress{appearance:none;-webkit-appearance:none;width:100%;height:5px;border:0;border-radius:9px;background:#ffffff18;overflow:hidden}
+#collection-sets progress::-webkit-progress-bar{background:#ffffff18;border-radius:9px}
+#collection-sets progress::-webkit-progress-value{background:linear-gradient(90deg,#d1b1ff,#a77be6);border-radius:9px}
+#collection-sets progress::-moz-progress-bar{background:#bd98f3;border-radius:9px}
+.rs-set-text progress{margin-top:5px}
+.rs-footnote{font-size:12px;line-height:1.6;color:#a89ab8;margin:24px 0 10px;max-width:760px}
+#collection-sets .rs-back{background:transparent;border:0;color:#d2b9f3;font-size:13px;padding:10px 0;min-height:44px;margin-bottom:14px}
+.rs-set-header{display:flex;align-items:center;justify-content:space-between;gap:24px;padding-bottom:20px;border-bottom:1px solid #ffffff12}
+.rs-set-progress{width:240px;max-width:100%;flex-shrink:0}
+.rs-set-progress p{font-size:13px;color:#cdb8e5;margin:0 0 10px;font-variant-numeric:tabular-nums}
+.rs-filters{margin:20px 0 12px;display:flex;flex-direction:column;gap:16px}
+.rs-statuses{display:flex;gap:6px;flex-wrap:wrap}
+#collection-sets .rs-statuses button{min-height:40px;border:1px solid #ffffff1a;background:#1d1727;border-radius:10px;padding:9px 13px;color:#c4b6d3;font-size:12px}
+#collection-sets .rs-statuses button[aria-pressed=true]{background:#c8a2f2;color:#251534;border-color:#dfc6ff;font-weight:650}
+.rs-fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,240px);gap:10px}
+#collection-sets .rs-fields input,#collection-sets .rs-fields select{width:100%;min-width:0;margin:0;min-height:46px;border:1px solid #584466;border-radius:12px;background:#1b1524;color:#eee6f9;font-size:16px;padding:10px 13px}
+.rs-results{font-size:12px;color:#a99ab9;margin:16px 0}
+.rs-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:23px 15px;align-items:start}
+#collection-sets button.rs-card{display:block;min-width:0;width:100%;padding:0;border:0;background:transparent;color:inherit;text-align:left;border-radius:10px;transition:none;box-shadow:none}
+.rs-card-art{position:relative;display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:744/1039;border:1px solid #b08bdb55;border-radius:10px;overflow:hidden;background:linear-gradient(145deg,#2d2438,#15111c);box-shadow:0 4px 14px #0003}
+.rs-card-art img{width:100%;height:100%;object-fit:contain;display:block}
+.rs-missing .rs-card-art img{filter:grayscale(1);opacity:.36}
+.rs-missing .rs-card-art{border-color:#ffffff16;background:#1b1920}
+.rs-owned-badge{position:absolute;left:6px;bottom:6px;background:#20132ff2;border:1px solid #c5a1ef80;color:#e8d7ff;font-size:10px;font-weight:650;line-height:1.2;padding:5px 7px;border-radius:6px;box-shadow:0 2px 7px #0004}
+.rs-missing .rs-owned-badge{background:#211e27f2;color:#c6c0ce;border-color:#ffffff22;font-weight:400}
+.rs-card-code{display:block;margin:9px 0 4px;color:#c0a2df;font-size:10px;letter-spacing:.03em}
+.rs-card-name{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13px;font-weight:500;line-height:1.4}
+.rs-missing .rs-card-name{color:#a7a1af}
+.rs-art-unavailable:before{content:'◇';font-size:42px;color:#665472}
+#collection-sets .rs-more{display:block;margin:28px auto 0;min-height:44px}
+#collection-sets .rs-more[hidden]{display:none}
+.rs-loading{color:#c6afd9;padding:40px 0}
+#collection-sets button:focus-visible,dialog.rs-preview button:focus-visible{outline:3px solid #e2c9ff;outline-offset:4px}
+dialog.rs-preview{position:fixed;inset:0;margin:auto;width:min(860px,calc(100% - 24px));max-width:none;max-height:calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom));padding:0;border:1px solid #85649e;border-radius:22px;background:#1b1425;color:#f5efff;overflow:hidden;box-shadow:0 24px 100px #0009}
+dialog.rs-preview::backdrop{background:#08050edb}
+dialog.rs-preview .rs-close{position:absolute!important;inset:12px 12px auto auto!important;transform:none!important;z-index:5!important;display:grid!important;place-items:center!important;width:48px!important;height:48px!important;min-width:48px!important;padding:0!important;border-radius:10px!important;border:2px solid #dfc7ff!important;background:#362445!important;color:white!important;font-size:32px!important;line-height:1!important;box-shadow:0 3px 16px #0009!important;opacity:1!important}
+.rs-preview-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:28px;align-items:center;max-height:calc(100dvh - 36px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow:auto;padding:72px 28px 28px;overscroll-behavior:contain}
+.rs-preview-art{display:flex;align-items:center;justify-content:center;min-width:0}
+.rs-preview-art img{display:block;max-width:100%;max-height:70dvh;object-fit:contain;border-radius:12px}
+.rs-preview-info h2{font-size:25px;line-height:1.3;margin:10px 0;overflow-wrap:anywhere}
+.rs-meta{color:#b6a0cc;font-size:12px;line-height:1.5}
+.rs-preview-status{color:#d6b9fa;font-size:14px;margin:20px 0}
+.rs-preview-info .primary{font-size:13px;min-height:46px;width:100%}
+@media(max-width:1000px){.rs-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.rs-shelf{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){#collection-sets{margin-top:20px}.rs-shelf{gap:10px}#collection-sets button.rs-set{padding:18px 14px;min-height:202px;border-radius:17px}.rs-set-name{font-size:18px;min-height:44px}.rs-set-text{gap:8px}.rs-set-text strong{font-size:20px;margin-top:4px}.rs-set-arrow{right:13px;top:19px}.rs-set-art{width:65%;opacity:.24}.rs-set-header{display:block}.rs-set-progress{width:100%;margin-top:18px}.rs-fields{grid-template-columns:1fr}.rs-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:19px 9px}.rs-card-name{font-size:11px}.rs-owned-badge{font-size:9px;left:4px;bottom:4px;padding:4px 5px}.rs-card-code{font-size:9px}.rs-preview-body{grid-template-columns:1fr;gap:20px;padding:70px 20px 25px}.rs-preview-art img{max-height:56dvh}.rs-preview-info h2{font-size:22px}.rs-statuses{gap:5px}#collection-sets .rs-statuses button{padding:8px;font-size:11px}}
+@media(max-width:360px){.rs-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.rs-set-name{font-size:16px}.rs-set-text strong{font-size:18px}}
+@media(prefers-reduced-motion:reduce){#collection-sets *{transition:none!important;animation:none!important}}

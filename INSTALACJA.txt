@@ -1,0 +1,64 @@
+CARDSCOPE — KOLEKCJA SETÓW RIFTBOUND
+Aktualizacja z 9 listopada 2026
+
+JAK WGRAC
+1. Rozpakuj ZIP na komputerze.
+2. W swoim repozytorium GitHub otwórz folder, w którym są app.html i sw.js.
+3. Wgraj do niego sześć plików z paczki:
+   app.html
+   sw.js
+   rift-set-core.js
+   rift-sets.js
+   rift-sets.css
+   riftbound-sets.json
+   Zastąp app.html i sw.js. Pozostałe cztery pliki są nowe.
+   Wgraj samą zawartość paczki, bez dodatkowego podfolderu.
+4. Zapisz zmiany (Commit changes) i poczekaj na zakończenie publikacji GitHub Pages.
+5. Otwórz stronę i odśwież. W aplikacji na telefonie zamknij ją całkowicie
+   i otwórz ponownie po wgraniu aktualizacji.
+6. Wejdź w Kolekcja → Sety Riftbound.
+
+Nie usuwaj pozostałych plików strony. To aktualizacja istniejącej aplikacji,
+nie kompletny nowy projekt. Nie wymaga zmian w Supabase, kluczy ani SQL.
+Nie usuwa danych konta i nie zmienia działania skanera.
+Pliki INSTALACJA.txt oraz WERYFIKACJA.txt są tylko instrukcją — nie musisz ich wgrywać.
+
+CO DODANO
+- Sześć setów: Origins, Proving Grounds, Spiritforged, Unleashed, Vendetta, Radiance.
+- Pełne podstawowe listy numerowane tych setów, a także warianty i dodatki
+  obecne w połączonym katalogu aplikacji i oficjalnej galerii.
+- Automatyczne oznaczanie posiadanych wydań z dotychczasowej kolekcji.
+- Brakujące wydania na szaro, posiadane w kolorze z liczbą kopii.
+- Licznik kompletności, wyszukiwanie po nazwie/numerze, filtry posiadania.
+- Osobny filtr: podstawowy set / alternatywne i sygnatury / runy, tokeny i dodatki.
+- Powiększenie każdej karty. Posiadaną kartę można otworzyć w zwykłym widoku
+  kolekcji, gdzie pozostają dotychczasowe ceny i opcje.
+- Dane setów pobierane raz, bez cyklicznego odświeżania siatki.
+
+JAK LICZYMY POSTĘP
+Jedno pole odpowiada jednemu wydaniu o konkretnym kodzie.
+Trzy kopie tej samej karty to jedno posiadane wydanie oraz oznaczenie „3 szt.”.
+Normal/foil o identycznym kodzie są liczone razem. Alternatywne ilustracje
+z innym numerem lub sufiksem i sygnatury z gwiazdką są osobnymi polami.
+Przełącznik „Podstawowy set” pokazuje wyłącznie jego podstawową listę numerowaną.
+Główny licznik kompletności obejmuje wszystkie wydania widoczne w katalogu setu,
+w tym dodatki; liczby na filtrach posiadania odnoszą się do całego setu.
+
+Dopasowanie opiera się na zapisanym identyfikatorze katalogowym lub serii i numerze.
+Ręcznie dodana karta bez numeru nie jest zgadywana tylko na podstawie nazwy.
+Uzupełnij jej poprawny numer/serię albo dodaj ją przez katalog/skaner.
+Sam podgląd brakującej karty nie dodaje jej do kolekcji.
+
+Sety zapisują się w pamięci aplikacji po aktualizacji. Obrazy kart pochodzą
+z istniejących źródeł i mogą wymagać internetu, jeśli nie były wcześniej wczytane.
+
+ŹRÓDŁA KATALOGU
+Oficjalna galeria Riot Games: https://playriftbound.com/en-us/card-gallery/
+Istniejący katalog CardScope z 7 listopada 2026 (Riftcodex / Riot Games / TCGplayer).
+Katalog setów deduplikuje wpisy, ale zachowuje stare identyfikatory dopasowania.
+Nie dołączono przyszłych, niewydanych setów Legacy i Reckoning.
+
+PACZKA PRZYGOTOWANA DLA
+https://cardscope-hub.github.io/cardscope/app.html
+Podstawa: bieżący kod strony z zachowaną aktualizacją Pokémon KO/ZH.
+Paczka nie została automatycznie opublikowana na Twoim GitHub Pages.

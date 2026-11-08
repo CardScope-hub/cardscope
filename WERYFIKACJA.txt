@@ -1,0 +1,39 @@
+WERYFIKACJA AKTUALIZACJI RIFTBOUND — 2026-11-09
+
+Katalog: 1488 unikalnych wydań w sześciu setach.
+Origins: 352, w tym 298 podstawowych.
+Proving Grounds: 24, w tym 24 podstawowe.
+Spiritforged: 309, w tym 221 podstawowych.
+Unleashed: 316, w tym 219 podstawowych.
+Vendetta: 248, w tym 166 podstawowych.
+Radiance: 239, w tym 167 podstawowych.
+
+Zweryfikowano ciągłość wszystkich podstawowych numerów w każdym secie.
+Uwaga: licznik oficjalnego API galerii nie odpowiada dokładnie liczbie rekordów
+osadzonych w jej stronie. Katalog połączono z istniejącymi wpisami CardScope,
+w tym brakującym w osadzonej galerii SFD-054/221. Liczba 1488 oznacza rozpoznane
+unikalne kody tego połączonego katalogu, nie deklarowaną liczbę rekordów API.
+
+Testy Node.js + Happy DOM:
+- Dopasowanie każdego starego identyfikatora z sześciu setów.
+- Numery z ukośnikiem, pełne kody, zera wiodące, sufiksy i gwiazdki.
+- Brak dopasowań między innymi grami/setami lub wyłącznie po nazwie.
+- Sumowanie kopii bez zawyżania kompletności.
+- Oddzielenie kart podstawowych, alternatywnych, sygnatur i tokenów.
+- Filtry, wyszukiwanie, doładowywanie kolejnych kart i wszystkie sześć setów.
+- Aktualizacja własności i usuwanie kart bez wymiany istniejących węzłów siatki.
+- Wyczyszczenie własności i zamknięcie podglądu przy zmianie konta.
+- Podgląd tylko do odczytu, przycisk zamknięcia i przywrócenie przewijania.
+- Ponowienie pobierania po błędzie sieci.
+- Zachowanie istniejącej nawigacji i zasobów skanera, w tym Pokémon KO/ZH.
+- Nowe zasoby w pamięci service workera i poprawne ścieżki /cardscope/.
+- Sprawdzenie składni JavaScript, w tym skryptów osadzonych w app.html.
+
+15 testów zakończonych poprawnie.
+Nie wykonywano zmian w Supabase ani na koncie produkcyjnym.
+
+OGRANICZENIE WERYFIKACJI
+W tej sesji nie był dostępny podgląd aplikacji w prawdziwej przeglądarce.
+Testy obejmują logikę, strukturę DOM i zdarzenia, ale nie potwierdzają renderowania
+na fizycznym iPhonie/Androidzie. Po publikacji sprawdź podgląd karty, filtry,
+stałe położenie dolnego paska oraz aktualizację po dodaniu jednej karty.
