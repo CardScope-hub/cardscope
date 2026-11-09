@@ -8,7 +8,9 @@
    kinds:[['all','Wszystkie wydania'],['base','Podstawowy set'],['alternate','Hyperspace, foil i inne warianty'],['extra','Tokeny']]},
   mtg: {name:'Magic: The Gathering',label:'Magic (MTG)',core:root.CardMTGSetCore,file:'mtg-sets.json?v=mtg-sets-1',lazy:true,packVersion:'mtg-sets-1',
    kinds:[['all','Wszystkie wydania'],['base','Standardowe ilustracje'],['alternate','Specjalne warianty'],['extra','Tokeny i dodatki']]},
-  pokemon:{name:'Pokémon',core:root.CardPokemonSetCore,lazy:true,packVersion:'pokemon-sets-1',kinds:[['all','Wszystkie karty']]}
+  pokemon:{name:'Pokémon',core:root.CardPokemonSetCore,lazy:true,packVersion:'pokemon-sets-1',kinds:[['all','Wszystkie karty']]},
+  cyberpunk:{name:'Cyberpunk TCG',label:'Cyberpunk',core:root.CardCyberpunkSetCore,file:'cyberpunk-sets.json?v=cyberpunk-sets-1',count:17,
+   kinds:[['all','Wszystkie rzadkości'],['standard','Common, Uncommon, Rare, Epic'],['premium','Iconic, Secret, Nova Rare']]}
  };
  const pokemonLanguages={en:'Angielski',ja:'Japoński',de:'Niemiecki',fr:'Francuski',es:'Hiszpański',it:'Włoski',pt:'Portugalski',ko:'Koreański','zh-cn':'Chiński uproszczony','zh-tw':'Chiński tradycyjny'};
  let pokemonLanguage='en';
@@ -147,14 +149,15 @@
   tile.node.setAttribute('aria-label', `${set.name}: ${stats.owned} z ${stats.total} wydań w kolekcji. Otwórz set.`);
  }
  function cardsForSet(id) { return index.bySet?.get(id) || index.data.cards.filter(c=>c.setId===id); }
+ const cyberpunkCategories={expansion:'Główne wydania',starter:'Talie startowe',promo:'Promocje',demo:'Talie demonstracyjne'};
  const categoryNames={main:'Dodatki i edycje główne',commander:'Commander',special:'Zestawy specjalne',promo:'Promocje',extra:'Tokeny i dodatki'};
  function renderShelf() {
   const normalized=s=>String(s||'').normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase();
-  const terms=normalized(['mtg','pokemon'].includes(game)?setQuery:'').split(/\s+/).filter(Boolean);
-  const matches=index.data.sets.filter(s=>(game!=='mtg'||setCategory==='all'||s.category===setCategory)
+  const terms=normalized(['mtg','pokemon','cyberpunk'].includes(game)?setQuery:'').split(/\s+/).filter(Boolean);
+  const matches=index.data.sets.filter(s=>(!['mtg','cyberpunk'].includes(game)||setCategory==='all'||s.category===setCategory)
    && (game!=='mtg'||setYear==='all'||s.year===setYear)
    && terms.every(t=>normalized(s.id+' '+s.name+' '+(s.aliases||[]).join(' ')).includes(t)));
-  const shown=['mtg','pokemon'].includes(game)?matches.slice(0,setLimit):matches;
+  const shown=['mtg','pokemon','cyberpunk'].includes(game)?matches.slice(0,setLimit):matches;
   tiles=new Map();shelf.replaceChildren();
   for (const set of shown) {
    const tile = button('', 'rs-set', () => openSet(set.id));tile.dataset.setId=set.id;
@@ -162,8 +165,9 @@
    const text = el('span', null, 'rs-set-text');
    const bar = el('progress'); bar.setAttribute('aria-label', `Kompletność setu ${set.name}`);
    const count = el('strong');
-   text.append(el('span', set.code || set.id, 'rs-set-code'), el('span', set.name, 'rs-set-name'));
+   text.append(el('span', set.displayCode || set.code || set.id, 'rs-set-code'), el('span', set.name, 'rs-set-name'));
    if(game==='mtg')text.append(el('span',set.preview?'Przedsprzedaż · '+set.releaseDate:(set.year+' · '+categoryNames[set.category]),'rs-set-date'));
+   if(game==='cyberpunk'){const date=el('span',set.previewLabel||cyberpunkCategories[set.category],'rs-set-date');if(set.preview)date.classList.add('rs-preview-label');text.append(date)}
    text.append(count, el('span', 'wydań w kolekcji', 'rs-set-caption'), bar);
    tile.append(art, text, el('span', '↗', 'rs-set-arrow')); shelf.append(tile);
    tiles.set(set.id, { node: tile, count, bar }); updateTile(set);
@@ -179,11 +183,16 @@
   shelf = el('div', null, 'rs-shelf');
   shelfResults=el('p',null,'rs-results');shelfResults.setAttribute('role','status');
   shelfMore=button('Pokaż kolejne sety','secondary rs-more',()=>{setLimit+=30;renderShelf()});
-  const controls=el('div',null,'rs-set-controls');controls.hidden=!['mtg','pokemon'].includes(game);
-  if(['mtg','pokemon'].includes(game)){
-   const search=el('input');search.className='rs-set-search';search.type='search';search.placeholder=game==='pokemon'?'Nazwa lub kod setu Pokémon…':'Szukaj setu, np. LTR, Star Trek, Bloomburrow…';search.value=setQuery;search.setAttribute('aria-label','Szukaj setu '+games[game].name);
+  const controls=el('div',null,'rs-set-controls');controls.hidden=!['mtg','pokemon','cyberpunk'].includes(game);
+  if(['mtg','pokemon','cyberpunk'].includes(game)){
+   const search=el('input');search.className='rs-set-search';search.type='search';search.placeholder=game==='pokemon'?'Nazwa lub kod setu Pokémon…':game==='cyberpunk'?'Szukaj zestawu, np. Retail, Beta, The Heist…':'Szukaj setu, np. LTR, Star Trek, Bloomburrow…';search.value=setQuery;search.setAttribute('aria-label','Szukaj setu '+games[game].name);
    search.addEventListener('input',()=>{setQuery=search.value;setLimit=30;renderShelf()});
    controls.append(search);
+   if(game==='cyberpunk'){
+    const category=el('select');category.className='rs-set-category';category.setAttribute('aria-label','Rodzaj zestawu Cyberpunk');
+    for(const [value,label] of [['all','Wszystkie zestawy'],...Object.entries(cyberpunkCategories)]){const o=el('option',label);o.value=value;category.append(o)}
+    category.value=setCategory;category.addEventListener('change',()=>{setCategory=category.value;setLimit=30;renderShelf()});controls.append(category);
+   }
    if(game==='mtg'){
    const select=el('select');select.className='rs-set-type';select.setAttribute('aria-label','Rodzaj setu MTG');
    for(const [value,label] of [['all','Wszystkie rodzaje'],...Object.entries(categoryNames)]){const o=el('option',label);o.value=value;select.append(o)}
@@ -193,7 +202,9 @@
    year.value=setYear;year.addEventListener('change',()=>{setYear=year.value;setLimit=30;renderShelf()});controls.append(select,year);
    }
   }
-  mount(intro,controls,shelfResults,shelf,shelfMore,el('p',game==='pokemon'
+  mount(intro,controls,shelfResults,shelf,shelfMore,el('p',game==='cyberpunk'
+   ? 'Retail, Beta, talie i promocje mają osobne kolekcje. Różne numery oraz warianty a/b liczymy osobno; kilka kopii i wykończenia tego samego wydania zajmują jedno pole. Zapowiedzi obejmują karty udostępnione w katalogu.'
+   : game==='pokemon'
    ? 'Każdy język ma własne sety i postęp. Kilka kopii oraz wykończenia tego samego numeru liczymy razem. Karty pochodzą z katalogów aplikacji; brakującej ilustracji nie zastępujemy innym wydaniem. Szczegóły setu wczytują się po jego otwarciu.'
    : game==='mtg'
    ? 'Wydania papierowe z katalogu Scryfall. Różne sety i numery mają osobne pola; wersje językowe i wykończenia tego samego numeru liczymy razem. Karty setu wczytują się po jego otwarciu.'
@@ -236,8 +247,8 @@
   host.replaceChildren();
   const back = button('← Wszystkie sety', 'rs-back', () => { overview(); setsTab.focus({preventScroll:true}); });
   const header = el('div', null, 'rs-set-header');
-  const title = el('div'); title.append(el('p', `${games[game].name.toUpperCase()} / ${id}`, 'rs-kicker'), el('h2', currentSet.name));
-  if(currentSet.preview)title.append(el('p','Przedsprzedaż · premiera '+currentSet.releaseDate,'rs-set-date'));
+  const title = el('div'); title.append(el('p', `${games[game].name.toUpperCase()} / ${currentSet.displayCode || currentSet.code || id}`, 'rs-kicker'), el('h2', currentSet.name));
+  if(currentSet.preview)title.append(el('p',currentSet.previewLabel || 'Przedsprzedaż · premiera '+currentSet.releaseDate,'rs-set-date'));
   const progress = el('div', null, 'rs-set-progress'); progressText = el('p'); progressBar = el('progress'); progressBar.setAttribute('aria-label', 'Kompletność całego setu');
   progress.append(progressText, progressBar); header.append(title, progress);
   const filters = el('div', null, 'rs-filters'), statuses = el('div', null, 'rs-statuses'); statuses.setAttribute('role', 'group'); statuses.setAttribute('aria-label', 'Posiadanie kart');
@@ -299,7 +310,7 @@
  }
  function collectionChanged(next) {
   saved = Array.isArray(next) ? next : [];
-  const fingerprint = root.CardPokemonSetCore.fingerprint(saved); if (stamp === fingerprint) return;
+  const fingerprint = JSON.stringify([root.CardPokemonSetCore.fingerprint(saved),saved.map(c=>[c.officialPrintingId,c.tcgplayerId])]); if (stamp === fingerprint) return;
   stamp = fingerprint;
   if (index) { owned = core.ownership(index, saved); refresh(); }
  }
