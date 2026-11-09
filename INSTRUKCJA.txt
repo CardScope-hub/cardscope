@@ -1,83 +1,30 @@
-CARDSCOPE — AKTUALIZACJA SKANERA
-Wersja: scanner-session-1 · 9 listopada 2026
+CARDSCOPE — POMOC Z KAMERĄ POD SKANEM NA ŻYWO
 
-JAK WGRAĆ
-1. Zrób kopię obecnych plików strony albo zachowaj możliwość powrotu do
-   poprzedniego commita w GitHub.
-2. Rozpakuj ZIP. Wgraj wszystkie 14 plików aplikacji z tej paczki bezpośrednio
-   do tego samego folderu repozytorium, w którym masz obecny app.html.
-   Zastąp pliki o tych samych nazwach. Nie twórz dodatkowego podfolderu.
-   INSTRUKCJA.txt jest tylko dla Ciebie — nie trzeba jej publikować.
-3. Nie usuwaj innych plików. Zachowaj swoje bazy kart, konfigurację Supabase
-   oraz istniejące foldery ocr-runtime, ws-ocr i ocr-asian.
-4. Poczekaj na zakończenie publikacji GitHub Pages. Otwórz stronę, odśwież ją,
-   a aplikację dodaną do ekranu telefonu zamknij i uruchom ponownie.
-   Nowy przycisk pod wynikami skanu nazywa się „Dokładniejszy odczyt”.
-5. Ta aktualizacja nie wymaga żadnego SQL ani zmiany ustawień Supabase.
-   Nie czyść danych witryny ani pamięci kolekcji.
+Wgraj cztery pliki z paczki do głównego folderu repozytorium GitHub,
+obok obecnego app.html, i zastąp pliki o tych samych nazwach:
 
-Jest to mała aktualizacja istniejącej strony, a nie pełna instalacja.
-Nie zawiera starych dodatków, baz kart ani dużych modeli OCR.
-Zachowuje odnośniki do ostatniej aktualizacji sortowania kolekcji znajomych.
-Nie zastępuje osobnej migracji SQL potrzebnej do tej wcześniejszej funkcji.
+app.html
+app-layout.css
+app-layout.js
+sw.js
+
+Kliknij Commit changes. Po zakończeniu publikacji GitHub Pages odśwież
+cardscope.pl, a aplikację na telefonie zamknij i otwórz ponownie.
+Nie usuwaj pliku CNAME ani pozostałych plików repozytorium.
+Nie trzeba zmieniać niczego w Simply ani Supabase.
 
 CO ZMIENIONO
-• Zdrowy, gotowy silnik OCR pozostaje dostępny dla kolejnej karty. Nie jest
-  uruchamiany od nowa po każdym zakończonym skanie. Nieaktywny silnik jest
-  zwalniany po 2 minutach; zamknięcie lub ukrycie aplikacji też zwalnia zasoby.
-• Anulowanie przerywa trwający odczyt. Spóźniony wynik nie może nadpisać nowej
-  karty. Dodano limity czasu pracy silnika i ochronę przed równoległymi odczytami.
-• Tryb automatyczny nie kończy już szukania tylko dlatego, że tekst przypomina
-  kod karty. Sprawdzana jest zgodność z katalogiem, kompletność wyników
-  i sprzeczności. Podobny numer pozostaje propozycją do potwierdzenia.
-• Weiß EN/JP: niezależne odczyty stopki są prawidłowo rozróżniane. Zachowano
-  potwierdzanie kodu z więcej niż jednego odczytu oraz rozróżnianie wariantów.
-• Poprawiono przeliczanie położenia tekstu po zmianie rozmiaru obrazu przez OCR.
-  Pomaga to kierować nazwę i numer do właściwej części rozpoznawania.
-• Ręczny skan MTG i Star Wars zaczyna od powiększonego numeru oraz serii.
-  Potwierdzony wynik omija odczyt całego obrazu i słownika nazw.
-• W automatycznym rozpoznawaniu i Weiß ograniczono nadmiarowe próby. Przycisk
-  „Dokładniejszy odczyt” uruchamia szerszą próbę dla trudnego ujęcia.
-  W pozostałych kategoriach przycisk uruchamia odczyt rezerwowy.
-• Po nieudanym odczycie angielskiej karty skaner nie ładuje bez powodu modelu
-  japońskiego i słowników wszystkich gier. Ręczny wybór kategorii pozostaje.
-• Skan na żywo czeka na ustabilizowanie kadru, podpowiada przy bardzo ciemnym,
-  prześwietlonym lub nieostrym obrazie i pomija powtarzany nieruchomy kadr
-  przez krótki czas. Ręczny przycisk skanu nadal działa.
-• Ręczne uchwycenie wybiera najostrzejsze z 3 ujęć zamiast 5.
-• Znana karta Pokémon otwiera się od razu z lokalnego katalogu. Szczegóły
-  i ceny doładowują się osobno; odpowiedź dla wcześniejszej karty jest odrzucana.
-• Aktualizacja ponownie wykorzystuje niezmienione pliki o dokładnie tym samym
-  adresie wersji. Modele OCR mają osobną pamięć podręczną, zachowywaną między
-  kolejnymi aktualizacjami aplikacji.
+Instrukcja „Kamera się nie uruchamia?” znajduje się bezpośrednio pod
+sekcją skanu na żywo i nad „Język i ustawienia skanera”. Po rozwinięciu
+lub wystąpieniu błędu pozostaje w tym samym miejscu.
+Przyciski pomocnicze aparatu mają też określone miejsce w układzie,
+żeby po pokazaniu nie przeskakiwały nad przycisk skanowania.
 
-SPRAWDZENIE PO INSTALACJI
-• Spróbuj zeskanować kilka kolejnych kart w tej samej kategorii. Pierwszy skan
-  może być wolniejszy, zwłaszcza podczas pierwszego pobierania modelu.
-• Zrób próbę ze znaną kartą Weiß EN i JP, MTG oraz Star Wars. Gdy numer lub
-  wariant jest niepewny, wybierz zgodną propozycję albo dokładniejszy odczyt.
-• Anuluj jeden odczyt i od razu zeskanuj inną kartę. Nie powinien wrócić stary wynik.
-• Włącz skan na żywo, przytrzymaj kartę nieruchomo, a potem wymień ją na inną.
-• Ustaw kartę w ramce i unikaj odblasków. Zwiększona liczba prób nie odzyska
-  szczegółów, których nie widać w obrazie.
+Paczka jest oparta na plikach pobranych z cardscope.pl i zawiera tylko
+zmiany układu oraz odświeżenie wersji pamięci podręcznej.
 
-WERYFIKACJA TEJ PACZKI
-23 automatyczne testy zakończyły się powodzeniem. Sprawdzają m.in. anulowanie,
-ponowne używanie silników, limity czasu, zgodność kodów, niepewne warianty,
-stabilizację skanu na żywo, aktualizację cache, zachowanie wcześniejszych
-odnośników aplikacji i poprawność składni wszystkich zmienionych modułów.
-
-W dodatkowym teście prawdziwego OCR użyto 4 zapisanych obrazów Weiß (2 EN,
-2 JP), każdy także po lekkim obrocie: razem 8 próbek. Prawidłowa karta znalazła
-się w propozycjach dla wszystkich 8 próbek zarówno przed, jak i po zmianie.
-Pewne potwierdzenie numeru uzyskano w 1 z 8 prób w obu wersjach; pozostałe
-wyniki wymagają potwierdzenia przez użytkownika. Nowa wersja wykonała 43
-przebiegi OCR zamiast 46 i uruchomiła modele 6 razy zamiast 11.
-
-To mały test regresji na komputerze, z katalogiem ograniczonym do kart
-próbnych — nie pomiar skuteczności pełnej bazy ani benchmark telefonu.
-Nie wykonano testów prawdziwej kamery na Androidzie/iOS ani porównania
-z konkurencyjnymi aplikacjami. Nie ma podstaw do deklarowania 100% trafności
-lub tytułu „najlepszy na rynku”. Dostęp do katalogów i cen nadal zależy od
-połączenia oraz dostępności ich źródeł. Nowe rozpoznawanie działa lokalnie
-bez dodatkowego klucza API.
+WERYFIKACJA
+Sprawdzono kolejność elementów HTML i CSS, zachowanie treści pomocy
+oraz identyfikatorów, wersje zasobów i składnię JavaScript.
+Podgląd w przeglądarce był niedostępny; nie wykonano testu wizualnego
+na telefonie.

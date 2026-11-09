@@ -14,13 +14,17 @@ body[data-view="binders"] #binders,body[data-view="binder"] #binder{animation:no
 #scanner>.shutter-row{order:1;flex:none;width:100%;max-width:330px;margin:0 auto;padding:12px 18px 8px}
 #scanner>.scanner-category{order:2}
 #scanner>#live-panel{order:3;margin:10px 0 14px}
-#scanner>.scanner-config{order:4;margin:0 0 14px}
-#scanner>#camera-status{order:5}
-#scanner>#camera-retry{order:6}
-#scanner>.scanner-secondary-tools{order:7}
-#scanner>.scan-upload-label{order:8}
-#scanner>#scan-upload{order:9}
-#scanner>.crop-note{order:10}
+/* Camera help belongs directly below live scanning, including on errors. */
+#scanner>#camera-help{order:4;margin-top:0}
+#scanner>.scanner-config{order:5;margin:0 0 14px}
+#scanner>#camera-status{order:6}
+#scanner>#camera-retry{order:7}
+#scanner>#camera-play{order:8}
+#scanner>#camera-device-label{order:9}
+#scanner>.scanner-secondary-tools{order:10}
+#scanner>.scan-upload-label{order:11}
+#scanner>#scan-upload{order:12}
+#scanner>.crop-note{order:13}
 .scanner-category{display:block;padding:12px 15px;border:1px solid #c5a3f02b;border-radius:16px;background:#21192d;margin:4px 0 0;flex:none}
 .scanner-category>div{display:flex;align-items:center;gap:12px;min-width:0}
 .scanner-category label{margin:0;flex:0 0 auto;font-size:11px;color:#c3afd9}

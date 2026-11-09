@@ -9,7 +9,10 @@ globalThis.CardLayout=(()=>{
   if(!category.contains(select)){const field=document.createElement('div'),label=document.querySelector('label[for="scan-game"]')||document.createElement('label');label.htmlFor='scan-game';label.textContent='Kategoria kart';field.append(label,select);category.append(field);}
   const summary=config.querySelector('summary>span');if(summary)summary.textContent='Język i ustawienia skanera';
   if(body)for(const id of ['auto-scan-options','weiss-scan-options','swu-scan-options']){const control=byId(id);if(control&&!body.contains(control))body.append(control);}
-  const ordered=[camera,shutter,category,byId('live-panel'),config,byId('camera-status'),byId('camera-retry'),section.querySelector('.scanner-secondary-tools')].filter(Boolean);
+  const ordered=[camera,shutter,category,byId('live-panel'),byId('camera-help'),config,
+   byId('camera-status'),byId('camera-retry'),byId('camera-play'),byId('camera-device-label'),
+   section.querySelector('.scanner-secondary-tools'),section.querySelector('.scan-upload-label'),
+   byId('scan-upload'),section.querySelector('.crop-note')].filter(Boolean);
   let previous=null;for(const el of ordered){const expected=previous?previous.nextElementSibling:section.firstElementChild;if(expected!==el)section.insertBefore(el,expected);previous=el;}
   section.dataset.layout='camera-first-v2';
  }
