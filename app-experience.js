@@ -8,6 +8,33 @@
   running.add(effect);effect.onfinish=effect.oncancel=()=>running.delete(effect);return effect;
  }
  function cancelMotion(){for(const a of running)a.cancel();running.clear()}
+ const collectionOrder=new Intl.Collator('pl',{sensitivity:'base',numeric:true});
+ const collectionText=value=>typeof value==='string'||typeof value==='number'?String(value).normalize('NFKC').trim().replace(/\s+/g,' '):'';
+ function collectionSet(card){
+  if(card.set&&typeof card.set==='object'){
+   for(const key of ['name','label','id','code','set_id']){const value=collectionText(card.set[key]);if(value)return value}
+   return '';
+  }
+  return collectionText(card.set);
+ }
+ function sortBySet(items,direction){
+  const keys=new Map(items.map(card=>[card,{
+   set:collectionSet(card),game:collectionText(card.game||card.catalogGame),
+   language:collectionText(card.catalogLanguage||card.artworkLanguage||card.language),
+   number:collectionText(card.number)||collectionText(card.localId),name:collectionText(card.name)
+  }]));
+  return items.sort((a,b)=>{
+   const x=keys.get(a),y=keys.get(b);
+   // Unknown sets stay last in both directions. Keep games and languages
+   // together when different editions happen to share the same set title.
+   if(!x.set&&y.set)return 1;if(x.set&&!y.set)return -1;
+   const group=direction*collectionOrder.compare(x.set,y.set)
+    ||collectionOrder.compare(x.game,y.game)||collectionOrder.compare(x.language,y.language);
+   if(group)return group;
+   if(!x.number&&y.number)return 1;if(x.number&&!y.number)return -1;
+   return collectionOrder.compare(x.number,y.number)||collectionOrder.compare(x.name,y.name);
+  });
+ }
  let lastCount=null,gameSignature='';
  const experience={
   refreshHome(){
@@ -44,6 +71,10 @@
    const mode=$('collection-sort').value;
    let sortNote='';
    if(mode==='name')found.sort((a,b)=>a.name.localeCompare(b.name,'pl',{sensitivity:'base'}));
+   else if(mode==='set-asc'||mode==='set-desc'){
+    sortBySet(found,mode==='set-asc'?1:-1);
+    sortNote=' · według dodatku, potem numeru karty';
+   }
    else if(mode==='quantity')found.sort((a,b)=>b.qty-a.qty);
    else if(mode==='value-asc'||mode==='value-desc'){
     const currency=globalThis.CardCurrency,target=currency?.selected||'PLN',values=new Map();

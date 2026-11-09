@@ -5,6 +5,19 @@ globalThis.CardTabletopCore=(()=>{
  const validTime=n=>Number.isSafeInteger(n)&&n>=0;
  const validCount=n=>Number.isInteger(n)&&n>=2&&n<=6;
  const playerName=(v,i)=>String(v||'').trim().slice(0,24)||'Gracz '+(i+1);
+ // Cosmetic leader data is optional. A broken image record must never discard a game.
+ function leaderData(value){
+  if(!value||typeof value!=='object'||typeof value.id!=='string'||!/^([A-Z0-9]{2,8})-(\d{1,5})$/.test(value.id)||typeof value.name!=='string'||!value.name.trim()||value.name.length>100)return null;
+  const [set,number]=value.id.split('-');
+  if(value.set!==set||value.image!=='https://cdn.swu-db.com/images/cards/'+set+'/'+number+'.png')return null;
+  return {id:value.id,name:value.name.trim(),subtitle:typeof value.subtitle==='string'?value.subtitle.slice(0,160):'',set,setName:typeof value.setName==='string'?value.setName.slice(0,120):set,image:value.image};
+ }
+ function setLeader(s,player,value){
+  if(!Number.isInteger(player)||!s.players[player])throw Error('Nieprawidłowy gracz.');
+  const leader=value===null?null:leaderData(value);
+  if(value!==null&&!leader)throw Error('Nie można wybrać tego lidera.');
+  return {...s,players:s.players.map((p,i)=>{if(i!==player)return p;const next={...p};if(leader)next.leader=leader;else delete next.leader;return next;})};
+ }
  function startingLife(value){const text=String(value).trim();if(!/^\d{1,4}$/.test(text)||Number(text)<1)throw Error('Wpisz początkowe życie od 1 do 9999.');return Number(text);}
  function create(value,names=[],count=2,now=Date.now()){
   if(!validCount(count))throw Error('Wybierz od 2 do 6 graczy.');if(!validTime(now))throw Error('Nie można odczytać czasu urządzenia.');
@@ -31,7 +44,7 @@ globalThis.CardTabletopCore=(()=>{
    scores[e.player]=e.after;events.push(event);
   }
   if(scores.some((x,i)=>x!==s.players[i].life)||lastStarter!==s.starter)return null;
-  return {version:2,initial:s.initial,players:s.players.map(p=>({name:p.name,life:p.life})),starter:s.starter,startedAt:s.startedAt,timerEstimated:s.timerEstimated,historyPartial:s.historyPartial,baseline:[...s.baseline],events};
+  return {version:2,initial:s.initial,players:s.players.map(p=>{const next={name:p.name,life:p.life},leader=leaderData(p.leader);if(leader)next.leader=leader;return next;}),starter:s.starter,startedAt:s.startedAt,timerEstimated:s.timerEstimated,historyPartial:s.historyPartial,baseline:[...s.baseline],events};
  }
  function restore(s,now=Date.now()){
   if(s?.version===2)return validate(s);
@@ -68,5 +81,5 @@ globalThis.CardTabletopCore=(()=>{
  }
  function elapsed(s,now=Date.now()){return Math.max(0,Math.floor((now-s.startedAt)/1000));}
  function formatDuration(seconds){seconds=Math.max(0,Math.floor(seconds));const h=Math.floor(seconds/3600),m=Math.floor(seconds%3600/60),s=seconds%60;return (h?String(h).padStart(2,'0')+':':'')+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
- return Object.freeze({MIN,MAX,startingLife,create,validate,restore,change,undo,undoTarget,draw,elapsed,formatDuration});
+ return Object.freeze({MIN,MAX,leaderData,setLeader,startingLife,create,validate,restore,change,undo,undoTarget,draw,elapsed,formatDuration});
 })();
