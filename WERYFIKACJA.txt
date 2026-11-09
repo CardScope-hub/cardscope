@@ -1,35 +1,36 @@
-WERYFIKACJA — SETY MTG — 2026-11-09
+WERYFIKACJA AKTUALIZACJI — 2026-11-09
 
-Katalog: 998 setów / 110 821 numerowanych wydań kart / 40 paczek danych.
-Kategorie: 204 dodatki i edycje główne, 45 Commander, 117 zestawów specjalnych,
-297 promocyjnych oraz 335 list tokenów, art series i dodatków.
-Siedem list Star Trek z premierą 2026-11-13 oznaczono jako przedsprzedaż.
-Źródło zawiera 162 rekordy bez obrazów; wyświetlane są jako opisane pola.
+81 testów automatycznych zakończonych powodzeniem:
+- 15: regresja kolekcji setów Riftbound.
+- 13: regresja kolekcji Star Wars: Unlimited.
+- 18: regresja MTG, leniwe pobieranie kart, podgląd dwustronnych kart.
+- 17: sety Pokémon, wszystkie identyfikatory i pakiety, niezależne języki,
+  posiadanie/kopie, wyszukiwanie, paginacja, błędy pobierania, zmiana konta,
+  odrzucenie spóźnionej odpowiedzi po zmianie języka, pamięć podręczna PWA.
+- 18: scenariusze startu kamery przy symulowanym sprzęcie i uprawnieniach:
+  mniej wymagające ustawienia, odmowa dostępu, brak sprzętu, blokada odtwarzania,
+  pierwsza klatka, wadliwe capabilities, zawieszona regulacja ostrości,
+  przerwanie startu, powrót z tła, wielokrotne kliknięcie, zmiana aparatu,
+  zapasowe zdjęcie z aparatu telefonu.
 
-WYNIK: 46 TESTÓW ZAKOŃCZONYCH POPRAWNIE
-15 testów Riftbound + 13 testów Star Wars: Unlimited + 18 testów MTG.
+Testy logiki: Node.js. Interakcje DOM: Happy DOM.
+Kod JS i skrypty osadzone w app.html sprawdzone pod kątem składni.
+Procedury kadrowania i wyboru najostrzejszej klatki zachowano bez zmian.
 
-Sprawdzono:
-- każdy identyfikator wydania i pełny numer w całym nowym katalogu MTG;
-- zgodność wszystkich 40 paczek z indeksem, unikalność kodów i liczbę kart;
-- zachowanie dopasowań wcześniej zapisanych kart MTG;
-- numery z zerami wiodącymi, sufiksy, gwiazdki, znaki † i kody The List;
-- rozróżnianie rzeczywistych numerów 0 i 00 w zestawach World Championships;
-- rozróżnianie setów i innych gier oraz brak zgadywania po nazwie/oracle_id;
-- sumowanie kopii foil/nonfoil o tym samym kodzie;
-- odrzucanie niekompletnych lub uszkodzonych paczek danych;
-- pobieranie na żądanie i brak pobierania wszystkich paczek przy starcie;
-- wyszukiwanie setów, filtry rodzaju i roku, paginację kart i setów;
-- aktualizację posiadania bez zastępowania istniejących elementów siatki;
-- podgląd kart dwustronnych oraz przycisk zamknięcia;
-- zmianę konta i czyszczenie oznaczeń własności;
-- przechodzenie między trzema grami i ochronę przed spóźnionymi odpowiedziami;
-- obsługę błędu sieci i ponowienie pobierania;
-- zachowanie nawigacji, istniejących zasobów skanera i wcześniejszych setów;
-- obecność nowych plików w pamięci service workera i składnię JavaScript.
+Ograniczenia: brak testu na fizycznym urządzeniu Android/iOS oraz brak dostępnej
+usługi podglądu przeglądarkowego w tym środowisku. Testy DOM nie zastępują
+sprawdzenia wyglądu, uprawnień i sterownika aparatu na konkretnym telefonie.
+Nie zmieniano silników OCR, cenników, logowania ani danych kont.
 
-OGRANICZENIE
-Podgląd w rzeczywistej przeglądarce nie był dostępny w tej sesji.
-Weryfikacja używała Node.js oraz Happy DOM; nie zastępuje testu na fizycznym
-iPhonie lub Androidzie. Po wgraniu sprawdź układ, widoczność X i dodanie jednej
-karty do kolekcji. Nie wykonywano zmian w Supabase ani na koncie produkcyjnym.
+Zakres Pokémon: sety zawierające karty w istniejących katalogach aplikacji,
+stan tych katalogów z 8 listopada 2026. 10 wersji językowych, 1766 katalogów
+setów liczonych osobno dla języka i 186557 pozycji kart. Nie jest to deklaracja
+kompletności wszystkich wydań Pokémon na świecie. Katalogi bez żadnych kart
+nie tworzą pustych kolekcji. Pokémon TCG Pocket jest wyłączony.
+
+170984 pozycji ma adres ilustracji w źródle; przy pozostałych 16573 używany
+jest czytelny placeholder. Nie podstawiamy grafiki z innego języka/wydania.
+Nie zweryfikowano dostępności każdego zewnętrznego adresu ilustracji.
+Źródła: istniejące katalogi CardScope oparte o TCGdex, Limitless,
+Pokémon Korea, Pokémon Asia i Excalibur Card Vault.
+Listę setów i liczności zawiera LISTA_SETOW_POKEMON.txt.

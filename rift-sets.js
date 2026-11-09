@@ -6,9 +6,13 @@
    kinds:[['all','Wszystkie wydania'],['base','Podstawowy set'],['alternate','Alternatywne i sygnatury'],['extra','Runy, tokeny i dodatki']]},
   swu: {name:'Star Wars: Unlimited', core:root.CardSWUSetCore, file:'swu-sets.json?v=swu-sets-1', count:11,
    kinds:[['all','Wszystkie wydania'],['base','Podstawowy set'],['alternate','Hyperspace, foil i inne warianty'],['extra','Tokeny']]},
-  mtg: {name:'Magic: The Gathering',label:'Magic (MTG)',core:root.CardMTGSetCore,file:'mtg-sets.json?v=mtg-sets-1',lazy:true,
-   kinds:[['all','Wszystkie wydania'],['base','Standardowe ilustracje'],['alternate','Specjalne warianty'],['extra','Tokeny i dodatki']]}
+  mtg: {name:'Magic: The Gathering',label:'Magic (MTG)',core:root.CardMTGSetCore,file:'mtg-sets.json?v=mtg-sets-1',lazy:true,packVersion:'mtg-sets-1',
+   kinds:[['all','Wszystkie wydania'],['base','Standardowe ilustracje'],['alternate','Specjalne warianty'],['extra','Tokeny i dodatki']]},
+  pokemon:{name:'Pokémon',core:root.CardPokemonSetCore,lazy:true,packVersion:'pokemon-sets-1',kinds:[['all','Wszystkie karty']]}
  };
+ const pokemonLanguages={en:'Angielski',ja:'Japoński',de:'Niemiecki',fr:'Francuski',es:'Hiszpański',it:'Włoski',pt:'Portugalski',ko:'Koreański','zh-cn':'Chiński uproszczony','zh-tw':'Chiński tradycyjny'};
+ let pokemonLanguage='en';
+ const cacheKey=()=>game==='pokemon'?'pokemon:'+pokemonLanguage:game;
  let game = 'riftbound', core = games[game].core;
  const host = $('collection-sets'), allTab = $('collection-all-cards'), setsTab = $('collection-rift-sets');
  if (!host || !core) return;
@@ -31,13 +35,22 @@
  }
  function mount(...children) {
   const focusedGame = document.activeElement?.dataset.game;
-  host.replaceChildren(gameSwitch(), ...children);
+  const language=el('label',null,'rs-language');
+  if(game==='pokemon'){
+   language.append(el('span','Język wydania'));const select=el('select');select.setAttribute('aria-label','Język setów Pokémon');
+   for(const [value,label] of Object.entries(pokemonLanguages)){const o=el('option',label);o.value=value;select.append(o)}
+   select.value=pokemonLanguage;select.addEventListener('change',()=>{
+    pokemonLanguage=select.value;navigationId++;if(modal.open)modal.close();index=null;currentSet=null;owned=new Map();setQuery='';setLimit=30;void load();
+   });language.append(select);
+  }
+  host.replaceChildren(gameSwitch(), ...(game==='pokemon'?[language]:[]), ...children);
   if (focusedGame) host.querySelector(`.rs-game-switch [data-game="${game}"]`)?.focus({preventScroll:true});
  }
  function selectGame(next) {
   if (game === next) return;
   navigationId++;
   if (modal.open) modal.close();
+  setQuery='';setCategory='all';setYear='all';setLimit=30;
   game = next; core = games[game].core; index = null; currentSet = null; owned = new Map();
   void load();
  }
@@ -102,7 +115,8 @@
  setsTab.addEventListener('click', () => setMode('sets'));
  async function load() {
   if (index) { refresh(); return; }
-  const target = game, config = games[target];
+  const target = cacheKey(), config = {...games[game]};
+  if(game==='pokemon')config.file='pokemon-set-data/index-'+pokemonLanguage+'.json?v=pokemon-sets-1';
   mount(el('p', `Wczytuję sety ${config.name}…`, 'rs-loading'));
   let task = requests.get(target);
   if (!task) {
@@ -118,10 +132,10 @@
   }
   try {
    const built = await task;
-   if (game !== target) return;
+   if (cacheKey() !== target) return;
    index = built; owned = core.ownership(index, saved); overview();
   } catch {
-   if (game !== target) return;
+   if (cacheKey() !== target) return;
    mount(el('h2', 'Nie udało się wczytać setów.'), el('p', 'Połącz się z internetem i spróbuj ponownie.', 'rs-muted'), button('Spróbuj ponownie', 'secondary rs-retry', () => load()));
   } finally { if (requests.get(target) === task) requests.delete(target); }
  }
@@ -136,11 +150,11 @@
  const categoryNames={main:'Dodatki i edycje główne',commander:'Commander',special:'Zestawy specjalne',promo:'Promocje',extra:'Tokeny i dodatki'};
  function renderShelf() {
   const normalized=s=>String(s||'').normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase();
-  const terms=normalized(game==='mtg'?setQuery:'').split(/\s+/).filter(Boolean);
+  const terms=normalized(['mtg','pokemon'].includes(game)?setQuery:'').split(/\s+/).filter(Boolean);
   const matches=index.data.sets.filter(s=>(game!=='mtg'||setCategory==='all'||s.category===setCategory)
    && (game!=='mtg'||setYear==='all'||s.year===setYear)
-   && terms.every(t=>normalized(s.id+' '+s.name).includes(t)));
-  const shown=game==='mtg'?matches.slice(0,setLimit):matches;
+   && terms.every(t=>normalized(s.id+' '+s.name+' '+(s.aliases||[]).join(' ')).includes(t)));
+  const shown=['mtg','pokemon'].includes(game)?matches.slice(0,setLimit):matches;
   tiles=new Map();shelf.replaceChildren();
   for (const set of shown) {
    const tile = button('', 'rs-set', () => openSet(set.id));tile.dataset.setId=set.id;
@@ -148,7 +162,7 @@
    const text = el('span', null, 'rs-set-text');
    const bar = el('progress'); bar.setAttribute('aria-label', `Kompletność setu ${set.name}`);
    const count = el('strong');
-   text.append(el('span', set.id, 'rs-set-code'), el('span', set.name, 'rs-set-name'));
+   text.append(el('span', set.code || set.id, 'rs-set-code'), el('span', set.name, 'rs-set-name'));
    if(game==='mtg')text.append(el('span',set.preview?'Przedsprzedaż · '+set.releaseDate:(set.year+' · '+categoryNames[set.category]),'rs-set-date'));
    text.append(count, el('span', 'wydań w kolekcji', 'rs-set-caption'), bar);
    tile.append(art, text, el('span', '↗', 'rs-set-arrow')); shelf.append(tile);
@@ -165,18 +179,23 @@
   shelf = el('div', null, 'rs-shelf');
   shelfResults=el('p',null,'rs-results');shelfResults.setAttribute('role','status');
   shelfMore=button('Pokaż kolejne sety','secondary rs-more',()=>{setLimit+=30;renderShelf()});
-  const controls=el('div',null,'rs-set-controls');controls.hidden=game!=='mtg';
-  if(game==='mtg'){
-   const search=el('input');search.className='rs-set-search';search.type='search';search.placeholder='Szukaj setu, np. LTR, Star Trek, Bloomburrow…';search.value=setQuery;search.setAttribute('aria-label','Szukaj setu MTG');
+  const controls=el('div',null,'rs-set-controls');controls.hidden=!['mtg','pokemon'].includes(game);
+  if(['mtg','pokemon'].includes(game)){
+   const search=el('input');search.className='rs-set-search';search.type='search';search.placeholder=game==='pokemon'?'Nazwa lub kod setu Pokémon…':'Szukaj setu, np. LTR, Star Trek, Bloomburrow…';search.value=setQuery;search.setAttribute('aria-label','Szukaj setu '+games[game].name);
    search.addEventListener('input',()=>{setQuery=search.value;setLimit=30;renderShelf()});
+   controls.append(search);
+   if(game==='mtg'){
    const select=el('select');select.className='rs-set-type';select.setAttribute('aria-label','Rodzaj setu MTG');
    for(const [value,label] of [['all','Wszystkie rodzaje'],...Object.entries(categoryNames)]){const o=el('option',label);o.value=value;select.append(o)}
    select.value=setCategory;select.addEventListener('change',()=>{setCategory=select.value;setLimit=30;renderShelf()});
    const year=el('select');year.className='rs-set-year';year.setAttribute('aria-label','Rok wydania setu');
    for(const value of ['all',...[...new Set(index.data.sets.map(s=>s.year))].sort().reverse()]){const o=el('option',value==='all'?'Wszystkie lata':value);o.value=value;year.append(o)}
-   year.value=setYear;year.addEventListener('change',()=>{setYear=year.value;setLimit=30;renderShelf()});controls.append(search,select,year);
+   year.value=setYear;year.addEventListener('change',()=>{setYear=year.value;setLimit=30;renderShelf()});controls.append(select,year);
+   }
   }
-  mount(intro,controls,shelfResults,shelf,shelfMore,el('p',game==='mtg'
+  mount(intro,controls,shelfResults,shelf,shelfMore,el('p',game==='pokemon'
+   ? 'Każdy język ma własne sety i postęp. Kilka kopii oraz wykończenia tego samego numeru liczymy razem. Karty pochodzą z katalogów aplikacji; brakującej ilustracji nie zastępujemy innym wydaniem. Szczegóły setu wczytują się po jego otwarciu.'
+   : game==='mtg'
    ? 'Wydania papierowe z katalogu Scryfall. Różne sety i numery mają osobne pola; wersje językowe i wykończenia tego samego numeru liczymy razem. Karty setu wczytują się po jego otwarciu.'
    : game === 'swu'
    ? 'Podstawowe karty, Hyperspace, Showcase, Prestige i inne wydania z różnymi numerami mają osobne pola. Kilka kopii tego samego wydania zajmuje jedno pole. Na końcu znajdziesz zestawy Intro Battle: Hoth i Twin Suns 2026.'
@@ -194,13 +213,13 @@
   mount(back(),el('h2',set.name),el('p','Wczytuję karty tego setu…','rs-loading'));
   const active=()=>game===target&&index===targetIndex&&navigationId===requestId;
   try{
-   if(!/^mtg-set-data\/pack-\d+\.json$/.test(set.file))throw Error('Invalid pack path');
+   if(!(target==='pokemon'?/^pokemon-set-data\/pack-\d+\.json$/:/^mtg-set-data\/pack-\d+\.json$/).test(set.file))throw Error('Invalid pack path');
    let promise=packRequests.get(set.file);
    if(!promise){
     promise=(async()=>{
      if(packCache.has(set.file))return packCache.get(set.file);
-     const r=await fetch(new URL(set.file+'?v=mtg-sets-1',document.baseURI));if(!r.ok)throw Error('MTG pack');
-     const p=await r.json();if(p.version!==1||p.game!=='mtg'||!p.sets)throw Error('MTG schema');
+     const r=await fetch(new URL(set.file+'?v='+games[target].packVersion,document.baseURI));if(!r.ok)throw Error('MTG pack');
+     const p=await r.json();if(p.version!==1||p.game!==target||!p.sets)throw Error('MTG schema');
      packCache.set(set.file,p);if(packCache.size>3)packCache.delete(packCache.keys().next().value);return p;
     })();
     packRequests.set(set.file,promise);
@@ -234,7 +253,7 @@
    const option = el('option', label); option.value = value; select.append(option);
   }
   select.addEventListener('change', () => { kind = select.value; limit = 48; refreshGrid(); });
-  fields.append(search, select); filters.append(statuses, fields);
+  select.hidden=games[game].kinds.length===1;fields.append(search, select); filters.append(statuses, fields);
   resultText = el('p', null, 'rs-results'); resultText.setAttribute('role', 'status'); resultText.setAttribute('aria-live', 'polite');
   grid = el('div', null, 'rs-grid');
   more = button('Pokaż kolejne karty', 'secondary rs-more', () => { limit += 48; refreshGrid(); });
@@ -280,7 +299,7 @@
  }
  function collectionChanged(next) {
   saved = Array.isArray(next) ? next : [];
-  const fingerprint = core.fingerprint(saved); if (stamp === fingerprint) return;
+  const fingerprint = root.CardPokemonSetCore.fingerprint(saved); if (stamp === fingerprint) return;
   stamp = fingerprint;
   if (index) { owned = core.ownership(index, saved); refresh(); }
  }
