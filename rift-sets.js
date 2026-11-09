@@ -10,7 +10,9 @@
    kinds:[['all','Wszystkie wydania'],['base','Standardowe ilustracje'],['alternate','Specjalne warianty'],['extra','Tokeny i dodatki']]},
   pokemon:{name:'Pokémon',core:root.CardPokemonSetCore,lazy:true,packVersion:'pokemon-sets-1',kinds:[['all','Wszystkie karty']]},
   cyberpunk:{name:'Cyberpunk TCG',label:'Cyberpunk',core:root.CardCyberpunkSetCore,file:'cyberpunk-sets.json?v=cyberpunk-sets-1',count:17,
-   kinds:[['all','Wszystkie rzadkości'],['standard','Common, Uncommon, Rare, Epic'],['premium','Iconic, Secret, Nova Rare']]}
+   kinds:[['all','Wszystkie rzadkości'],['standard','Common, Uncommon, Rare, Epic'],['premium','Iconic, Secret, Nova Rare']]},
+  lorcana:{name:'Disney Lorcana',label:'Lorcana',core:root.CardLorcanaSetCore,file:'lorcana-sets.json?v=lorcana-sets-1',count:19,
+   kinds:[['all','Wszystkie wydania'],['base','Zwykłe karty'],['alternate','Epic · Enchanted · Iconic'],['promo','Promocje'],['extra','Tokeny']]}
  };
  const pokemonLanguages={en:'Angielski',ja:'Japoński',de:'Niemiecki',fr:'Francuski',es:'Hiszpański',it:'Włoski',pt:'Portugalski',ko:'Koreański','zh-cn':'Chiński uproszczony','zh-tw':'Chiński tradycyjny'};
  let pokemonLanguage='en';
@@ -71,7 +73,15 @@
   const r = modal.getBoundingClientRect();
   if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) modal.close();
  });
+ function lorcanaImage(card,cls='') {
+  const wrap=el('span',null,'rs-lorcana-image'),img=el('img',null,cls),placeholder=el('span','Brak dostępnej ilustracji','rs-no-image');
+  const urls=[...new Set([card.image,...card.fallbackImages||[]].filter(u=>typeof u==='string'&&u.startsWith('https://')))];let position=0;
+  img.alt=card.name;img.loading='lazy';img.decoding='async';placeholder.hidden=!!urls.length;img.hidden=!urls.length;
+  img.addEventListener('error',()=>{const next=urls[++position];if(next)img.src=next;else{img.hidden=true;img.removeAttribute('src');placeholder.hidden=false}});
+  if(urls.length)img.src=urls[0];wrap.append(img,placeholder);return wrap;
+ }
  function image(card, cls = '') {
+  if(game==='lorcana')return lorcanaImage(card,cls);
   if(game==='pokemon'&&root.CardPokemonRepair)return root.CardPokemonRepair.image(card,cls);
   if (!card.image) { const placeholder=el('span','Brak ilustracji w źródle','rs-no-image');placeholder.setAttribute('role','img');placeholder.setAttribute('aria-label',card.name+' — brak ilustracji');return placeholder; }
   const img = el('img', null, cls); img.src = card.image; img.alt = card.name; img.loading = 'lazy'; img.decoding = 'async';
@@ -151,15 +161,16 @@
   tile.node.setAttribute('aria-label', `${set.name}: ${stats.owned} z ${stats.total} wydań w kolekcji. Otwórz set.`);
  }
  function cardsForSet(id) { return index.bySet?.get(id) || index.data.cards.filter(c=>c.setId===id); }
+ const lorcanaCategories={main:'Główne dodatki',quest:'Illumineer’s Quest',promo:'Wydania kolekcjonerskie',beta:'Format Coconut · beta'};
  const cyberpunkCategories={expansion:'Główne wydania',starter:'Talie startowe',promo:'Promocje',demo:'Talie demonstracyjne'};
  const categoryNames={main:'Dodatki i edycje główne',commander:'Commander',special:'Zestawy specjalne',promo:'Promocje',extra:'Tokeny i dodatki'};
  function renderShelf() {
   const normalized=s=>String(s||'').normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase();
-  const terms=normalized(['mtg','pokemon','cyberpunk'].includes(game)?setQuery:'').split(/\s+/).filter(Boolean);
-  const matches=index.data.sets.filter(s=>(!['mtg','cyberpunk'].includes(game)||setCategory==='all'||s.category===setCategory)
+  const terms=normalized(['mtg','pokemon','cyberpunk','lorcana'].includes(game)?setQuery:'').split(/\s+/).filter(Boolean);
+  const matches=index.data.sets.filter(s=>(!['mtg','cyberpunk','lorcana'].includes(game)||setCategory==='all'||s.category===setCategory)
    && (game!=='mtg'||setYear==='all'||s.year===setYear)
    && terms.every(t=>normalized(s.id+' '+s.name+' '+(s.aliases||[]).join(' ')).includes(t)));
-  const shown=['mtg','pokemon','cyberpunk'].includes(game)?matches.slice(0,setLimit):matches;
+  const shown=['mtg','pokemon','cyberpunk','lorcana'].includes(game)?matches.slice(0,setLimit):matches;
   tiles=new Map();shelf.replaceChildren();
   for (const set of shown) {
    const tile = button('', 'rs-set', () => openSet(set.id));tile.dataset.setId=set.id;
@@ -169,6 +180,7 @@
    const count = el('strong');
    text.append(el('span', set.displayCode || set.code || set.id, 'rs-set-code'), el('span', set.name, 'rs-set-name'));
    if(game==='mtg')text.append(el('span',set.preview?'Przedsprzedaż · '+set.releaseDate:(set.year+' · '+categoryNames[set.category]),'rs-set-date'));
+   if(game==='lorcana'){text.append(el('span',[lorcanaCategories[set.category],set.releaseDate].filter(Boolean).join(' · '),'rs-set-date'));if(set.catalogNote)text.append(el('span',set.catalogNote,'rs-set-date'));}
    if(game==='cyberpunk'){const date=el('span',set.previewLabel||cyberpunkCategories[set.category],'rs-set-date');if(set.preview)date.classList.add('rs-preview-label');text.append(date)}
    text.append(count, el('span', 'wydań w kolekcji', 'rs-set-caption'), bar);
    tile.append(art, text, el('span', '↗', 'rs-set-arrow')); shelf.append(tile);
@@ -185,14 +197,14 @@
   shelf = el('div', null, 'rs-shelf');
   shelfResults=el('p',null,'rs-results');shelfResults.setAttribute('role','status');
   shelfMore=button('Pokaż kolejne sety','secondary rs-more',()=>{setLimit+=30;renderShelf()});
-  const controls=el('div',null,'rs-set-controls');controls.hidden=!['mtg','pokemon','cyberpunk'].includes(game);
-  if(['mtg','pokemon','cyberpunk'].includes(game)){
-   const search=el('input');search.className='rs-set-search';search.type='search';search.placeholder=game==='pokemon'?'Nazwa lub kod setu Pokémon…':game==='cyberpunk'?'Szukaj zestawu, np. Retail, Beta, The Heist…':'Szukaj setu, np. LTR, Star Trek, Bloomburrow…';search.value=setQuery;search.setAttribute('aria-label','Szukaj setu '+games[game].name);
+  const controls=el('div',null,'rs-set-controls');controls.hidden=!['mtg','pokemon','cyberpunk','lorcana'].includes(game);
+  if(['mtg','pokemon','cyberpunk','lorcana'].includes(game)){
+   const search=el('input');search.className='rs-set-search';search.type='search';search.placeholder=game==='lorcana'?'Szukaj dodatku, np. The First Chapter, Fabled, Q3…':game==='pokemon'?'Nazwa lub kod setu Pokémon…':game==='cyberpunk'?'Szukaj zestawu, np. Retail, Beta, The Heist…':'Szukaj setu, np. LTR, Star Trek, Bloomburrow…';search.value=setQuery;search.setAttribute('aria-label','Szukaj setu '+games[game].name);
    search.addEventListener('input',()=>{setQuery=search.value;setLimit=30;renderShelf()});
    controls.append(search);
-   if(game==='cyberpunk'){
-    const category=el('select');category.className='rs-set-category';category.setAttribute('aria-label','Rodzaj zestawu Cyberpunk');
-    for(const [value,label] of [['all','Wszystkie zestawy'],...Object.entries(cyberpunkCategories)]){const o=el('option',label);o.value=value;category.append(o)}
+   if(game==='cyberpunk'||game==='lorcana'){
+    const category=el('select');category.className='rs-set-category';category.setAttribute('aria-label',game==='lorcana'?'Rodzaj zestawu Lorcana':'Rodzaj zestawu Cyberpunk');
+    for(const [value,label] of [['all','Wszystkie zestawy'],...Object.entries(game==='lorcana'?lorcanaCategories:cyberpunkCategories)]){const o=el('option',label);o.value=value;category.append(o)}
     category.value=setCategory;category.addEventListener('change',()=>{setCategory=category.value;setLimit=30;renderShelf()});controls.append(category);
    }
    if(game==='mtg'){
@@ -204,7 +216,9 @@
    year.value=setYear;year.addEventListener('change',()=>{setYear=year.value;setLimit=30;renderShelf()});controls.append(select,year);
    }
   }
-  mount(intro,controls,shelfResults,shelf,shelfMore,el('p',game==='cyberpunk'
+  mount(intro,controls,shelfResults,shelf,shelfMore,el('p',game==='lorcana'
+   ? 'Podgląd kart w języku angielskim. Normal i Foil tego samego wydania liczymy razem. Enchanted, Epic, Iconic, promocje oraz różne ilustracje mają osobne miejsca. Promocje znajdziesz przy dodatku wskazanym na karcie; Curator’s Collection i Coconut mają własne zestawy.'
+   : game==='cyberpunk'
    ? 'Retail, Beta, talie i promocje mają osobne kolekcje. Różne numery oraz warianty a/b liczymy osobno; kilka kopii i wykończenia tego samego wydania zajmują jedno pole. Zapowiedzi obejmują karty udostępnione w katalogu.'
    : game==='pokemon'
    ? 'Każdy język ma własne sety i postęp. Kilka kopii oraz wykończenia tego samego numeru liczymy razem. Karty pochodzą z katalogów aplikacji; podgląd EN jest oznaczony i nie zmienia języka ani posiadania karty. Szczegóły setu wczytują się po jego otwarciu.'
@@ -254,6 +268,7 @@
   const back = button('← Wszystkie sety', 'rs-back', () => { overview(); setsTab.focus({preventScroll:true}); });
   const header = el('div', null, 'rs-set-header');
   const title = el('div'); title.append(el('p', `${games[game].name.toUpperCase()} / ${currentSet.displayCode || currentSet.code || id}`, 'rs-kicker'), el('h2', currentSet.name));
+  if(game==='lorcana'&&currentSet.catalogNote)title.append(el('p',currentSet.catalogNote,'rs-set-date'));
   if(currentSet.preview)title.append(el('p',currentSet.previewLabel || 'Przedsprzedaż · premiera '+currentSet.releaseDate,'rs-set-date'));
   const progress = el('div', null, 'rs-set-progress'); progressText = el('p'); progressBar = el('progress'); progressBar.setAttribute('aria-label', 'Kompletność całego setu');
   progress.append(progressText, progressBar); header.append(title, progress);
@@ -316,7 +331,7 @@
  }
  function collectionChanged(next) {
   saved = Array.isArray(next) ? next : [];
-  const fingerprint = JSON.stringify([root.CardPokemonSetCore.fingerprint(saved),saved.map(c=>[c.officialPrintingId,c.tcgplayerId])]); if (stamp === fingerprint) return;
+  const fingerprint = JSON.stringify([root.CardPokemonSetCore.fingerprint(saved),saved.map(c=>[c.officialPrintingId,c.tcgplayerId,c.cardmarketId,c.lorcastId,c.fullIdentifier,c.printedNumber,c.sourceId,c.lorcanaId])]); if (stamp === fingerprint) return;
   stamp = fingerprint;
   if (index) { owned = core.ownership(index, saved); refresh(); }
  }
