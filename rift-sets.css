@@ -102,3 +102,12 @@ dialog.rs-preview .rs-close{position:absolute!important;inset:12px 12px auto aut
 .rs-lorcana-image>.rs-no-image{display:flex;min-height:100%;align-items:center;justify-content:center;padding:10px;box-sizing:border-box}
 .rs-preview-art .rs-lorcana-image{height:auto;min-height:220px}
 .rs-preview-art .rs-lorcana-image>img{height:auto;max-height:70dvh}
+
+/* One Piece and date ordering; scoped to collection set browser. */
+#collection-sets .rs-game-switch{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));max-width:1200px}
+#collection-sets .rs-set-controls{grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));align-items:end}
+.rs-order-label{display:flex;flex-direction:column;gap:6px;min-width:0;color:#c8b5df;font-size:11px}
+.rs-sort-note{font-size:11px;line-height:1.5;color:#a99ab9;margin:0 0 16px}
+.rs-release-date{font-variant-numeric:tabular-nums;color:#c0acd7}
+@media(max-width:1000px){#collection-sets .rs-game-switch{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:600px){#collection-sets .rs-game-switch{grid-template-columns:repeat(2,minmax(0,1fr))}}

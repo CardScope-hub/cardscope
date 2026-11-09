@@ -12,7 +12,9 @@
   cyberpunk:{name:'Cyberpunk TCG',label:'Cyberpunk',core:root.CardCyberpunkSetCore,file:'cyberpunk-sets.json?v=cyberpunk-sets-1',count:17,
    kinds:[['all','Wszystkie rzadkości'],['standard','Common, Uncommon, Rare, Epic'],['premium','Iconic, Secret, Nova Rare']]},
   lorcana:{name:'Disney Lorcana',label:'Lorcana',core:root.CardLorcanaSetCore,file:'lorcana-sets.json?v=lorcana-sets-1',count:19,
-   kinds:[['all','Wszystkie wydania'],['base','Zwykłe karty'],['alternate','Epic · Enchanted · Iconic'],['promo','Promocje'],['extra','Tokeny']]}
+   kinds:[['all','Wszystkie wydania'],['base','Zwykłe karty'],['alternate','Epic · Enchanted · Iconic'],['promo','Promocje'],['extra','Tokeny']]},
+  onepiece:{name:'One Piece',core:root.CardOnePieceSetCore,file:'onepiece-sets.json?v=onepiece-sets-1',count:86,
+   kinds:[['all','Wszystkie wydania'],['base','Standardowe wydania'],['alternate','Alternatywne i specjalne'],['don','Karty DON!!']]}
  };
  const pokemonLanguages={en:'Angielski',ja:'Japoński',de:'Niemiecki',fr:'Francuski',es:'Hiszpański',it:'Włoski',pt:'Portugalski',ko:'Koreański','zh-cn':'Chiński uproszczony','zh-tw':'Chiński tradycyjny'};
  let pokemonLanguage='en';
@@ -26,6 +28,11 @@
  const catalogs = new Map(), requests = new Map();
  const packCache = new Map(), packRequests = new Map();
  let navigationId=0, shelf, shelfResults, shelfMore, setQuery='',setCategory='all',setYear='all',setLimit=30;
+ let setOrder='catalog';
+ const readOrder=()=>{try{return ['catalog','newest','oldest'].includes(localStorage.getItem('cardscope:set-order:'+game))?localStorage.getItem('cardscope:set-order:'+game):'catalog'}catch{return 'catalog'}};
+ const releaseDate=s=>root.CardSetOrder?.date(game,s)||null;
+ const displayDate=s=>{const d=releaseDate(s);return d?d.slice(8,10)+'.'+d.slice(5,7)+'.'+d.slice(0,4):''};
+ setOrder=readOrder();
  let status = 'all', kind = 'all', query = '', limit = 48, grid, resultText, more, progressText, progressBar, statusButtons;
  let tiles = new Map(), previewCard, restoreOverflow, showingBack = false;
  function gameSwitch() {
@@ -55,7 +62,7 @@
   navigationId++;
   if (modal.open) modal.close();
   setQuery='';setCategory='all';setYear='all';setLimit=30;
-  game = next; core = games[game].core; index = null; currentSet = null; owned = new Map();
+  game = next; setOrder=readOrder(); core = games[game].core; index = null; currentSet = null; owned = new Map();
   void load();
  }
  const modal = el('dialog', null, 'rs-preview');
@@ -73,7 +80,7 @@
   const r = modal.getBoundingClientRect();
   if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) modal.close();
  });
- function lorcanaImage(card,cls='') {
+ function catalogImage(card,cls='') {
   const wrap=el('span',null,'rs-lorcana-image'),img=el('img',null,cls),placeholder=el('span','Brak dostępnej ilustracji','rs-no-image');
   const urls=[...new Set([card.image,...card.fallbackImages||[]].filter(u=>typeof u==='string'&&u.startsWith('https://')))];let position=0;
   img.alt=card.name;img.loading='lazy';img.decoding='async';placeholder.hidden=!!urls.length;img.hidden=!urls.length;
@@ -81,7 +88,7 @@
   if(urls.length)img.src=urls[0];wrap.append(img,placeholder);return wrap;
  }
  function image(card, cls = '') {
-  if(game==='lorcana')return lorcanaImage(card,cls);
+  if(game==='lorcana'||game==='onepiece')return catalogImage(card,cls);
   if(game==='pokemon'&&root.CardPokemonRepair)return root.CardPokemonRepair.image(card,cls);
   if (!card.image) { const placeholder=el('span','Brak ilustracji w źródle','rs-no-image');placeholder.setAttribute('role','img');placeholder.setAttribute('aria-label',card.name+' — brak ilustracji');return placeholder; }
   const img = el('img', null, cls); img.src = card.image; img.alt = card.name; img.loading = 'lazy'; img.decoding = 'async';
@@ -161,16 +168,18 @@
   tile.node.setAttribute('aria-label', `${set.name}: ${stats.owned} z ${stats.total} wydań w kolekcji. Otwórz set.`);
  }
  function cardsForSet(id) { return index.bySet?.get(id) || index.data.cards.filter(c=>c.setId===id); }
+ const onepieceCategories={main:'Główne dodatki',extra:'Extra Booster',premium:'Premium Booster',starter:'Talie startowe',event:'Wydania turniejowe',promo:'Promocje i pozostałe'};
  const lorcanaCategories={main:'Główne dodatki',quest:'Illumineer’s Quest',promo:'Wydania kolekcjonerskie',beta:'Format Coconut · beta'};
  const cyberpunkCategories={expansion:'Główne wydania',starter:'Talie startowe',promo:'Promocje',demo:'Talie demonstracyjne'};
  const categoryNames={main:'Dodatki i edycje główne',commander:'Commander',special:'Zestawy specjalne',promo:'Promocje',extra:'Tokeny i dodatki'};
  function renderShelf() {
   const normalized=s=>String(s||'').normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase();
-  const terms=normalized(['mtg','pokemon','cyberpunk','lorcana'].includes(game)?setQuery:'').split(/\s+/).filter(Boolean);
-  const matches=index.data.sets.filter(s=>(!['mtg','cyberpunk','lorcana'].includes(game)||setCategory==='all'||s.category===setCategory)
+  const terms=normalized(setQuery).split(/\s+/).filter(Boolean);
+  const matches=index.data.sets.filter(s=>(!['mtg','cyberpunk','lorcana','onepiece'].includes(game)||setCategory==='all'||s.category===setCategory)
    && (game!=='mtg'||setYear==='all'||s.year===setYear)
    && terms.every(t=>normalized(s.id+' '+s.name+' '+(s.aliases||[]).join(' ')).includes(t)));
-  const shown=['mtg','pokemon','cyberpunk','lorcana'].includes(game)?matches.slice(0,setLimit):matches;
+  const ordered=root.CardSetOrder?.sort(matches,setOrder,game)||matches;
+  const shown=ordered.slice(0,setLimit);
   tiles=new Map();shelf.replaceChildren();
   for (const set of shown) {
    const tile = button('', 'rs-set', () => openSet(set.id));tile.dataset.setId=set.id;
@@ -180,7 +189,8 @@
    const count = el('strong');
    text.append(el('span', set.displayCode || set.code || set.id, 'rs-set-code'), el('span', set.name, 'rs-set-name'));
    if(game==='mtg')text.append(el('span',set.preview?'Przedsprzedaż · '+set.releaseDate:(set.year+' · '+categoryNames[set.category]),'rs-set-date'));
-   if(game==='lorcana'){text.append(el('span',[lorcanaCategories[set.category],set.releaseDate].filter(Boolean).join(' · '),'rs-set-date'));if(set.catalogNote)text.append(el('span',set.catalogNote,'rs-set-date'));}
+   if(game==='lorcana'||game==='onepiece'){text.append(el('span',(game==='lorcana'?lorcanaCategories:onepieceCategories)[set.category],'rs-set-date'));if(set.catalogNote)text.append(el('span',set.catalogNote,'rs-set-date'));if(set.preview)text.append(el('span',set.previewLabel,'rs-preview-label'));}
+   const date=displayDate(set);if(date)text.append(el('span','Premiera · '+date,'rs-set-date rs-release-date'));
    if(game==='cyberpunk'){const date=el('span',set.previewLabel||cyberpunkCategories[set.category],'rs-set-date');if(set.preview)date.classList.add('rs-preview-label');text.append(date)}
    text.append(count, el('span', 'wydań w kolekcji', 'rs-set-caption'), bar);
    tile.append(art, text, el('span', '↗', 'rs-set-arrow')); shelf.append(tile);
@@ -197,14 +207,14 @@
   shelf = el('div', null, 'rs-shelf');
   shelfResults=el('p',null,'rs-results');shelfResults.setAttribute('role','status');
   shelfMore=button('Pokaż kolejne sety','secondary rs-more',()=>{setLimit+=30;renderShelf()});
-  const controls=el('div',null,'rs-set-controls');controls.hidden=!['mtg','pokemon','cyberpunk','lorcana'].includes(game);
-  if(['mtg','pokemon','cyberpunk','lorcana'].includes(game)){
-   const search=el('input');search.className='rs-set-search';search.type='search';search.placeholder=game==='lorcana'?'Szukaj dodatku, np. The First Chapter, Fabled, Q3…':game==='pokemon'?'Nazwa lub kod setu Pokémon…':game==='cyberpunk'?'Szukaj zestawu, np. Retail, Beta, The Heist…':'Szukaj setu, np. LTR, Star Trek, Bloomburrow…';search.value=setQuery;search.setAttribute('aria-label','Szukaj setu '+games[game].name);
+  const controls=el('div',null,'rs-set-controls');controls.hidden=false;
+  {
+   const search=el('input');search.className='rs-set-search';search.type='search';search.placeholder=game==='onepiece'?'Szukaj dodatku, np. OP01, EB05, Heroines…':game==='riftbound'||game==='swu'?'Nazwa lub kod dodatku…':game==='lorcana'?'Szukaj dodatku, np. The First Chapter, Fabled, Q3…':game==='pokemon'?'Nazwa lub kod setu Pokémon…':game==='cyberpunk'?'Szukaj zestawu, np. Retail, Beta, The Heist…':'Szukaj setu, np. LTR, Star Trek, Bloomburrow…';search.value=setQuery;search.setAttribute('aria-label','Szukaj setu '+games[game].name);
    search.addEventListener('input',()=>{setQuery=search.value;setLimit=30;renderShelf()});
    controls.append(search);
-   if(game==='cyberpunk'||game==='lorcana'){
-    const category=el('select');category.className='rs-set-category';category.setAttribute('aria-label',game==='lorcana'?'Rodzaj zestawu Lorcana':'Rodzaj zestawu Cyberpunk');
-    for(const [value,label] of [['all','Wszystkie zestawy'],...Object.entries(game==='lorcana'?lorcanaCategories:cyberpunkCategories)]){const o=el('option',label);o.value=value;category.append(o)}
+   if(['cyberpunk','lorcana','onepiece'].includes(game)){
+    const category=el('select');category.className='rs-set-category';category.setAttribute('aria-label','Rodzaj zestawu '+games[game].name);
+    for(const [value,label] of [['all','Wszystkie zestawy'],...Object.entries(game==='onepiece'?onepieceCategories:game==='lorcana'?lorcanaCategories:cyberpunkCategories)]){const o=el('option',label);o.value=value;category.append(o)}
     category.value=setCategory;category.addEventListener('change',()=>{setCategory=category.value;setLimit=30;renderShelf()});controls.append(category);
    }
    if(game==='mtg'){
@@ -216,7 +226,13 @@
    year.value=setYear;year.addEventListener('change',()=>{setYear=year.value;setLimit=30;renderShelf()});controls.append(select,year);
    }
   }
-  mount(intro,controls,shelfResults,shelf,shelfMore,el('p',game==='lorcana'
+  const orderLabel=el('label',null,'rs-order-label');orderLabel.append(el('span','Sortowanie dodatków'));
+  const sort=el('select');sort.className='rs-set-sort';sort.setAttribute('aria-label','Sortowanie dodatków według daty wydania');
+  for(const [value,label] of [['catalog','Kolejność katalogu'],['newest','Data wydania · od najnowszych'],['oldest','Data wydania · od najstarszych']]){const option=el('option',label);option.value=value;sort.append(option)}
+  sort.value=setOrder;sort.addEventListener('change',()=>{setOrder=sort.value;setLimit=30;try{localStorage.setItem('cardscope:set-order:'+game,setOrder)}catch{}renderShelf()});orderLabel.append(sort);controls.append(orderLabel);
+  mount(intro,controls,el('p','Daty według katalogu danego wydania. Zestawy bez potwierdzonej daty są na końcu sortowania.','rs-sort-note'),shelfResults,shelf,shelfMore,el('p',game==='onepiece'
+   ? 'Katalog angielski. Alternatywne ilustracje, promocje, reprinty i DON!! mają osobne miejsca. Kilka kopii tego samego wydania liczymy razem. OP18 jest oznaczone jako zapowiedź i obejmuje tylko udostępnione karty.'
+   : game==='lorcana'
    ? 'Podgląd kart w języku angielskim. Normal i Foil tego samego wydania liczymy razem. Enchanted, Epic, Iconic, promocje oraz różne ilustracje mają osobne miejsca. Promocje znajdziesz przy dodatku wskazanym na karcie; Curator’s Collection i Coconut mają własne zestawy.'
    : game==='cyberpunk'
    ? 'Retail, Beta, talie i promocje mają osobne kolekcje. Różne numery oraz warianty a/b liczymy osobno; kilka kopii i wykończenia tego samego wydania zajmują jedno pole. Zapowiedzi obejmują karty udostępnione w katalogu.'
