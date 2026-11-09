@@ -5,6 +5,10 @@
 #collection-sets{min-width:0;margin-top:24px;color:#f5efff}
 #collection-sets *,dialog.rs-preview *{box-sizing:border-box}
 .rs-kicker{font-size:11px;letter-spacing:.14em;font-weight:650;color:#c0a3e6;margin:0 0 10px}
+.rs-game-switch{display:inline-flex;max-width:100%;gap:5px;padding:5px;margin:0 0 26px;border:1px solid #65517266;border-radius:14px;background:#100d17}
+#collection-sets .rs-game-switch button{flex:1;min-height:44px;padding:10px 17px;border:1px solid transparent;border-radius:10px;background:transparent;color:#ac9ebc;font-size:13px;line-height:1.35}
+#collection-sets .rs-game-switch button[aria-pressed=true]{background:#342343;border-color:#9e79c488;color:#ecdfff;font-weight:650}
+.rs-preview-info .rs-flip{margin:0 0 12px;min-height:44px;width:100%;font-size:13px}
 .rs-intro h2,.rs-set-header h2{font-size:clamp(23px,4vw,34px);letter-spacing:-.7px;margin:0 0 12px;line-height:1.2}
 .rs-muted{color:#bcb1cb;font-size:14px;line-height:1.6;max-width:630px}
 .rs-shelf{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:26px}
@@ -63,5 +67,5 @@ dialog.rs-preview .rs-close{position:absolute!important;inset:12px 12px auto aut
 .rs-preview-info .primary{font-size:13px;min-height:46px;width:100%}
 @media(max-width:1000px){.rs-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.rs-shelf{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){#collection-sets{margin-top:20px}.rs-shelf{gap:10px}#collection-sets button.rs-set{padding:18px 14px;min-height:202px;border-radius:17px}.rs-set-name{font-size:18px;min-height:44px}.rs-set-text{gap:8px}.rs-set-text strong{font-size:20px;margin-top:4px}.rs-set-arrow{right:13px;top:19px}.rs-set-art{width:65%;opacity:.24}.rs-set-header{display:block}.rs-set-progress{width:100%;margin-top:18px}.rs-fields{grid-template-columns:1fr}.rs-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:19px 9px}.rs-card-name{font-size:11px}.rs-owned-badge{font-size:9px;left:4px;bottom:4px;padding:4px 5px}.rs-card-code{font-size:9px}.rs-preview-body{grid-template-columns:1fr;gap:20px;padding:70px 20px 25px}.rs-preview-art img{max-height:56dvh}.rs-preview-info h2{font-size:22px}.rs-statuses{gap:5px}#collection-sets .rs-statuses button{padding:8px;font-size:11px}}
-@media(max-width:360px){.rs-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.rs-set-name{font-size:16px}.rs-set-text strong{font-size:18px}}
+@media(max-width:360px){.rs-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.rs-set-name{font-size:16px}.rs-set-text strong{font-size:18px}#collection-sets .rs-game-switch button{padding:9px 10px;font-size:12px}}
 @media(prefers-reduced-motion:reduce){#collection-sets *{transition:none!important;animation:none!important}}

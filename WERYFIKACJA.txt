@@ -1,39 +1,44 @@
-WERYFIKACJA AKTUALIZACJI RIFTBOUND — 2026-11-09
+WERYFIKACJA — SETY STAR WARS: UNLIMITED — 2026-11-09
 
-Katalog: 1488 unikalnych wydań w sześciu setach.
-Origins: 352, w tym 298 podstawowych.
-Proving Grounds: 24, w tym 24 podstawowe.
-Spiritforged: 309, w tym 221 podstawowych.
-Unleashed: 316, w tym 219 podstawowych.
-Vendetta: 248, w tym 166 podstawowych.
-Radiance: 239, w tym 167 podstawowych.
+Zawartość: 7996 odrębnych wydań katalogowych w 11 setach SWU.
+Pełne podstawowe listy numerowane: 2549 kart łącznie.
 
-Zweryfikowano ciągłość wszystkich podstawowych numerów w każdym secie.
-Uwaga: licznik oficjalnego API galerii nie odpowiada dokładnie liczbie rekordów
-osadzonych w jej stronie. Katalog połączono z istniejącymi wpisami CardScope,
-w tym brakującym w osadzonej galerii SFD-054/221. Liczba 1488 oznacza rozpoznane
-unikalne kody tego połączonego katalogu, nie deklarowaną liczbę rekordów API.
+Kod    Wszystkie wydania    Podstawowe
+SOR          514               252
+SHD          526               262
+TWI          521               257
+JTL         1130               262
+LOF         1166               264
+SEC         1155               264
+LAW          907               264
+ASH          931               264
+HMW          954               272
+IBH          104               104
+TS26          88                84
 
-Testy Node.js + Happy DOM:
-- Dopasowanie każdego starego identyfikatora z sześciu setów.
-- Numery z ukośnikiem, pełne kody, zera wiodące, sufiksy i gwiazdki.
-- Brak dopasowań między innymi grami/setami lub wyłącznie po nazwie.
-- Sumowanie kopii bez zawyżania kompletności.
-- Oddzielenie kart podstawowych, alternatywnych, sygnatur i tokenów.
-- Filtry, wyszukiwanie, doładowywanie kolejnych kart i wszystkie sześć setów.
-- Aktualizacja własności i usuwanie kart bez wymiany istniejących węzłów siatki.
-- Wyczyszczenie własności i zamknięcie podglądu przy zmianie konta.
-- Podgląd tylko do odczytu, przycisk zamknięcia i przywrócenie przewijania.
-- Ponowienie pobierania po błędzie sieci.
-- Zachowanie istniejącej nawigacji i zasobów skanera, w tym Pokémon KO/ZH.
-- Nowe zasoby w pamięci service workera i poprawne ścieżki /cardscope/.
-- Sprawdzenie składni JavaScript, w tym skryptów osadzonych w app.html.
+Liczby odzwierciedlają istniejący katalog CardScope (SWU-DB, 2026-11-07),
+z tą samą regułą łączenia technicznych aliasów foil co skaner/katalog aplikacji.
+Sprawdzono brak luk w podstawowej numeracji każdego z 11 setów.
+Nie oznacza to listy wszystkich promocyjnych produktów SWU na świecie.
 
-15 testów zakończonych poprawnie.
-Nie wykonywano zmian w Supabase ani na koncie produkcyjnym.
+WYNIKI: 28 TESTÓW ZAKOŃCZONYCH POPRAWNIE
+15 testów zgodności widoku Riftbound i 13 testów nowej funkcji SWU.
 
-OGRANICZENIE WERYFIKACJI
-W tej sesji nie był dostępny podgląd aplikacji w prawdziwej przeglądarce.
-Testy obejmują logikę, strukturę DOM i zdarzenia, ale nie potwierdzają renderowania
-na fizycznym iPhonie/Androidzie. Po publikacji sprawdź podgląd karty, filtry,
-stałe położenie dolnego paska oraz aktualizację po dodaniu jednej karty.
+Zweryfikowano m.in.:
+- dopasowanie wszystkich zapisanych identyfikatorów i numerów z 11 setów;
+- pełne kody, zera wiodące, nazwy setów, ułamki i aliasy foil;
+- oddzielne liczenie różnych numerów Hyperspace/Showcase/Prestige;
+- brak dopasowań między grami lub wyłącznie po nazwie;
+- sumowanie kopii, usuwanie posiadania i wyczyszczenie przy zmianie konta;
+- oba wybory gry, wszystkie 17 setów razem z Riftbound, filtry i wyszukiwanie;
+- aktualizacje bez zastępowania istniejących kart w DOM i bez cyklicznych pobrań;
+- podgląd karty i przełączanie stron lidera bez zmiany kolekcji;
+- odrzucenie spóźnionej odpowiedzi po przełączeniu na drugą grę;
+- ponowienie pobierania po błędzie sieci;
+- zachowanie dolnej nawigacji oraz wszystkich wcześniejszych zasobów skanera;
+- poprawność składni JavaScript i obecność nowych plików w service workerze.
+
+Ograniczenie: podgląd w prawdziwej przeglądarce nie był dostępny w tej sesji.
+Testy używały Node.js i Happy DOM. Po publikacji sprawdź układ na telefonie,
+widoczność X, podgląd obu stron lidera oraz dodanie jednej karty z katalogu.
+Nie wykonywano zmian na koncie produkcyjnym ani w Supabase.

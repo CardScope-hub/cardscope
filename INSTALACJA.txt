@@ -1,64 +1,85 @@
-CARDSCOPE — KOLEKCJA SETÓW RIFTBOUND
+CARDSCOPE — SETY STAR WARS: UNLIMITED
 Aktualizacja z 9 listopada 2026
 
 JAK WGRAC
-1. Rozpakuj ZIP na komputerze.
-2. W swoim repozytorium GitHub otwórz folder, w którym są app.html i sw.js.
-3. Wgraj do niego sześć plików z paczki:
+1. Rozpakuj ZIP.
+2. Otwórz w repozytorium GitHub folder z plikami app.html i sw.js.
+3. Wgraj do tego samego folderu osiem plików z paczki:
    app.html
    sw.js
    rift-set-core.js
    rift-sets.js
    rift-sets.css
    riftbound-sets.json
-   Zastąp app.html i sw.js. Pozostałe cztery pliki są nowe.
-   Wgraj samą zawartość paczki, bez dodatkowego podfolderu.
-4. Zapisz zmiany (Commit changes) i poczekaj na zakończenie publikacji GitHub Pages.
-5. Otwórz stronę i odśwież. W aplikacji na telefonie zamknij ją całkowicie
-   i otwórz ponownie po wgraniu aktualizacji.
-6. Wejdź w Kolekcja → Sety Riftbound.
+   swu-set-core.js
+   swu-sets.json
+   Zastąp istniejące pliki. Nie twórz dodatkowego podfolderu.
+4. Zapisz zmiany (Commit changes). Poczekaj, aż GitHub Pages zakończy publikację.
+5. Odśwież stronę. Na telefonie zamknij aplikację całkowicie i otwórz ponownie.
+6. Wejdź w Kolekcja → Sety gier → Star Wars: Unlimited.
 
-Nie usuwaj pozostałych plików strony. To aktualizacja istniejącej aplikacji,
-nie kompletny nowy projekt. Nie wymaga zmian w Supabase, kluczy ani SQL.
-Nie usuwa danych konta i nie zmienia działania skanera.
-Pliki INSTALACJA.txt oraz WERYFIKACJA.txt są tylko instrukcją — nie musisz ich wgrywać.
+Nie usuwaj innych plików aplikacji. Nie zmieniaj konfiguracji Supabase.
+INSTALACJA.txt i WERYFIKACJA.txt są instrukcjami; nie trzeba ich publikować.
+To paczka aktualizacyjna istniejącego CardScope, nie samodzielna nowa strona.
+Pliki o nazwach zaczynających się od „rift” obsługują teraz wspólny widok setów.
+Ich obecność w paczce jest zamierzona — zachowują kolekcje Riftbound.
 
 CO DODANO
-- Sześć setów: Origins, Proving Grounds, Spiritforged, Unleashed, Vendetta, Radiance.
-- Pełne podstawowe listy numerowane tych setów, a także warianty i dodatki
-  obecne w połączonym katalogu aplikacji i oficjalnej galerii.
-- Automatyczne oznaczanie posiadanych wydań z dotychczasowej kolekcji.
-- Brakujące wydania na szaro, posiadane w kolorze z liczbą kopii.
-- Licznik kompletności, wyszukiwanie po nazwie/numerze, filtry posiadania.
-- Osobny filtr: podstawowy set / alternatywne i sygnatury / runy, tokeny i dodatki.
-- Powiększenie każdej karty. Posiadaną kartę można otworzyć w zwykłym widoku
-  kolekcji, gdzie pozostają dotychczasowe ceny i opcje.
-- Dane setów pobierane raz, bez cyklicznego odświeżania siatki.
+- Wspólną zakładkę „Sety gier” z wyborem Riftbound / Star Wars: Unlimited.
+- Wszystkie dziewięć wydanych głównych setów SWU oraz Intro Battle: Hoth
+  i Twin Suns 2026.
+- Automatyczne oznaczanie posiadanych wydań na podstawie istniejącej kolekcji.
+- Brakujące karty w szarości, posiadane w kolorze z liczbą kopii.
+- Kompletność setu, wyszukiwarkę po nazwie/numerze, filtry posiadane/brakujące.
+- Filtr podstawowego setu, wariantów oraz tokenów.
+- Powiększanie kart, a przy kartach dwustronnych również podgląd drugiej strony.
+- Przejście z posiadanej karty do jej dotychczasowego widoku z cenami.
+- Aktualizowanie posiadania bez okresowego przeładowywania siatki.
 
-JAK LICZYMY POSTĘP
-Jedno pole odpowiada jednemu wydaniu o konkretnym kodzie.
-Trzy kopie tej samej karty to jedno posiadane wydanie oraz oznaczenie „3 szt.”.
-Normal/foil o identycznym kodzie są liczone razem. Alternatywne ilustracje
-z innym numerem lub sufiksem i sygnatury z gwiazdką są osobnymi polami.
-Przełącznik „Podstawowy set” pokazuje wyłącznie jego podstawową listę numerowaną.
-Główny licznik kompletności obejmuje wszystkie wydania widoczne w katalogu setu,
-w tym dodatki; liczby na filtrach posiadania odnoszą się do całego setu.
+LISTA SETÓW — SWU
+SOR  Spark of Rebellion
+SHD  Shadows of the Galaxy
+TWI  Twilight of the Republic
+JTL  Jump To Lightspeed
+LOF  Legends of the Force
+SEC  Secrets of Power
+LAW  A Lawless Time
+ASH  Ashes of the Empire
+HMW  Homeworlds
+IBH  Intro Battle: Hoth
+TS26 Twin Suns 2026
 
-Dopasowanie opiera się na zapisanym identyfikatorze katalogowym lub serii i numerze.
-Ręcznie dodana karta bez numeru nie jest zgadywana tylko na podstawie nazwy.
-Uzupełnij jej poprawny numer/serię albo dodaj ją przez katalog/skaner.
-Sam podgląd brakującej karty nie dodaje jej do kolekcji.
+Icons 2027 nie jest jeszcze wydanym setem na dzień 9 listopada 2026;
+nie jest wliczany do tej listy. Oddzielne zestawy promocyjne OP/judges/event
+nie są przypisywane do podstawowego setu tylko z powodu identycznej nazwy karty.
 
-Sety zapisują się w pamięci aplikacji po aktualizacji. Obrazy kart pochodzą
-z istniejących źródeł i mogą wymagać internetu, jeśli nie były wcześniej wczytane.
+JAK LICZYMY WŁASNOŚĆ I WARIANTY
+Jedno pole oznacza wydanie z konkretnym kodem setu i numerem karty.
+Kopie tego samego wydania sumują się w jednym polu. Karty o tej samej nazwie,
+ale różnych numerach, np. Normal, Hyperspace, Showcase i Prestige, mają osobne pola.
+Techniczny sufiks F jest łączony z wersją podstawową wyłącznie wtedy, gdy
+istniejący katalog potwierdza ten sam numer, tytuł, podtytuł i rodzaj ilustracji.
+Foil z własnym odrębnym numerem pozostaje osobnym wydaniem.
 
-ŹRÓDŁA KATALOGU
-Oficjalna galeria Riot Games: https://playriftbound.com/en-us/card-gallery/
-Istniejący katalog CardScope z 7 listopada 2026 (Riftcodex / Riot Games / TCGplayer).
-Katalog setów deduplikuje wpisy, ale zachowuje stare identyfikatory dopasowania.
-Nie dołączono przyszłych, niewydanych setów Legacy i Reckoning.
+Główny licznik kompletności obejmuje wszystkie wydania danego setu w katalogu,
+także warianty i tokeny. Filtr „Podstawowy set” pokazuje zwykłą listę numerowaną.
+Karty ręczne bez numeru i serii nie są dopasowywane wyłącznie po nazwie.
+Po zapisaniu karty ze skanera/katalogu pojawi się ona automatycznie w secie.
+Sam podgląd szarej karty nie dodaje jej do kolekcji.
 
-PACZKA PRZYGOTOWANA DLA
+ZACHOWANE FUNKCJE
+Wszystkie sześć setów Riftbound oraz wcześniejsze funkcje aplikacji,
+w tym kolekcja, bindery, konto, ceny i skanowanie Pokémon KO/ZH.
+Ta aktualizacja nie wymaga kluczy API, nowej tabeli ani migracji bazy danych.
+Lista kart pobierana jest z pliku aplikacji. Obrazy z dotychczasowych źródeł
+mogą wymagać internetu, jeśli nie były wcześniej wczytane.
+
+ŹRÓDŁA
+Katalog SWU-DB obecny w CardScope, stan z 7 listopada 2026:
+https://www.swu-db.com/api
+Wykaz produktów i aktualnych wydań:
+https://starwarsunlimited.com/product-guide
+
+Paczka przygotowana dla obecnej strony:
 https://cardscope-hub.github.io/cardscope/app.html
-Podstawa: bieżący kod strony z zachowaną aktualizacją Pokémon KO/ZH.
-Paczka nie została automatycznie opublikowana na Twoim GitHub Pages.
+Nie została automatycznie opublikowana na Twoim GitHub Pages.
