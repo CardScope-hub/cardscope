@@ -2,7 +2,7 @@
 (()=>{let enabled=false,generation=0,classic=null,japaneseReader=null,weissReader=null,autoReader=null,autoSignature=null,weissSignature=null,usingClassic=false;const toggle=$('live-toggle'),label=$('live-status'),results=$('live-results');if(!toggle)return;
  const valid=(g,game,lang)=>enabled&&g===generation&&document.body.dataset.view==='scanner'&&currentGame()===game&&selectedLanguage()===lang&&!document.hidden;
  function stop(){const wasRunning=enabled;const oldAuto=autoReader;autoReader=null;autoSignature=null;weissSignature=null;void oldAuto?.close();enabled=false;generation++;toggle.textContent='◉ Włącz skan na żywo';classic=null;const previous=japaneseReader;japaneseReader=null;void previous?.close();const oldWeiss=weissReader;weissReader=null;void oldWeiss?.close();usingClassic=false;if(wasRunning)CardScanRuntime.cancel()}
- async function fallback(canvas,game,lang,isValid){if(!classic){await loadOCR();if(!isValid())throw new DOMException('Anulowano','AbortError');const w=await Tesseract.createWorker(game==='weiss-jp'?'jpn+eng':catalogLanguages[lang]?.ocr||'eng',1);if(!isValid()){await w.terminate();throw new DOMException('Anulowano','AbortError')}classic=CardScanRuntime.track(w);await classic.setParameters({tessedit_pageseg_mode:'11'})}if(game==='swu'&&CardSWUScan.isPortrait(canvas))await classic.setParameters({tessedit_pageseg_mode:'11',tessedit_char_whitelist:''});const {data}=await classic.recognize(canvas,{}, {text:true,blocks:true});return CardNeuralEvidence.fromTesseract(game,data,canvas.width,canvas.height)}
+ async function fallback(canvas,game,lang,isValid){if(!classic){await loadOCR();if(!isValid())throw new DOMException('Anulowano','AbortError');const w=await CardScanRuntime.classicWorker(game==='weiss-jp'?'jpn+eng':catalogLanguages[lang]?.ocr||'eng');if(!isValid()){await w.terminate();throw new DOMException('Anulowano','AbortError')}classic=CardScanRuntime.track(w);await classic.setParameters({tessedit_pageseg_mode:'11'})}if(game==='swu'&&CardSWUScan.isPortrait(canvas))await classic.setParameters({tessedit_pageseg_mode:'11',tessedit_char_whitelist:''});const {data}=await classic.recognize(canvas,{}, {text:true,blocks:true});return CardNeuralEvidence.fromTesseract(game,data,canvas.width,canvas.height)}
  async function find(game,lang,evidence,index,isValid=()=>true){
   if(game==='swu'){delete evidence.swuAutoOpenId;const r=await CardSWUScan.lookup(evidence,index,{search:otherJSON,valid:isValid,getNames:()=>scanDictionary('swu')});if(!r)return [];if(r.mode==='code')evidence.swuAutoOpenId=CardMTGScan.singleResult(r.sources,evidence)?.id;const all=new Map();for(const s of r.sources)for(const c of s.data.cards)all.set(c.id,c);return CardSWUScan.rank([...all.values()],evidence).slice(0,4).map(x=>x.card)}
   if(CardWeissScan.is(game)){const r=await CardWeissScan.lookup(game,evidence,index,{search:otherJSON,valid:isValid,getNames:()=>scanDictionary(game)});if(!r)return [];const all=new Map();for(const s of r.sources)for(const c of s.data.cards)all.set(c.id,c);return CardWeissScan.rank([...all.values()],evidence).slice(0,4).map(x=>x.card)}
@@ -14,7 +14,11 @@
   const unique=new Map();for(const q of queries.slice(0,4)){const data=await otherJSON({game,...q});for(const c of data.cards||[])unique.set(c.id,c)}
   return CardScanIndex.rank(game,[...unique.values()],evidence).slice(0,4).map(x=>x.card);
  }
- async function openFound(c,{g,game,lang}){if(!valid(g,game,lang))return;stop();const choice=++scanId;label.textContent='Pobieram wybrane wydanie…';try{let selected=c;if(c._pokemon){const detectedLanguage=c._autoLanguage||c.catalogLanguage||lang;try{selected={...c,...await catalogJSON('https://api.tcgdex.net/v2/'+detectedLanguage+'/cards/'+encodeURIComponent(c.id)),catalogLanguage:detectedLanguage}}catch{selected={...c,set:c._set||{name:'',cardCount:{}},variants:{},variantsList:['Nieustalony'],catalogLanguage:detectedLanguage}}}if(choice!==scanId||document.body.dataset.view!=='scanner')return;photo=null;selectMatch(selected)}catch(e){if(choice===scanId)message(e.message)}}
+ async function openFound(c,{g,game,lang}){if(!valid(g,game,lang))return;stop();const choice=++scanId;photo=null;
+  if(c._pokemon){openPokemonMatch(c,c._set||c.set,c._autoLanguage||c.catalogLanguage||lang,choice);return;}
+  selectMatch(c);
+ }
+
  function renderFound(found,{g,game,lang,evidence,index,autoResult,weissResult}){
 results.replaceChildren();for(const c of found.slice(0,4)){const button=node('button'),im=node('img');button.type='button';CardPokemonArt.thumbnail(button,c._pokemon?{...c,catalogLanguage:c._autoLanguage||lang}:c);button.append(node('span',c.name),node('small',[game==='auto'?CardAutoScan.labels[c._autoGame]:null,c._set?.name||c.set?.name,c.localId].filter(Boolean).join(' · ')));
      button.onclick=()=>openFound(c,{g,game,lang});results.append(button)}
@@ -23,8 +27,14 @@ results.replaceChildren();for(const c of found.slice(0,4)){const button=node('bu
  if(game==='pokemon'&&(lang==='ja'||CardPokemonAsian.supports(lang))&&found.length>4){const all=node('button');all.type='button';all.className='live-all-editions';all.append(node('span','Zobacz wszystkie wydania'),node('small',found.length+' kart · wybierz ilustrację'));all.onclick=()=>{if(!valid(g,game,lang))return;const ranked=rankScanCatalog(index.cards,index.sets,evidence);stop();photo=null;prepareLookup();const token=++scanId;$('catalog-query').value=ranked[0]?.recognizedName||'';$('catalog-language').value=lang;void presentCandidates(ranked,lang,token,false)};results.append(all)}
  }
  async function start(){if(enabled)return;enabled=true;const g=++generation,game=currentGame(),lang=selectedLanguage();toggle.textContent='■ Zatrzymaj podgląd';results.replaceChildren();label.textContent='Przygotowuję katalog i lokalny odczyt…';
-  try{const index=game==='auto'?[]:game==='pokemon'?await getCatalog(lang):['mtg','swu'].includes(game)||CardWeissScan.is(game)?[]:await scanDictionary(game);if(!valid(g,game,lang))return;usingClassic=game==='weiss-jp'||game==='pokemon'&&lang!=='en';let misses=0;
-   while(valid(g,game,lang)){const canvas=captureCanvas(2000);if(!canvas){label.textContent='Najpierw uruchom aparat.';break}if(game!=='auto'&&!CardWeissScan.is(game))for(const button of results.querySelectorAll('button'))button.disabled=true;label.textContent='Odczytuję kartę — trzymaj ją w ramce.';let evidence;
+  try{const index=game==='auto'?[]:game==='pokemon'?await getCatalog(lang):['mtg','swu'].includes(game)||CardWeissScan.is(game)?[]:await scanDictionary(game);if(!valid(g,game,lang))return;usingClassic=game==='weiss-jp'||game==='pokemon'&&lang!=='en';let misses=0,lastSample=null,lastFrame=null,lastRead=0;
+   while(valid(g,game,lang)){const canvas=captureCanvas(2000);if(!canvas){label.textContent='Najpierw uruchom aparat.';break}let quality;try{quality=CardScanQuality.inspect(canvas);}catch{}
+    if(quality){const movement=CardScanQuality.difference(quality,lastSample);lastSample=quality;
+     if(quality.hint||movement>10){results.replaceChildren();autoSignature=weissSignature=null;lastFrame=null;label.textContent=quality.hint||'Przytrzymaj kartę nieruchomo — ustawiam odczyt.';await new Promise(r=>setTimeout(r,200));continue;}
+     if(lastFrame&&CardScanQuality.difference(quality,lastFrame)<2.5&&Date.now()-lastRead<4000){await new Promise(r=>setTimeout(r,250));continue;}
+     lastFrame=quality;lastRead=Date.now();
+    }
+    label.textContent='Odczytuję kartę — trzymaj ją w ramce.';let evidence;
     if(game==='auto'){
      if(!autoReader)autoReader=CardAutoScan.createReader(()=>valid(g,game,lang));
      const result=await autoReader.scan(canvas,{language:lang,onstage:s=>{if(valid(g,game,lang))label.textContent=s;}});if(!valid(g,game,lang))break;

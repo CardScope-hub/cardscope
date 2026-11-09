@@ -41,9 +41,9 @@ globalThis.CardAutoScan=(()=>{
   const unique=new Map();for(const row of rows){const k=key(row.card),old=unique.get(k);if(!old||row.score>old.score)unique.set(k,row);}
   const sorted=[...unique.values()].sort((a,b)=>b.score-a.score),exact=sorted.filter(x=>x.exact),conflict=new Set(routes.filter(r=>r.code&&r.score>=100).map(r=>family(r.game))).size>1;
   const single=!failed&&!conflict&&exact.length===1&&!exact[0].incomplete?exact[0].card:null;
-  return {cards:sorted.slice(0,12).map(x=>x.card),single,routes,note:single?'Rozpoznano '+labels[single._autoGame]+'.':sorted.length?'Porównaj ilustrację, serię i numer — wybierz właściwe wydanie.':failed?'Część katalogów chwilowo nie odpowiada. Ponów skan lub wybierz grę.':'Nie ma pewnego dopasowania. Zbliż nazwę i numer lub wskaż grę poniżej.'};
+  return {cards:sorted.slice(0,12).map(x=>x.card),single,confirmed:!failed&&!conflict&&exact.length>0,routes,note:single?'Rozpoznano '+labels[single._autoGame]+'.':sorted.length?'Porównaj ilustrację, serię i numer — wybierz właściwe wydanie.':failed?'Część katalogów chwilowo nie odpowiada. Ponów skan lub wybierz grę.':'Nie ma pewnego dopasowania. Zbliż nazwę i numer lub wskaż grę poniżej.'};
  }
- async function resolve(evidences,{search,getNames,getPokemon,rankPokemon,valid=()=>true,language='en',codeOnly=false,onstage=()=>{}}={}){
+ async function resolve(evidences,{search,getNames,getPokemon,rankPokemon,valid=()=>true,language='en',codeOnly=false,deep=false,timeLeft=()=>true,onstage=()=>{}}={}){
   const check=()=>{if(!valid())throw new DOMException('Anulowano','AbortError');};check();
   const routes=classify(evidences),rows=[];let failed=false;
   const append=(game,cards,{exact=false,incomplete=false,score=100,lang=game==='weiss-jp'?'ja':'en'}={})=>{for(const c of cards)rows.push({card:{...c,gameKey:c.gameKey||game,catalogLanguage:c.catalogLanguage||lang,_autoGame:game,_autoLanguage:c.catalogLanguage||lang},exact,incomplete,score});};
@@ -63,7 +63,9 @@ globalThis.CardAutoScan=(()=>{
      }
     }else{
      const nums=CardScanIndex.numbers(game,e).filter(n=>n.code&&!/^pr-/i.test(n.value)).slice(0,2);
-     for(const n of nums){const data=await search({game,q:n.query||n.value,ocr:'0'});check();const ranked=CardScanIndex.rank(game,data.cards||[],e),cards=ranked.filter(x=>x.evidence.number==='match'||x.evidence.number==='similar').map(x=>x.card);append(game,cards,{exact:!n.uncertain&&n.confidence>=60&&nums.length===1,incomplete:!!data.nextPage||Number(data.total)>cards.length,score:r.score>=100?1000:180});}
+     for(const n of nums){const data=await search({game,q:n.query||n.value,ocr:'0'});check();const ranked=CardScanIndex.rank(game,data.cards||[],e),found=ranked.filter(x=>x.evidence.number==='match'||x.evidence.number==='similar');
+      for(const row of found){const exact=row.evidence.number==='match'&&!n.uncertain&&n.confidence>=60&&nums.length===1;append(game,[row.card],{exact,incomplete:!!data.nextPage||Number(data.total)>found.length,score:exact?1000:180});}
+     }
     }
    }catch(err){check();failed=true;}
   }
@@ -76,9 +78,10 @@ globalThis.CardAutoScan=(()=>{
    for(const r of found)append('pokemon',[{...r.c,_pokemon:true,_set:r.set}],{lang,exact:!!r.certain,incomplete:certain.length!==1,score:r.certain?1000:110+(r.name||.88)*50+(r.num?20:0)});
   }catch(err){check();failed=true;}
   if(rows.some(r=>r.exact)||codeOnly)return finish(rows,routes,failed);
-  const ordered=[...new Set([...routes.map(r=>r.game),...games])].filter(g=>g!=='pokemon');
+  const selected=deep?games:routes.filter(r=>r.score>=65).map(r=>r.game);
+  const ordered=[...new Set(selected)].filter(g=>g!=='pokemon');
   // Match titles only. Names mentioned in rules text must not identify a game.
-  for(const game of ordered){check();const e=evidences[game],jp=game==='weiss-jp';if(jp&&!e.names.some(r=>japanese(r.text)))continue;
+  for(const game of ordered){check();if(!timeLeft())break;const e=evidences[game],jp=game==='weiss-jp';if(jp&&!e.names.some(r=>japanese(r.text)))continue;
    if(!e.names.some(r=>(r.confidence||0)>=40&&r.text.trim().length>=3))continue;
    onstage('Porównuję nazwę · '+labels[game]+'…');
    try{let names=await getNames(game);check();const title={...e,full:''};if(game==='swu'){if(!primaryNamesCache.has(names))primaryNamesCache.set(names,[...new Set(names.map(n=>n.split(' — ')[0]))]);names=primaryNamesCache.get(names);}
@@ -97,38 +100,40 @@ globalThis.CardAutoScan=(()=>{
   async function read(image,options={}){check();
    if(!neuralFailed)try{const r=await CardScanRuntime.read(image,options);check();return r;}catch(err){check();if(options.language==='ja')throw err;neuralFailed=true;}
    if(options.language==='ja')throw Error('Japoński odczyt jest niedostępny.');
-   if(!classic){await loadOCR();check();const w=await Tesseract.createWorker('eng',1);if(closed||!valid()){await w.terminate();check();}classic=CardScanRuntime.track(w);await classic.setParameters({tessedit_pageseg_mode:'11'});}
+   if(!classic){await loadOCR();check();const w=await CardScanRuntime.classicWorker('eng');if(closed||!valid()){await w.terminate();check();}classic=CardScanRuntime.track(w);await classic.setParameters({tessedit_pageseg_mode:'11'});}
    const canvas=options.region?enhancedRegion(image,options.region,!!options.enhance,2200):image;
    const {data}=await classic.recognize(canvas,{}, {text:true,blocks:true});check();return tesseractResult(data,canvas.width||canvas.naturalWidth,canvas.height||canvas.naturalHeight);
   }
-  async function readAsian(image,lang,onstage){const index=await getPokemon(lang);check();let reader=asianReaders.get(lang);if(!reader){reader=CardPokemonAsian.createReader(lang,()=>!closed&&valid());asianReaders.set(lang,reader);}const e=await reader.read(image,index,{onstage});check();const ranked=rankPokemon(index.cards,index.sets,e),rows=ranked.map(r=>({card:{...r.c,_pokemon:true,_set:r.set,gameKey:'pokemon',catalogLanguage:lang,_autoGame:'pokemon',_autoLanguage:lang},exact:!!r.certain,incomplete:ranked.length!==1,score:r.certain?1000:160}));return {...finish(rows,[]),evidences:{pokemon:e}};}
+  async function readAsian(image,lang,onstage){const index=await getPokemon(lang);check();let reader=asianReaders.get(lang);if(!reader){reader=CardPokemonAsian.createReader(lang,()=>!closed&&valid());asianReaders.set(lang,reader);}let e;try{e=await reader.read(image,index,{onstage});}finally{await reader.close();asianReaders.delete(lang);}check();const ranked=rankPokemon(index.cards,index.sets,e),rows=ranked.map(r=>({card:{...r.c,_pokemon:true,_set:r.set,gameKey:'pokemon',catalogLanguage:lang,_autoGame:'pokemon',_autoLanguage:lang},exact:!!r.certain,incomplete:ranked.length!==1,score:r.certain?1000:160}));return {...finish(rows,[]),evidences:{pokemon:e}};}
   async function close(){closed=true;for(const r of asianReaders.values())await r.close();asianReaders.clear();if(classic){CardScanRuntime.untrack(classic);await classic.terminate().catch(()=>{});classic=null;}for(const r of wsReaders.values())await r.close();wsReaders.clear();await jpReader?.close();jpReader=null;}
-  return {close,async scan(image,{onstage=()=>{},language='en'}={}){
+  return {close,async scan(image,{onstage=()=>{},language='en',deep=false}={}){
    check();if(CardPokemonAsian.supports(language)){const asian=await readAsian(image,language,onstage);check();if(asian.cards.length)return asian;}let result=await read(image,{onstage:s=>onstage(s==='loading'?'Wczytuję lokalny odczyt wszystkich gier…':'Odczytuję kartę i szukam jej gry…')});check();
-   let evidences=fromResult(result),routes=classify(evidences);const memo=new Map(),options={search:p=>{const k=JSON.stringify(p);if(!memo.has(k))memo.set(k,search(p));return memo.get(k);},getNames,getPokemon,rankPokemon,valid:()=>!closed&&valid(),language,onstage};
+   const deadline=Date.now()+(deep?40000:10000),timeLeft=()=>Date.now()<deadline;let evidences=fromResult(result),routes=classify(evidences);const memo=new Map(),options={search:p=>{const k=JSON.stringify(p);if(!memo.has(k))memo.set(k,search(p));return memo.get(k);},getNames,getPokemon,rankPokemon,valid:()=>!closed&&valid(),language,deep,timeLeft,onstage};
    let found=await resolve(evidences,{...options,codeOnly:true});check();
-   if(found.single||found.cards.some(c=>routes.some(r=>r.game===c._autoGame&&r.score>=100)))return {...found,evidences};
+   if(found.single||found.confirmed)return {...found,evidences};
    // Shared footer enlargements help identify the family without seven OCR runs.
    const footers=[];
    for(const pass of [{region:[0,.82,1,.18],enhance:false},{region:[.55,.89,.45,.11],enhance:true}]){
-    onstage('Powiększam numer i oznaczenie serii…');const r=await read(image,pass);check();footers.push(...CardNeuralEvidence.crop(r));evidences=fromResult(result,footers);routes=classify(evidences);found=await resolve(evidences,{...options,codeOnly:true});check();if(found.single||found.cards.some(c=>routes.some(r=>r.game===c._autoGame&&r.score>=100)))return {...found,evidences};
+    if(!timeLeft())break;onstage('Powiększam numer i oznaczenie serii…');const r=await read(image,pass);check();footers.push(...CardNeuralEvidence.crop(r).map(x=>({...x,source:'auto-footer-'+footers.length})));evidences=fromResult(result,footers);routes=classify(evidences);found=await resolve(evidences,{...options,codeOnly:true});check();if(found.single||found.confirmed)return {...found,evidences};
    }
    const detectedLanguage=CardPokemonAsian.languageHint(evidences.pokemon.full,language);
    if(CardPokemonAsian.supports(detectedLanguage)&&detectedLanguage!==language){const asian=await readAsian(image,detectedLanguage,onstage);check();if(asian.cards.length)return asian;}
    // Preserve the precise portrait-footer pass for small SWU collector numbers.
    if(routes.some(r=>r.game==='swu')&&CardSWUScan.isPortrait(image))for(const pass of CardSWUScan.getFooterPasses(image).slice(0,2)){
-    onstage('Odczytuję mały numer Star Wars…');const r=await read(image,pass);check();footers.push(...CardNeuralEvidence.crop(r).map(x=>({...x,source:'auto-swu-footer'})));evidences=fromResult(result,footers);routes=classify(evidences);found=await resolve(evidences,{...options,codeOnly:true});check();if(found.single)return {...found,evidences};
+    if(!timeLeft())break;onstage('Odczytuję mały numer Star Wars…');const r=await read(image,pass);check();footers.push(...CardNeuralEvidence.crop(r).map(x=>({...x,source:'auto-swu-footer'})));evidences=fromResult(result,footers);routes=classify(evidences);found=await resolve(evidences,{...options,codeOnly:true});check();if(found.single)return {...found,evidences};
    }
    // When a family is visible, reuse its established precise reader.
    const ws=routes.find(r=>(r.game==='weiss'||r.game==='weiss-jp')&&r.score>=70);
-   if(ws){const targets=routes.filter(r=>family(r.game)==='weiss'&&r.score===ws.score).map(r=>r.game);const rows=[];
+   if(ws&&timeLeft()){if(classic){CardScanRuntime.untrack(classic);await classic.terminate();classic=null;}const targets=routes.filter(r=>family(r.game)==='weiss'&&r.score===ws.score).map(r=>r.game);const rows=[];
     for(const game of targets){check();let reader=wsReaders.get(game);if(!reader){reader=CardWeissScan.createReader(game,()=>!closed&&valid());wsReaders.set(game,reader);}
-     const r=await reader.scan(image,{search:options.search,getNames:()=>getNames(game),onstage});check();evidences[game]=r.evidence;
+     let r;try{r=await reader.scan(image,{search:options.search,getNames:()=>getNames(game),deep,onstage});}finally{await reader.close();wsReaders.delete(game);}check();evidences[game]=r.evidence;
      if(r.result?.sources?.length){const unique=new Map();for(const s of r.result.sources)for(const c of s.data.cards)unique.set(c.id,c);const one=r.result.mode==='code'&&CardMTGScan.singleResult(r.result.sources,r.evidence);for(const c of unique.values())rows.push({card:{...c,_autoGame:game,_autoLanguage:game==='weiss-jp'?'ja':'en'},exact:r.result.mode==='code',incomplete:!one,score:r.result.mode==='code'?1000:160});}
     }if(rows.length)return {...finish(rows,routes),evidences};
    }
    found=await resolve(evidences,options);check();if(found.cards.length)return {...found,evidences};
    // Japanese titles require the Japanese model, not Latin OCR gibberish.
+   if(!timeLeft())return {...found,evidences,limited:true,note:found.cards.length?found.note:'Nie potwierdzono karty. Zbliż numer albo wybierz „Dokładniejszy odczyt”.'};
+   if(language!=='ja'&&!japanese(evidences.pokemon.full)&&!routes.some(r=>r.game==='weiss-jp'))return {...found,evidences};
    onstage('Sprawdzam również japońskie nazwy…');
    try{const jp=await read(image,{language:'ja',maxSide:1800});check();const je=fromResult(jp,footers);for(const g of games)je[g].numbers.push(...evidences[g].numbers);
     found=await resolve(je,{...options,language:'ja'});check();if(found.cards.length)return {...found,evidences:je};

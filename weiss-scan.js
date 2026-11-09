@@ -91,14 +91,14 @@ globalThis.CardWeissScan=(()=>{
  }
  const numberPasses=[
   {region:[.09,.885,.22,.022],psm:'7',width:1200,freeText:true},
-  {region:[0,.73,1,.27],psm:'11',width:2200,freeText:true,broad:true},
   {region:[.09,.875,.24,.042],psm:'7',width:1200,enhance:true,freeText:true},
+  {region:[0,.73,1,.27],psm:'11',width:1800,freeText:true,broad:true},
   {region:[.03,.845,.40,.10],psm:'11',width:1600,freeText:true}
  ].map(p=>({...p,kind:'numbers',latin:true}));
  const landscapeNumberPasses=[
   {region:[.415,.889,.17,.023],psm:'7',width:1000,freeText:true},
-  {region:[0,.67,1,.33],psm:'11',width:2200,freeText:true,broad:true},
   {region:[.405,.88,.18,.045],psm:'7',width:1000,enhance:true,freeText:true},
+  {region:[0,.67,1,.33],psm:'11',width:1800,freeText:true,broad:true},
   {region:[.34,.83,.30,.12],psm:'11',width:1500,freeText:true}
  ].map(p=>({...p,kind:'numbers',latin:true}));
  const namePasses=[{region:[.20,.81,.78,.16],psm:'11',width:1800,broad:true},{region:[.27,.895,.65,.05],psm:'7'}, {region:[.29,.896,.54,.052],psm:'6'}, {region:[.27,.885,.65,.065],psm:'7',enhance:true}].map(p=>({...p,kind:'names',latin:false,width:p.width||1400}));
@@ -122,7 +122,7 @@ globalThis.CardWeissScan=(()=>{
  }
  function readout(e){return [footerStatus(e),'Nazwa: '+(e.weissNames?.join(' / ')||'brak potwierdzonego odczytu')].join('\n')}
  function syncScanner(){const enabled=typeof currentGame==='function'&&is(currentGame()),control=$('weiss-scan-options'),guide=$('scan-guide');if(control)control.hidden=!enabled;if(guide&&enabled)guide.dataset.orientation=$('weiss-orientation')?.value||'portrait';}
- function createReader(game,valid=()=>true){const workers=new Map();let closed=false,usedJapanese=false,neuralUnavailable=false,stage=()=>{};
+ function createReader(game,valid=()=>true){const workers=new Map();let closed=false,usedJapanese=false,neuralUnavailable=false,stage=()=>{},deadline=Infinity,deepScan=false;
   const check=()=>{if(closed||!valid())throw new DOMException('Anulowano','AbortError')};
   async function close(){if(closed)return;closed=true;const old=[...workers.values()];workers.clear();for(const w of old){CardScanRuntime.untrack(w);await w.terminate().catch(()=>{})}if(usedJapanese&&valid())CardScanRuntime.cancel()}
   async function worker(lang){check();if(workers.has(lang))return workers.get(lang);
@@ -134,7 +134,7 @@ globalThis.CardWeissScan=(()=>{
   }
   async function pass(image,p,evidence){check();const w=await worker(p.kind==='numbers'||game==='weiss'?'eng':'jpn');
    await w.setParameters({tessedit_pageseg_mode:p.psm,user_defined_dpi:'300',preserve_interword_spaces:'1',tessedit_char_whitelist:p.latin&&!p.freeText?'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789/-_@+ |':''});
-   const crop=enhancedRegion(image,p.region,p.enhance,p.width||1800),{data}=await w.recognize(crop,{rotateAuto:true},{text:true,blocks:true});check();
+   const crop=enhancedRegion(image,p.region,p.enhance,p.width||1800),{data}=await w.recognize(crop,{rotateAuto:true},{text:true,blocks:true});check();if(deadline===Infinity)deadline=Date.now()+(deepScan?40000:10000);
    const lines=data.blocks?.flatMap(b=>b.paragraphs?.flatMap(p=>p.lines||[])||[])||data.lines||[],passId='weiss-'+p.kind+'-'+evidence.numbers.length+'-'+evidence.names.length;
    const rows=lines.map(l=>({text:l.text||'',confidence:l.confidence||0,source:passId,region:p.region,box:l.bbox,cropWidth:crop.width,cropHeight:crop.height,y:p.region[1]+(((l.bbox?.y0||0)+(l.bbox?.y1||0))/2-24)/(crop.height-48)*p.region[3]})).filter(x=>x.text.trim());
    // OCR may split a title into separate blocks around a shine or decoration.
@@ -146,9 +146,9 @@ globalThis.CardWeissScan=(()=>{
    if(!rows.length)rows.push({text:data.text||'',confidence:data.confidence||0,source:passId,region:p.region});
    evidence[p.kind].push(...rows);if(p.broad&&p.kind==='numbers'&&game==='weiss')evidence.names.push(...rows.filter(r=>r.y>=.875&&r.y<=.955));return rows;
   }
-  return {close,async scan(image,{search,getNames,onstage=()=>{},onread=()=>{}}={}){check();stage=onstage;const original=image,alignment=globalThis.CardWeissFrame?.prepare(image);if(alignment?.aligned)image=alignment.image;const evidence={aligned:!!alignment?.aligned,names:[],numbers:[],full:'',game,weissOrientation:landscape(image)?'landscape':'portrait',engine:'Weiss · seria i numer'},attempts=new Map();let code;
+  return {close,async scan(image,{search,getNames,deep=false,onstage=()=>{},onread=()=>{}}={}){check();stage=onstage;deepScan=deep;deadline=Infinity;const original=image,alignment=globalThis.CardWeissFrame?.prepare(image);if(alignment?.aligned)image=alignment.image;const evidence={aligned:!!alignment?.aligned,names:[],numbers:[],full:'',game,weissOrientation:landscape(image)?'landscape':'portrait',engine:'Weiss · seria i numer'},attempts=new Map();let code;
    const memo=async params=>{const key=JSON.stringify(params);if(!attempts.has(key))attempts.set(key,search(params));return attempts.get(key)};
-   for(const p of getNumberPasses(image)){check();onstage('Odczytuję serię i numer Weiß Schwarz…');try{await pass(image,p,evidence);onread(evidence)}catch(e){check();if(e.weissEngineError)throw e;evidence.numberReadFailed=true;break}check();code=await lookupCode(game,evidence,{search:memo,valid:()=>!closed&&valid(),onstage});check();if(code?.sources?.length&&code.mode!=='code'&&!evidence.codeZoomed){
+   for(const p of getNumberPasses(image)){check();if(Date.now()>deadline)break;onstage('Odczytuję serię i numer Weiß Schwarz…');try{await pass(image,p,evidence);onread(evidence)}catch(e){check();if(e.weissEngineError)throw e;evidence.numberReadFailed=true;break}check();code=await lookupCode(game,evidence,{search:memo,valid:()=>!closed&&valid(),onstage});check();if(code?.sources?.length&&code.mode!=='code'&&!evidence.codeZoomed&&Date.now()<deadline){
      const row=[...evidence.numbers].reverse().find(r=>r.box&&r.confidence>=40&&T.weissReads(numberText(r.text)).length);
      if(row){evidence.codeZoomed=true;const [x,y,w,h]=row.region,b=row.box,px=w/(row.cropWidth-48),py=h/(row.cropHeight-48),left=Math.max(0,x+(b.x0-30)*px),top=Math.max(0,y+(b.y0-29)*py),right=Math.min(1,x+(b.x1-18)*px),bottom=Math.min(1,y+(b.y1-19)*py);
       if(right>left&&bottom>top)await pass(image,{kind:'numbers',latin:true,freeText:true,region:[left,top,right-left,bottom-top],psm:'7',width:1500,enhance:true},evidence);
@@ -158,16 +158,16 @@ globalThis.CardWeissScan=(()=>{
    const result=await lookup(game,evidence,[],{search:memo,valid:()=>!closed&&valid(),onstage,getNames,codeResult:code,readNames:async names=>{
     const found=()=>{const matches=suggest(names,evidence);evidence.weissNames=matches.map(x=>x.name);onread(evidence);return matches.some(x=>x.similarity>=.98)};
     if(found())return;
-    for(const p of getNamePasses(image)){check();onstage(game==='weiss-jp'?'Odczytuję japoński tytuł…':'Odczytuję pełną angielską nazwę…');await pass(image,p,evidence);if(found())return;}
+    for(const p of getNamePasses(image).slice(0,deep?4:2)){check();if(Date.now()>deadline)break;onstage(game==='weiss-jp'?'Odczytuję japoński tytuł…':'Odczytuję pełną angielską nazwę…');await pass(image,p,evidence);if(found())return;}
     // A wide, contrast-adjusted fallback also works when sleeves, borders or
     // decorative artwork prevent a confident geometric crop.
-    for(const source of alignment?.aligned?[image,original]:[image]){check();onstage('Sprawdzam szerszy kadr nazwy i poprawiam kontrast…');await pass(source,{kind:'names',latin:false,region:landscape(source)?[.43,.75,.56,.24]:[.15,.78,.84,.21],psm:'11',width:2000,enhance:true},evidence);if(found())return;}
-    if(game==='weiss-jp'&&!neuralUnavailable&&typeof CardScanRuntime.read==='function')try{
+    for(const source of deep?(alignment?.aligned?[image,original]:[image]):[]){check();if(Date.now()>deadline)break;onstage('Sprawdzam szerszy kadr nazwy i poprawiam kontrast…');await pass(source,{kind:'names',latin:false,region:landscape(source)?[.43,.75,.56,.24]:[.15,.78,.84,.21],psm:'11',width:2000,enhance:true},evidence);if(found())return;}
+    if(game==='weiss-jp'&&Date.now()<deadline&&!neuralUnavailable&&typeof CardScanRuntime.read==='function')try{
      for(const w of workers.values()){CardScanRuntime.untrack(w);await w.terminate().catch(()=>{});}workers.clear();check();
-     for(const p of japanesePasses(image)){check();usedJapanese=true;onstage('Odczytuję japońską nazwę karty…');const canvas=enhancedRegion(image,p.region,p.enhance,p.width),r=await CardScanRuntime.read(canvas,{language:'ja',maxSide:1500,onstage:s=>{if(valid()&&s==='loading')onstage('Wczytuję lokalny odczyt japońskich nazw…')}});check();evidence.names.push(...titleEvidence(r,p,image));evidence.engine='Weiss · japoński OCR';if(found())return;}
+     for(const p of japanesePasses(image).slice(0,deep?3:1)){check();if(Date.now()>deadline)break;usedJapanese=true;onstage('Odczytuję japońską nazwę karty…');const canvas=enhancedRegion(image,p.region,p.enhance,p.width),r=await CardScanRuntime.read(canvas,{language:'ja',maxSide:1500,onstage:s=>{if(valid()&&s==='loading')onstage('Wczytuję lokalny odczyt japońskich nazw…')}});check();evidence.names.push(...titleEvidence(r,p,image));evidence.engine='Weiss · japoński OCR';if(found())return;}
     }catch(e){check();neuralUnavailable=true;evidence.japaneseReadFailed=true;onstage('Sprawdzam japoński tytuł odczytem rezerwowym…')}
 
-   }});check();onread(evidence);return {evidence,result};
+   }});check();evidence.limited=Date.now()>deadline;if(result&&!result.sources.length&&!deep)result.note='Nie potwierdzono karty. Zbliż serię i numer albo wybierz „Dokładniejszy odczyt”.';onread(evidence);return {evidence,result};
   }};
  }
  return Object.freeze({is,codeKey,numberText,nameKey,nameScore,titleLines,suggest,reads,compare,rank,footerStatus,lookupCode,lookup,createReader,numberPasses,namePasses,landscape,getNumberPasses,getNamePasses,japanesePasses,titleEvidence,seriesKey,seriesReads,readout,syncScanner});

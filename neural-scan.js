@@ -12,16 +12,30 @@ async function refineScan(image,game,evidence,index,valid,onstage=()=>{}){
  for(const pass of passes){if(!valid())throw new DOMException('Anulowano','AbortError');onstage(pass.kind);const r=await CardScanRuntime.read(image,pass);if(!valid())throw new DOMException('Anulowano','AbortError');evidence[pass.kind].push(...(game==='swu'?CardSWUScan.markFooter(evidence,CardNeuralEvidence.crop(r)):CardNeuralEvidence.crop(r)));if(scanIsCertain(game,evidence,index))break}
  return evidence;
 }
+async function scanFooterFirst(image,game,valid,onstage=()=>{}){
+ if(!['mtg','swu'].includes(game))return null;
+ const reader=game==='mtg'?CardMTGScan:CardSWUScan,evidence={names:[],numbers:[],full:'',...(game==='swu'?{swuPortrait:CardSWUScan.isPortrait(image)}:{})};
+ const passes=game==='mtg'?reader.footerPasses:reader.getFooterPasses(image);
+ for(const pass of passes.slice(0,2)){
+  if(!valid())throw new DOMException('Anulowano','AbortError');onstage('Odczytuję serię i numer karty…');
+  const result=await CardScanRuntime.read(image,pass);if(!valid())throw new DOMException('Anulowano','AbortError');
+  const rows=CardNeuralEvidence.crop(result);evidence.numbers.push(...(game==='swu'?reader.markFooter(evidence,rows):rows));
+  if(reader.hasReliable(evidence)){const found=await reader.lookup(evidence,[],{search:otherJSON,valid,onstage});if(found?.mode==='code'&&found.sources.length)return {evidence,result:found};}
+ }
+ return {evidence,result:null};
+}
 async function recognizeNeural(){if(currentGame()==='pokemon'&&CardPokemonAsian.supports(selectedLanguage()))return recognizeClassic();if(currentGame()==='auto')return CardAutoScanUI.recognize();if(CardWeissScan.is(currentGame()))return recognizeWeiss();if(!photo)return;CardScanner.cancel();prepareLookup();const token=++scanId,game=currentGame(),lang=selectedLanguage();for(const id of ['retry','catalog-submit','scan-classic'])$(id).disabled=true;$('processing').setAttribute('aria-busy','true');status('1 / 3 · Przygotowuję odczyt…');
  const catalog=(game==='pokemon'?getCatalog(lang):['mtg','swu'].includes(game)?Promise.resolve([]):scanDictionary(game)).then(value=>({value}),error=>({error}));let fallback=false;
- try{const image=new Image();image.src=photo;await image.decode();if(token!==scanId)return;let result;try{result=await detectCardText(image,token)}catch(e){if(e.name==='AbortError')throw e;fallback=true;throw e}if(token!==scanId)return;
-  const evidence=CardNeuralEvidence.fromResult(game,result);$('scan-readout').textContent=evidence.full||'Nie odczytano tekstu.';const index=await catalog;if(token!==scanId)return;if(index.error)throw index.error;
+ try{const image=new Image();image.src=photo;await image.decode();if(token!==scanId)return;let result,footer;try{footer=await scanFooterFirst(image,game,()=>token===scanId,status);if(token!==scanId)return;
+  if(footer?.result){$('scan-readout').textContent=footer.evidence.numbers.map(x=>x.text).join('\n');await showOtherScanResults(game,footer.result.sources,footer.evidence,token);return;}
+  result=await detectCardText(image,token)}catch(e){if(e.name==='AbortError')throw e;fallback=true;throw e}if(token!==scanId)return;
+  const evidence=CardNeuralEvidence.fromResult(game,result);if(footer)evidence.numbers.push(...footer.evidence.numbers);$('scan-readout').textContent=evidence.full||'Nie odczytano tekstu.';const index=await catalog;if(token!==scanId)return;if(index.error)throw index.error;
   try{await refineScan(image,game,evidence,index.value,()=>token===scanId,kind=>status(kind==='numbers'?'2 / 3 · Odczytuję numer w powiększeniu…':'2 / 3 · Sprawdzam nazwę w powiększeniu…'))}catch(e){if(e.name==='AbortError')throw e;evidence.numberReadFailed=true}
   if(game==='weiss'){try{await readWeissNumbers(image,evidence,token)}catch(e){if(token!==scanId)return;evidence.numberReadFailed=true}}
   if(token!==scanId)return;$('scan-readout').textContent=[...evidence.names,...evidence.numbers].map(x=>x.text).join('\n');status('3 / 3 · Porównuję odczyt z katalogiem…');await resolveScanEvidence(game,lang,evidence,index.value,token);
  }catch(e){if(token===scanId&&e.name!=='AbortError'){if(fallback){status('Przełączam na zapasowy odczyt na urządzeniu…');return recognizeClassic()}status(e.message||'Nie udało się odczytać karty.')}}finally{if(token===scanId){for(const id of ['retry','catalog-submit','scan-classic'])$(id).disabled=false;$('processing').setAttribute('aria-busy','false')}}
 }
-$('scan-classic').onclick=()=>{CardScanner.cancel();void recognizeClassic()};
+$('scan-classic').onclick=()=>{CardScanner.cancel();if(currentGame()==='auto')void CardAutoScanUI.recognize({deep:true});else if(CardWeissScan.is(currentGame()))void recognizeWeiss({deep:true});else void recognizeClassic();};
 async function resolveScanEvidence(game,lang,evidence,index,token){
  if(game==='pokemon'){const ranked=rankScanCatalog(index.cards,index.sets,evidence);$('catalog-count').textContent=index.cards.length.toLocaleString('pl-PL')+' kart · '+index.sets.length+' serii';$('catalog-query').value=ranked[0]?.c.name||CardScanText.names(evidence)[0]||'';$('scan-checks').hidden=false;$('scan-name-check').textContent='Nazwa: '+(ranked[0]?.c.name||'niepotwierdzona');const read=readEvidence(evidence.numbers.map(x=>x.text).join('\n'));$('scan-number-check').textContent='Odczyt numeru: '+(read.numbers.map(x=>x.local+(x.total?'/'+x.total:'')).join(' · ')||'niepotwierdzony');await presentCandidates(ranked,lang,token,true)}
  else await lookupOtherEvidence(game,evidence,index,token);
