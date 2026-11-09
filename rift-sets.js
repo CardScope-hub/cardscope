@@ -2,6 +2,8 @@
  'use strict';
  const $ = id => document.getElementById(id);
  const games = {
+  weiss:{name:'Weiß Schwarz',core:root.CardWeissSetCore,
+   kinds:[['all','Wszystkie karty'],['base','Standardowe rzadkości'],['parallel','Rzadkie i specjalne'],['extra','Promo i karty z talii']]},
   riftbound: {name:'Riftbound', core:root.CardRiftSetCore, file:'riftbound-sets.json?v=rift-sets-1', count:6,
    kinds:[['all','Wszystkie wydania'],['base','Podstawowy set'],['alternate','Alternatywne i sygnatury'],['extra','Runy, tokeny i dodatki']]},
   swu: {name:'Star Wars: Unlimited', core:root.CardSWUSetCore, file:'swu-sets.json?v=swu-sets-1', count:11,
@@ -17,8 +19,9 @@
    kinds:[['all','Wszystkie wydania'],['base','Standardowe wydania'],['alternate','Alternatywne i specjalne'],['don','Karty DON!!']]}
  };
  const pokemonLanguages={en:'Angielski',ja:'Japoński',de:'Niemiecki',fr:'Francuski',es:'Hiszpański',it:'Włoski',pt:'Portugalski',ko:'Koreański','zh-cn':'Chiński uproszczony','zh-tw':'Chiński tradycyjny'};
- let pokemonLanguage='en';
- const cacheKey=()=>game==='pokemon'?'pokemon:'+pokemonLanguage:game;
+ let pokemonLanguage='en',weissLanguage='en';
+ try{const l=localStorage.getItem('cardscope:weiss-set-language');if(['en','ja'].includes(l))weissLanguage=l}catch{}
+ const cacheKey=()=>game==='pokemon'?'pokemon:'+pokemonLanguage:game==='weiss'?'weiss:'+weissLanguage:game;
  let game = 'riftbound', core = games[game].core;
  const host = $('collection-sets'), allTab = $('collection-all-cards'), setsTab = $('collection-rift-sets');
  if (!host || !core) return;
@@ -38,7 +41,7 @@
  function gameSwitch() {
   const group = el('div', null, 'rs-game-switch');
   group.setAttribute('role','group'); group.setAttribute('aria-label','Gra w kolekcji setów');
-  for (const [key, config] of Object.entries(games)) {
+  for (const [key, config] of Object.entries(games).sort(([a],[b])=>a==='weiss'?1:b==='weiss'?-1:0)) {
    const b = button(config.label || config.name, '', () => selectGame(key));
    b.dataset.game = key; b.setAttribute('aria-pressed', String(key === game)); group.append(b);
   }
@@ -47,14 +50,15 @@
  function mount(...children) {
   const focusedGame = document.activeElement?.dataset.game;
   const language=el('label',null,'rs-language');
-  if(game==='pokemon'){
-   language.append(el('span','Język wydania'));const select=el('select');select.setAttribute('aria-label','Język setów Pokémon');
-   for(const [value,label] of Object.entries(pokemonLanguages)){const o=el('option',label);o.value=value;select.append(o)}
-   select.value=pokemonLanguage;select.addEventListener('change',()=>{
-    pokemonLanguage=select.value;navigationId++;if(modal.open)modal.close();index=null;currentSet=null;owned=new Map();setQuery='';setLimit=30;void load();
+  if(game==='pokemon'||game==='weiss'){
+   const isWeiss=game==='weiss';
+   language.append(el('span','Język wydania'));const select=el('select');select.setAttribute('aria-label',isWeiss?'Język wydań Weiß Schwarz':'Język setów Pokémon');
+   for(const [value,label] of Object.entries(isWeiss?{en:'EN · angielskie',ja:'JP · japońskie'}:pokemonLanguages)){const o=el('option',label);o.value=value;select.append(o)}
+   select.value=isWeiss?weissLanguage:pokemonLanguage;select.addEventListener('change',()=>{
+    if(isWeiss){weissLanguage=select.value;try{localStorage.setItem('cardscope:weiss-set-language',weissLanguage)}catch{}}else pokemonLanguage=select.value;setCategory='all';setYear='all';navigationId++;if(modal.open)modal.close();index=null;currentSet=null;owned=new Map();setQuery='';setLimit=30;void load();
    });language.append(select);
   }
-  host.replaceChildren(gameSwitch(), ...(game==='pokemon'?[language]:[]), ...children);
+  host.replaceChildren(gameSwitch(), ...(['pokemon','weiss'].includes(game)?[language]:[]), ...children);
   if (focusedGame) host.querySelector(`.rs-game-switch [data-game="${game}"]`)?.focus({preventScroll:true});
  }
  function selectGame(next) {
@@ -88,7 +92,7 @@
   if(urls.length)img.src=urls[0];wrap.append(img,placeholder);return wrap;
  }
  function image(card, cls = '') {
-  if(game==='lorcana'||game==='onepiece')return catalogImage(card,cls);
+  if(game==='lorcana'||game==='onepiece'||game==='weiss')return catalogImage(card,cls);
   if(game==='pokemon'&&root.CardPokemonRepair)return root.CardPokemonRepair.image(card,cls);
   if (!card.image) { const placeholder=el('span','Brak ilustracji w źródle','rs-no-image');placeholder.setAttribute('role','img');placeholder.setAttribute('aria-label',card.name+' — brak ilustracji');return placeholder; }
   const img = el('img', null, cls); img.src = card.image; img.alt = card.name; img.loading = 'lazy'; img.decoding = 'async';
@@ -142,9 +146,10 @@
   if (!task) {
    task = (async () => {
     if (catalogs.has(target)) return catalogs.get(target);
-    const response = await fetch(new URL(config.file, document.baseURI));
-    if (!response.ok) throw Error('catalog');
-    let data = await response.json();
+    let data;
+    if(target.startsWith('weiss:'))data=await config.core.load(target.split(':')[1]);
+    else{const response = await fetch(new URL(config.file, document.baseURI));
+    if (!response.ok) throw Error('catalog');data=await response.json();}
     if(target.startsWith('pokemon:')&&root.CardPokemonRepair)data=await root.CardPokemonRepair.prepareIndex(data);
     if (data.version !== 1 || !data.sets?.length || config.count && data.sets.length !== config.count || !(config.lazy ? data.entries?.length : data.cards?.length)) throw Error('schema');
     const built = config.core.buildIndex(data); catalogs.set(target, built); return built;
@@ -176,6 +181,7 @@
   const normalized=s=>String(s||'').normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase();
   const terms=normalized(setQuery).split(/\s+/).filter(Boolean);
   const matches=index.data.sets.filter(s=>(!['mtg','cyberpunk','lorcana','onepiece'].includes(game)||setCategory==='all'||s.category===setCategory)
+   && (game!=='weiss'||setCategory==='all'||s.franchiseId===setCategory)
    && (game!=='mtg'||setYear==='all'||s.year===setYear)
    && terms.every(t=>normalized(s.id+' '+s.name+' '+(s.aliases||[]).join(' ')).includes(t)));
   const ordered=root.CardSetOrder?.sort(matches,setOrder,game)||matches;
@@ -190,6 +196,7 @@
    text.append(el('span', set.displayCode || set.code || set.id, 'rs-set-code'), el('span', set.name, 'rs-set-name'));
    if(game==='mtg')text.append(el('span',set.preview?'Przedsprzedaż · '+set.releaseDate:(set.year+' · '+categoryNames[set.category]),'rs-set-date'));
    if(game==='lorcana'||game==='onepiece'){text.append(el('span',(game==='lorcana'?lorcanaCategories:onepieceCategories)[set.category],'rs-set-date'));if(set.catalogNote)text.append(el('span',set.catalogNote,'rs-set-date'));if(set.preview)text.append(el('span',set.previewLabel,'rs-preview-label'));}
+   if(game==='weiss')text.append(el('span',(weissLanguage==='ja'?'JP':'EN')+' · '+set.franchise,'rs-set-date'));
    const date=displayDate(set);if(date)text.append(el('span','Premiera · '+date,'rs-set-date rs-release-date'));
    if(game==='cyberpunk'){const date=el('span',set.previewLabel||cyberpunkCategories[set.category],'rs-set-date');if(set.preview)date.classList.add('rs-preview-label');text.append(date)}
    text.append(count, el('span', 'wydań w kolekcji', 'rs-set-caption'), bar);
@@ -209,9 +216,16 @@
   shelfMore=button('Pokaż kolejne sety','secondary rs-more',()=>{setLimit+=30;renderShelf()});
   const controls=el('div',null,'rs-set-controls');controls.hidden=false;
   {
-   const search=el('input');search.className='rs-set-search';search.type='search';search.placeholder=game==='onepiece'?'Szukaj dodatku, np. OP01, EB05, Heroines…':game==='riftbound'||game==='swu'?'Nazwa lub kod dodatku…':game==='lorcana'?'Szukaj dodatku, np. The First Chapter, Fabled, Q3…':game==='pokemon'?'Nazwa lub kod setu Pokémon…':game==='cyberpunk'?'Szukaj zestawu, np. Retail, Beta, The Heist…':'Szukaj setu, np. LTR, Star Trek, Bloomburrow…';search.value=setQuery;search.setAttribute('aria-label','Szukaj setu '+games[game].name);
+   const search=el('input');search.className='rs-set-search';search.type='search';search.placeholder=game==='weiss'?'Seria, wydanie lub kod, np. Re:ZERO, Vol. 2, NIK…':game==='onepiece'?'Szukaj dodatku, np. OP01, EB05, Heroines…':game==='riftbound'||game==='swu'?'Nazwa lub kod dodatku…':game==='lorcana'?'Szukaj dodatku, np. The First Chapter, Fabled, Q3…':game==='pokemon'?'Nazwa lub kod setu Pokémon…':game==='cyberpunk'?'Szukaj zestawu, np. Retail, Beta, The Heist…':'Szukaj setu, np. LTR, Star Trek, Bloomburrow…';search.value=setQuery;search.setAttribute('aria-label','Szukaj setu '+games[game].name);
    search.addEventListener('input',()=>{setQuery=search.value;setLimit=30;renderShelf()});
    controls.append(search);
+   if(game==='weiss'){
+    const label=el('label',null,'rs-order-label');label.append(el('span','Seria'));
+    const select=el('select');select.className='rs-weiss-franchise';select.setAttribute('aria-label','Seria Weiß Schwarz');
+    const franchises=[...new Map(index.data.sets.map(s=>[s.franchiseId,s.franchise])).entries()].sort((a,b)=>a[1].localeCompare(b[1],'pl'));
+    for(const [value,name] of [['all','Wszystkie serie'],...franchises]){const o=el('option',name);o.value=value;select.append(o)}
+    select.value=setCategory;select.addEventListener('change',()=>{setCategory=select.value;setLimit=30;renderShelf()});label.append(select);controls.append(label);
+   }
    if(['cyberpunk','lorcana','onepiece'].includes(game)){
     const category=el('select');category.className='rs-set-category';category.setAttribute('aria-label','Rodzaj zestawu '+games[game].name);
     for(const [value,label] of [['all','Wszystkie zestawy'],...Object.entries(game==='onepiece'?onepieceCategories:game==='lorcana'?lorcanaCategories:cyberpunkCategories)]){const o=el('option',label);o.value=value;category.append(o)}
@@ -230,7 +244,9 @@
   const sort=el('select');sort.className='rs-set-sort';sort.setAttribute('aria-label','Sortowanie dodatków według daty wydania');
   for(const [value,label] of [['catalog','Kolejność katalogu'],['newest','Data wydania · od najnowszych'],['oldest','Data wydania · od najstarszych']]){const option=el('option',label);option.value=value;sort.append(option)}
   sort.value=setOrder;sort.addEventListener('change',()=>{setOrder=sort.value;setLimit=30;try{localStorage.setItem('cardscope:set-order:'+game,setOrder)}catch{}renderShelf()});orderLabel.append(sort);controls.append(orderLabel);
-  mount(intro,controls,el('p','Daty według katalogu danego wydania. Zestawy bez potwierdzonej daty są na końcu sortowania.','rs-sort-note'),shelfResults,shelf,shelfMore,el('p',game==='onepiece'
+  mount(intro,controls,el('p','Daty według katalogu danego wydania. Zestawy bez potwierdzonej daty są na końcu sortowania.','rs-sort-note'),shelfResults,shelf,shelfMore,el('p',game==='weiss'
+   ? 'Albumy są podzielone według wydań serii. Promki i karty z talii znajdziesz w pasującym wydaniu, bez osobnych albumów. Różne ilustracje i rzadkości mają osobne miejsca; EN i JP mają oddzielny postęp. Karty bez pewnego przypisania do wydania pozostają w zwykłej kolekcji.'
+   : game==='onepiece'
    ? 'Katalog angielski. Alternatywne ilustracje, promocje, reprinty i DON!! mają osobne miejsca. Kilka kopii tego samego wydania liczymy razem. OP18 jest oznaczone jako zapowiedź i obejmuje tylko udostępnione karty.'
    : game==='lorcana'
    ? 'Podgląd kart w języku angielskim. Normal i Foil tego samego wydania liczymy razem. Enchanted, Epic, Iconic, promocje oraz różne ilustracje mają osobne miejsca. Promocje znajdziesz przy dodatku wskazanym na karcie; Curator’s Collection i Coconut mają własne zestawy.'
@@ -283,7 +299,7 @@
   host.replaceChildren();
   const back = button('← Wszystkie sety', 'rs-back', () => { overview(); setsTab.focus({preventScroll:true}); });
   const header = el('div', null, 'rs-set-header');
-  const title = el('div'); title.append(el('p', `${games[game].name.toUpperCase()} / ${currentSet.displayCode || currentSet.code || id}`, 'rs-kicker'), el('h2', currentSet.name));
+  const title = el('div'); title.append(el('p', `${games[game].name.toUpperCase()}${game==='weiss'?' · '+(weissLanguage==='ja'?'JP':'EN'):''} / ${currentSet.displayCode || currentSet.code || id}`, 'rs-kicker'), el('h2', currentSet.name));
   if(game==='lorcana'&&currentSet.catalogNote)title.append(el('p',currentSet.catalogNote,'rs-set-date'));
   if(currentSet.preview)title.append(el('p',currentSet.previewLabel || 'Przedsprzedaż · premiera '+currentSet.releaseDate,'rs-set-date'));
   const progress = el('div', null, 'rs-set-progress'); progressText = el('p'); progressBar = el('progress'); progressBar.setAttribute('aria-label', 'Kompletność całego setu');
@@ -329,7 +345,7 @@
     n = button('', 'rs-card', () => preview(card)); n.dataset.key = card.key;
     const art = el('span', null, 'rs-card-art'); art.append(image(card));
     n._badge = el('span', null, 'rs-owned-badge'); art.append(n._badge);
-    n.append(art, el('span', [card.code, card.variant].filter(Boolean).join(' · '), 'rs-card-code'), el('span', card.name, 'rs-card-name'));
+    n.append(art, el('span', [card.code, card.variant,game==='weiss'?card.rarity:null].filter(Boolean).join(' · '), 'rs-card-code'), el('span', card.name, 'rs-card-name'));
    }
    const have = owned.get(card.key);
    n.classList.toggle('rs-missing', !have); n._badge.textContent = have ? `✓ ${have.qty} szt.` : 'Brakuje';
@@ -347,7 +363,7 @@
  }
  function collectionChanged(next) {
   saved = Array.isArray(next) ? next : [];
-  const fingerprint = JSON.stringify([root.CardPokemonSetCore.fingerprint(saved),saved.map(c=>[c.officialPrintingId,c.tcgplayerId,c.cardmarketId,c.lorcastId,c.fullIdentifier,c.printedNumber,c.sourceId,c.lorcanaId])]); if (stamp === fingerprint) return;
+  const fingerprint = JSON.stringify([root.CardPokemonSetCore.fingerprint(saved),root.CardWeissSetCore?.fingerprint(saved),saved.map(c=>[c.officialPrintingId,c.tcgplayerId,c.cardmarketId,c.lorcastId,c.fullIdentifier,c.printedNumber,c.sourceId,c.lorcanaId])]); if (stamp === fingerprint) return;
   stamp = fingerprint;
   if (index) { owned = core.ownership(index, saved); refresh(); }
  }
