@@ -1,44 +1,35 @@
-WERYFIKACJA — SETY STAR WARS: UNLIMITED — 2026-11-09
+WERYFIKACJA — SETY MTG — 2026-11-09
 
-Zawartość: 7996 odrębnych wydań katalogowych w 11 setach SWU.
-Pełne podstawowe listy numerowane: 2549 kart łącznie.
+Katalog: 998 setów / 110 821 numerowanych wydań kart / 40 paczek danych.
+Kategorie: 204 dodatki i edycje główne, 45 Commander, 117 zestawów specjalnych,
+297 promocyjnych oraz 335 list tokenów, art series i dodatków.
+Siedem list Star Trek z premierą 2026-11-13 oznaczono jako przedsprzedaż.
+Źródło zawiera 162 rekordy bez obrazów; wyświetlane są jako opisane pola.
 
-Kod    Wszystkie wydania    Podstawowe
-SOR          514               252
-SHD          526               262
-TWI          521               257
-JTL         1130               262
-LOF         1166               264
-SEC         1155               264
-LAW          907               264
-ASH          931               264
-HMW          954               272
-IBH          104               104
-TS26          88                84
+WYNIK: 46 TESTÓW ZAKOŃCZONYCH POPRAWNIE
+15 testów Riftbound + 13 testów Star Wars: Unlimited + 18 testów MTG.
 
-Liczby odzwierciedlają istniejący katalog CardScope (SWU-DB, 2026-11-07),
-z tą samą regułą łączenia technicznych aliasów foil co skaner/katalog aplikacji.
-Sprawdzono brak luk w podstawowej numeracji każdego z 11 setów.
-Nie oznacza to listy wszystkich promocyjnych produktów SWU na świecie.
+Sprawdzono:
+- każdy identyfikator wydania i pełny numer w całym nowym katalogu MTG;
+- zgodność wszystkich 40 paczek z indeksem, unikalność kodów i liczbę kart;
+- zachowanie dopasowań wcześniej zapisanych kart MTG;
+- numery z zerami wiodącymi, sufiksy, gwiazdki, znaki † i kody The List;
+- rozróżnianie rzeczywistych numerów 0 i 00 w zestawach World Championships;
+- rozróżnianie setów i innych gier oraz brak zgadywania po nazwie/oracle_id;
+- sumowanie kopii foil/nonfoil o tym samym kodzie;
+- odrzucanie niekompletnych lub uszkodzonych paczek danych;
+- pobieranie na żądanie i brak pobierania wszystkich paczek przy starcie;
+- wyszukiwanie setów, filtry rodzaju i roku, paginację kart i setów;
+- aktualizację posiadania bez zastępowania istniejących elementów siatki;
+- podgląd kart dwustronnych oraz przycisk zamknięcia;
+- zmianę konta i czyszczenie oznaczeń własności;
+- przechodzenie między trzema grami i ochronę przed spóźnionymi odpowiedziami;
+- obsługę błędu sieci i ponowienie pobierania;
+- zachowanie nawigacji, istniejących zasobów skanera i wcześniejszych setów;
+- obecność nowych plików w pamięci service workera i składnię JavaScript.
 
-WYNIKI: 28 TESTÓW ZAKOŃCZONYCH POPRAWNIE
-15 testów zgodności widoku Riftbound i 13 testów nowej funkcji SWU.
-
-Zweryfikowano m.in.:
-- dopasowanie wszystkich zapisanych identyfikatorów i numerów z 11 setów;
-- pełne kody, zera wiodące, nazwy setów, ułamki i aliasy foil;
-- oddzielne liczenie różnych numerów Hyperspace/Showcase/Prestige;
-- brak dopasowań między grami lub wyłącznie po nazwie;
-- sumowanie kopii, usuwanie posiadania i wyczyszczenie przy zmianie konta;
-- oba wybory gry, wszystkie 17 setów razem z Riftbound, filtry i wyszukiwanie;
-- aktualizacje bez zastępowania istniejących kart w DOM i bez cyklicznych pobrań;
-- podgląd karty i przełączanie stron lidera bez zmiany kolekcji;
-- odrzucenie spóźnionej odpowiedzi po przełączeniu na drugą grę;
-- ponowienie pobierania po błędzie sieci;
-- zachowanie dolnej nawigacji oraz wszystkich wcześniejszych zasobów skanera;
-- poprawność składni JavaScript i obecność nowych plików w service workerze.
-
-Ograniczenie: podgląd w prawdziwej przeglądarce nie był dostępny w tej sesji.
-Testy używały Node.js i Happy DOM. Po publikacji sprawdź układ na telefonie,
-widoczność X, podgląd obu stron lidera oraz dodanie jednej karty z katalogu.
-Nie wykonywano zmian na koncie produkcyjnym ani w Supabase.
+OGRANICZENIE
+Podgląd w rzeczywistej przeglądarce nie był dostępny w tej sesji.
+Weryfikacja używała Node.js oraz Happy DOM; nie zastępuje testu na fizycznym
+iPhonie lub Androidzie. Po wgraniu sprawdź układ, widoczność X i dodanie jednej
+karty do kolekcji. Nie wykonywano zmian w Supabase ani na koncie produkcyjnym.
