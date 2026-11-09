@@ -1,0 +1,12 @@
+#scanner .camera-help{margin:14px 0 20px;padding:15px 18px;border:1px solid #554563;border-radius:16px;background:#1b1724;color:#d3c7e2;font-size:14px;line-height:1.65}
+#scanner .camera-help summary{min-height:30px;cursor:pointer;font-weight:650;color:#ede3ff}
+#scanner .camera-help p{margin:12px 0}
+#scanner .camera-help ol{padding-left:23px}
+#scanner .camera-help li{margin:10px 0}
+#scanner .camera-help strong{color:#f2eafd}
+#scanner .camera-native-button{display:flex;align-items:center;justify-content:center;min-height:48px;margin:14px 0;cursor:pointer;text-align:center}
+#scanner #camera-error-code{display:block;overflow-wrap:anywhere;color:#bfb0ce}
+#scanner .camera-device-label{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:16px 0;color:#d3c7e2}
+#scanner .camera-device-label select{flex:1;min-width:180px;max-width:100%;margin:0}
+#scanner #camera-play,#scanner #camera-retry{min-height:48px;margin:8px 0}
+#scanner [hidden]{display:none!important}

@@ -1,89 +1,53 @@
-CARDSCOPE — SETY MAGIC: THE GATHERING
+CARDSCOPE — SETY POKÉMON + START SKANERA NA ANDROIDZIE
 Aktualizacja z 9 listopada 2026
 
-JAK WGRAC
+To aktualizacja istniejącej aplikacji, a nie samodzielna pełna aplikacja.
+Nie usuwa kolekcji ani binderów i nie wymaga zmian w Supabase.
+
+WGRANIE NA GITHUB PAGES
 1. Rozpakuj ZIP na komputerze.
-2. Otwórz w repozytorium GitHub folder, w którym znajdują się app.html i sw.js.
-3. Wgraj do niego pliki z paczki, zastępując istniejące:
-   app.html
-   sw.js
-   rift-set-core.js
-   swu-set-core.js
-   mtg-set-core.js
-   rift-sets.js
-   rift-sets.css
-   riftbound-sets.json
-   swu-sets.json
-   mtg-sets.json
-   ORAZ CAŁY FOLDER mtg-set-data wraz ze wszystkimi 40 plikami.
-   Nie zmieniaj nazw ani położenia plików w tym folderze.
-   Prawidłowo: obok app.html leży folder mtg-set-data, a w nim pack-01.json itd.
-4. Zapisz zmiany (Commit changes). Poczekaj na zakończenie publikacji GitHub Pages.
-5. Odśwież stronę. Na telefonie zamknij aplikację całkowicie i otwórz ponownie.
-6. Wejdź w Kolekcja → Sety gier → Magic (MTG).
+2. Otwórz repozytorium cardscope-hub/cardscope i folder publikowany przez
+   GitHub Pages — ten, w którym znajdują się app.html oraz sw.js.
+3. Wgraj CAŁĄ zawartość rozpakowanej paczki do tego folderu. Nadpisz pliki
+   o tych samych nazwach. Zachowaj foldery pokemon-set-data i mtg-set-data.
+   Nie wgrywaj samego ZIP-a i nie umieszczaj app.html w dodatkowym podfolderze.
+4. Zapisz commit i poczekaj, aż wdrożenie GitHub Pages zakończy się sukcesem.
+5. Otwórz https://cardscope-hub.github.io/cardscope/app.html i odśwież stronę.
+   Jeśli używasz skrótu na telefonie, po pobraniu aktualizacji zamknij aplikację
+   i uruchom ją ponownie. Nie kasuj danych witryny — mogą zawierać lokalną kolekcję.
 
-Nie usuwaj pozostałych plików strony. Supabase nie wymaga żadnych zmian.
-Nie trzeba wprowadzać kluczy API ani wykonywać SQL.
-INSTALACJA.txt, WERYFIKACJA.txt i LISTA_SETOW_MTG.txt są dokumentacją;
-nie musisz ich publikować.
-To aktualizacja obecnego CardScope, nie samodzielna nowa aplikacja.
-Pliki zaczynające się od „rift” obsługują wspólny widok setów wszystkich trzech gier.
+Nie usuwaj innych plików aplikacji. Paczka zawiera także komponenty i dane
+setów Riftbound, Star Wars oraz MTG, aby zachować działanie poprzednich zmian.
 
-CO DODANO
-- 998 papierowych wydań MTG i 110 821 numerowanych wydań kart w katalogu setów.
-- Dodatki od najstarszych edycji, Commander, promocje, zestawy specjalne,
-  tokeny oraz art series. Pełna lista w LISTA_SETOW_MTG.txt.
-- Automatyczne oznaczanie posiadanych kart z dotychczasowej kolekcji.
-- Posiadane karty w kolorze z liczbą kopii; brakujące na szaro.
-- Licznik kompletności każdego setu.
-- Wyszukiwanie setów po nazwie/kodzie oraz filtry rodzaju i roku wydania.
-- Wyszukiwanie kart w secie, filtry posiadania i specjalnych wariantów.
-- Powiększenie karty i druga strona, jeśli źródło udostępnia ją dla tego wydania.
-- Przejście z posiadanej karty do dotychczasowego widoku kolekcji z cenami.
-- Zachowane sety Riftbound i Star Wars: Unlimited.
+JAK SPRAWDZIĆ SETY
+Kolekcja → Sety gier → Pokémon → wybierz język → wyszukaj i otwórz set.
+Posiadane wydania są kolorowe, nieposiadane szare. Licznik pokazuje kompletność
+setu, a znaczek na karcie liczbę kopii. Dostępne są filtry Posiadane/Brakujące,
+wyszukiwanie karty i podgląd. Języki mają niezależny postęp.
+Zapisane w kolekcji karty są dopasowywane automatycznie; nie trzeba dodawać ich
+ponownie. Samo otwarcie podglądu nie dodaje karty do kolekcji.
+Przy braku jednoznacznej serii/numeru program nie zgaduje posiadanego wydania.
 
-WYDAJNOŚĆ I INTERNET
-Na początku wczytuje się indeks wydań i ich identyfikatorów.
-Pełne dane i ilustracje kart są wczytywane przy otwieraniu setu.
-Dane podzielono na 40 małych paczek; aplikacja nie pobiera wszystkich przy wejściu.
-Odwiedzone paczki są zachowywane przez aplikację do późniejszego użycia.
-Pierwsze otwarcie danego setu wymaga internetu. Ilustracje pochodzą z dotychczasowych
-zewnętrznych źródeł i też mogą wymagać połączenia, jeśli nie były wczytywane.
-Nie dodano okresowego odświeżania siatki podczas przewijania.
+SKANER NA ANDROIDZIE
+Uruchom stronę bezpośrednio w Chrome lub Samsung Internet, korzystając z HTTPS.
+Zezwól na aparat w prośbie przeglądarki. Instalacja na ekranie głównym nie jest
+warunkiem dostępu do kamery.
 
-JAK DZIAŁA DOPASOWANIE
-Najpierw używany jest zapisany identyfikator konkretnego wydania Scryfall.
-Następnie sprawdzana jest seria i numer kolekcjonerski, np. LTR-001 lub FRA-43.
-Ręcznie dodana karta bez identyfikatora oraz numeru/serii nie jest zgadywana po nazwie.
-Jeśli ręczna karta nie zaznacza się w secie, uzupełnij właściwy numer i serię.
+Jeśli podgląd się nie pojawi:
+- Rozwiń „Kamera się nie uruchamia?” pod ustawieniami skanera.
+- Sprawdź uprawnienie Aparat dla witryny oraz dla aplikacji przeglądarki
+  w ustawieniach Androida. Nazwy opcji różnią się zależnie od urządzenia.
+- Zamknij inne aplikacje korzystające z kamery i spróbuj ponownie.
+- Jeśli są dostępne różne aparaty, możesz wybrać inny z listy.
+- Jeśli przeglądarka blokuje samo odtwarzanie, dotknij „Uruchom podgląd”.
+- Zapasowo „Otwórz aparat telefonu” przekazuje zdjęcie do dotychczasowego OCR.
+  Możesz też nadal wczytać zdjęcie z galerii.
 
-Różne numery/serie to osobne pola, nawet gdy nazwa karty się powtarza.
-Foil, nonfoil i etched przy tym samym numerze liczymy jako jedno wydanie;
-ich kopie sumują się w polu. Wersje językowe tego samego setu i numeru również.
-Wariant z innym numerem, gwiazdką lub innym oznaczeniem ma osobne pole.
-Karty The List z numerami typu XLN-217 pozostają osobnymi wydaniami PLST.
-Licznik obejmuje wszystkie pola setu, również karty rozszerzone/specjalne.
-Filtry ilustracji opierają się na oznaczeniach źródłowych Scryfall.
+Skaner próbuje kolejno HD, 720p i mniej restrykcyjnych ustawień. Opcjonalna
+regulacja ostrości nie blokuje już startu podglądu. Wyjście z aplikacji zatrzymuje
+kamerę; powrót pozwala ją ponownie uruchomić. Odmowa dostępu nie wywołuje pętli
+kolejnych próśb o zgodę. Obsługa języków i rozpoznawania kart pozostała bez zmian.
 
-ZAKRES I DATA
-Źródło: publiczny eksport Scryfall default_cards z 8 listopada 2026
-oraz aktualny wykaz setów Scryfall. Używane są wydania papierowe.
-Ta aktualizacja rozszerza widok kolekcji setów; nie podmienia silnika skanera,
-nie zastępuje dotychczasowej wyszukiwarki i nie aktualizuje zapisanych wycen.
-
-Zasadniczo lista obejmuje już wydane karty. Zachowano także dostępne obecnie
-wydania Star Trek, Commander, Stardates, ich art series i tokeny, oznaczone jako
-przedsprzedaż z premierą 13 listopada 2026. Nie doliczono zapowiedzi na 2027 rok.
-Liczby oznaczają stan katalogu w dniu przygotowania; przyszłe wydania i nowo
-ujawnione karty wymagają kolejnej aktualizacji plików.
-Dla 162 rekordów źródło nie udostępnia ilustracji — wyświetla się ich nazwa,
-numer i czytelne oznaczenie braku ilustracji, bez usuwania ich z listy.
-
-ŹRÓDŁA
-https://api.scryfall.com/bulk-data
-https://api.scryfall.com/sets
-https://magic.wizards.com/en/news/feature/star-trek-release-notes
-
-Przygotowano dla:
-https://cardscope-hub.github.io/cardscope/app.html
-Paczka nie została automatycznie opublikowana na Twoim GitHub Pages.
+Nie odtworzono zgłoszenia na fizycznym telefonie kolegi. Jeśli problem pozostaje,
+potrzebne są: model telefonu, wersja Androida, nazwa przeglądarki, sposób otwarcia
+(strona/skrót/komunikator) i tekst komunikatu wraz z kodem pod panelem pomocy.
