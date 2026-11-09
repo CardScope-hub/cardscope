@@ -51,7 +51,7 @@
   const entry=lookup(card);if(!entry){el.hidden=true;el.replaceChildren();rendered.delete(el);return false}
   const key=entry.key+'|'+entry.editionCode;if(rendered.get(el)===key){el.hidden=false;return true}
   const header=node('div',null,'origins-pl-heading'),badge=node('span','PL','origins-pl-badge'),heading=node('div'),title=node('h3','Tekst karty po polsku');
-  title.id=(el.id||'swu-translation')+'-title';badge.setAttribute('aria-hidden','true');heading.append(title,node('span','Star Wars: Unlimited · '+entry.setName+' · '+entry.editionCode,'origins-pl-meta'));header.append(badge,heading);el.setAttribute('aria-labelledby',title.id);
+  title.id=(el.id||'swu-translation')+'-title';badge.setAttribute('aria-hidden','true');heading.append(title,CardI18n.protect(node('span','Star Wars: Unlimited · '+entry.setName+' · '+entry.editionCode,'origins-pl-meta')));header.append(badge,heading);el.setAttribute('aria-labelledby',title.id);
   const body=document.createDocumentFragment();body.append(header);
   function side(parent,label,ids,language){if(label)parent.append(node('h4',label,'swu-pl-side-title'));if(ids.length)parent.append(rules(ids,language));else parent.append(node('p',language==='pl'?'W dołączonym katalogu ta strona nie ma dodatkowego tekstu zasad.':'No additional rules text for this side in the bundled catalog.','origins-pl-note'))}
   side(body,entry.doubleSided?'Przód':null,entry.front,'pl');

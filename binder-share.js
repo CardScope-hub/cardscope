@@ -29,7 +29,7 @@
  }
  async function open(binder){
   if(!binder)return;generation++;selected=binder.id;owner=globalThis.CardScopeAuth?.state.user?.id;
-  state(null);$('share-binder-name').textContent=binder.name;
+  state(null);CardI18n.protect($('share-binder-name')).textContent=binder.name;
   $('share-owner').value=globalThis.CardScopeAuth?.state.user?.user_metadata?.display_name||'';
   $('share-status').textContent='Sprawdzam udostępnianie…';if(!dialog.open)dialog.showModal();lock(true);const run=generation;
   try{const data=await rpc('status');if(valid(run)){state(data);$('share-status').textContent=data?.enabled?'Link jest aktywny. Możesz go skopiować lub wyłączyć.':'Brak aktywnego linku. Podgląd wśród znajomych zależy od widoczności konta i bindera.';}}

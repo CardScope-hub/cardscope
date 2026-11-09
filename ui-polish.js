@@ -1,6 +1,6 @@
 // The close control belongs to the modal's top layer. Only its content scrolls.
 (()=>{
- const closeSelector='button[aria-label^="Zamknij"],button[data-b-close],button.modal-close,button.social-close';
+ const closeSelector='button[aria-label^="Zamknij"],button[aria-label^="Close"],button[data-b-close],button.modal-close,button.social-close';
  const cross=/^[×✕✖xX]$/;
  const isRemoval=button=>button.matches('.delete,[data-remove],[aria-label^="Usuń"],[aria-label^="Remove"]');
  const isClose=button=>!isRemoval(button)&&(button.matches(closeSelector)||(!button.hasAttribute('aria-label')&&cross.test(button.textContent.trim())));
@@ -8,7 +8,7 @@
  let frame=0;
  function decorate(button,modal=false){
   if(!button.classList.contains('cs-close-control')){
-   const label=button.getAttribute('aria-label')||'Zamknij';
+   const label=CardI18n.rawAttribute(button,'aria-label')||'Zamknij';
    button.classList.add('cs-close-control');button.type='button';
    button.setAttribute('aria-label',label);button.title=label;
    // The original node (and all its listeners) survives. SVG cannot steal clicks.

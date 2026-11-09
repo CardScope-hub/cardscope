@@ -107,9 +107,9 @@
   previewBody.replaceChildren();
   const art = el('div', null, 'rs-preview-art');
   art.append(image(showingBack && card.backImage ? {...card,image:card.backImage,name:card.name+' — rewers'} : card));
-  const title = el('h2', card.name); title.id = 'rs-preview-title';
+  const title = CardI18n.protect(el('h2', card.name)); title.id = 'rs-preview-title';
   const info = el('div', null, 'rs-preview-info'), have = owned.get(card.key);
-  info.append(el('p', index.data.sets.find(s => s.id === card.setId).name, 'rs-kicker'), title,
+  info.append(CardI18n.protect(el('p', index.data.sets.find(s => s.id === card.setId).name, 'rs-kicker')), title,
    el('p', [card.code, card.variant, card.rarity].filter(Boolean).join(' · '), 'rs-meta'),
    el('p', have ? `✓ W kolekcji · ${have.qty} szt.` : 'Jeszcze nie masz tego wydania', 'rs-preview-status'));
   if (card.backImage) info.append(button(showingBack ? 'Pokaż przód karty' : 'Pokaż drugą stronę', 'secondary rs-flip', () => {
@@ -205,7 +205,7 @@
    const text = el('span', null, 'rs-set-text');
    const bar = el('progress'); bar.setAttribute('aria-label', `Kompletność setu ${set.name}`);
    const count = el('strong');
-   text.append(el('span', set.displayCode || set.code || set.id, 'rs-set-code'), el('span', set.name, 'rs-set-name'));
+   text.append(el('span', set.displayCode || set.code || set.id, 'rs-set-code'), CardI18n.protect(el('span', set.name, 'rs-set-name')));
    if(game==='mtg')text.append(el('span',set.preview?'Przedsprzedaż · '+set.releaseDate:(set.year+' · '+categoryNames[set.category]),'rs-set-date'));
    if(game==='lorcana'||game==='onepiece'){text.append(el('span',(game==='lorcana'?lorcanaCategories:onepieceCategories)[set.category],'rs-set-date'));if(set.catalogNote)text.append(el('span',set.catalogNote,'rs-set-date'));if(set.preview)text.append(el('span',set.previewLabel,'rs-preview-label'));}
    if(game==='weiss')text.append(el('span',(weissLanguage==='ja'?'JP':'EN')+' · '+set.franchise,'rs-set-date'));
@@ -290,7 +290,7 @@
   const targetIndex=index,target=game,requestId=++navigationId,set=index.data.sets.find(s=>s.id===id);
   currentSet=null;tiles=new Map();
   const back=()=>button('← Wszystkie sety','rs-back',()=>overview());
-  mount(back(),el('h2',set.name),el('p','Wczytuję karty tego setu…','rs-loading'));
+  mount(back(),CardI18n.protect(el('h2',set.name)),el('p','Wczytuję karty tego setu…','rs-loading'));
   const active=()=>game===target&&index===targetIndex&&navigationId===requestId;
   try{
    if(target==='pokemon'&&set.repairOnly){
@@ -312,7 +312,7 @@
    games[target].core.hydrate(targetIndex,id,target==='pokemon'&&root.CardPokemonRepair?root.CardPokemonRepair.mergeRows(pack.sets[id],id):pack.sets[id]);
    if(active()){owned=core.ownership(index,saved);renderSet(id)}
   }catch{
-   if(active())mount(back(),el('h2',set.name),el('p','Nie udało się wczytać kart. Sprawdź połączenie z internetem.','rs-muted'),button('Spróbuj ponownie','secondary rs-set-retry',()=>openSet(id)));
+   if(active())mount(back(),CardI18n.protect(el('h2',set.name)),el('p','Nie udało się wczytać kart. Sprawdź połączenie z internetem.','rs-muted'),button('Spróbuj ponownie','secondary rs-set-retry',()=>openSet(id)));
   }
  }
  function renderSet(id) {
@@ -320,7 +320,7 @@
   host.replaceChildren();
   const back = button('← Wszystkie sety', 'rs-back', () => { overview(); setsTab.focus({preventScroll:true}); });
   const header = el('div', null, 'rs-set-header');
-  const title = el('div'); title.append(el('p', `${games[game].name.toUpperCase()}${game==='weiss'?' · '+(weissLanguage==='ja'?'JP':'EN'):''} / ${currentSet.displayCode || currentSet.code || id}`, 'rs-kicker'), el('h2', currentSet.name));
+  const title = el('div'); title.append(el('p', `${games[game].name.toUpperCase()}${game==='weiss'?' · '+(weissLanguage==='ja'?'JP':'EN'):''} / ${currentSet.displayCode || currentSet.code || id}`, 'rs-kicker'), CardI18n.protect(el('h2', currentSet.name)));
   if(game==='lorcana'&&currentSet.catalogNote)title.append(el('p',currentSet.catalogNote,'rs-set-date'));
   if(currentSet.preview)title.append(el('p',currentSet.previewLabel || 'Przedsprzedaż · premiera '+currentSet.releaseDate,'rs-set-date'));
   const progress = el('div', null, 'rs-set-progress'); progressText = el('p'); progressBar = el('progress'); progressBar.setAttribute('aria-label', 'Kompletność całego setu');
@@ -366,7 +366,7 @@
     n = button('', 'rs-card', () => preview(card)); n.dataset.key = card.key;
     const art = el('span', null, 'rs-card-art'); art.append(image(card));
     n._badge = el('span', null, 'rs-owned-badge'); art.append(n._badge);
-    n.append(art, el('span', [card.code, card.variant,game==='weiss'?card.rarity:null].filter(Boolean).join(' · '), 'rs-card-code'), el('span', card.name, 'rs-card-name'));
+    n.append(art, el('span', [card.code, card.variant,game==='weiss'?card.rarity:null].filter(Boolean).join(' · '), 'rs-card-code'), CardI18n.protect(el('span', card.name, 'rs-card-name')));
    }
    const have = owned.get(card.key);
    n.classList.toggle('rs-missing', !have); n._badge.textContent = have ? `✓ ${have.qty} szt.` : 'Brakuje';

@@ -10,7 +10,7 @@
  function manual(card,b,i){return read(manualKey).find(x=>x.key===identity(card,b,i))?.text||'';}
  function remember(card){try{const all=read(cacheKey).filter(x=>x.game!==card.game||x.id!==card.id||x.language!==card.language);localStorage.setItem(cacheKey,JSON.stringify([card,...all].slice(0,20)));}catch{}}
  function render(card){
-  el('name').textContent=card.name;el('source').textContent=card.source;el('source').href=card.sourceUrl;el('note').textContent=card.note||'Tekst wybranego wydania z katalogu. Sprawdź aktualne erraty w źródle.';
+  CardI18n.protect(el('name')).textContent=card.name;el('source').textContent=card.source;el('source').href=card.sourceUrl;el('note').textContent=card.note||'Tekst wybranego wydania z katalogu. Sprawdź aktualne erraty w źródle.';
   el('effects').replaceChildren();let known=0,total=0,own=0;
   card.blocks.forEach((b,i)=>{
    const segments=b.segments?.length?b.segments:(b.text?[{text:b.text,translation:b.translation}]:[]),saved=manual(card,b,i),count=segments.filter(s=>s.translation).length;
@@ -18,10 +18,10 @@
    const box=add('article','',el('effects'),'learn-effect');add('h3',b.label,box);if(b.meta)add('p',b.meta,box,'fine');
    const badge=add('span',saved?'TWÓJ ZAPIS · PL':segments.length&&count===segments.length?'POLSKI · REGUŁY':count?'TŁUMACZENIE CZĘŚCIOWE':'ORYGINAŁ + SŁOWNIK',box,'learn-badge');badge.dataset.state=saved||count===segments.length&&segments.length?'complete':'partial';
    if(saved)add('p',saved,box,'learn-translation');
-   else for(const s of segments){if(s.translation)add('p',s.translation,box,'learn-translation');else {const item=add('div','',box,'learn-untranslated');add('small','Fragment bez pełnego tłumaczenia',item);add('p',s.text,item,'learn-original');}}
+   else for(const s of segments){if(s.translation)CardI18n.protect(add('p',s.translation,box,'learn-translation'));else {const item=add('div','',box,'learn-untranslated');add('small','Fragment bez pełnego tłumaczenia',item);CardI18n.protect(add('p',s.text,item,'learn-original'));}}
    if(!segments.length)add('p','Źródło nie zawiera tekstu dodatkowego działania dla tego wydania. Nie odtwarzamy go z nazwy ani ilustracji.',box,'fine');
-   if(b.text){const original=add('details','',box,'learn-original-box');add('summary','Porównaj z całym oryginałem',original);add('p',b.text,original,'learn-original');}
-   if(b.glossary?.length){const dictionary=add('details','',box,'learn-glossary');add('summary','Pojęcia z tego tekstu · '+b.glossary.length,dictionary);add('p','Objaśnienia pojęć nie zastępują pełnego efektu ani jego warunków.',dictionary,'fine');for(const g of b.glossary){add('b',g.term,dictionary);add('p',g.meaning,dictionary);}}
+   if(b.text){const original=add('details','',box,'learn-original-box');add('summary','Porównaj z całym oryginałem',original);CardI18n.protect(add('p',b.text,original,'learn-original'));}
+   if(b.glossary?.length){const dictionary=add('details','',box,'learn-glossary');add('summary','Pojęcia z tego tekstu · '+b.glossary.length,dictionary);add('p','Objaśnienia pojęć nie zastępują pełnego efektu ani jego warunków.',dictionary,'fine');for(const g of b.glossary){CardI18n.protect(add('b',g.term,dictionary));CardI18n.protect(add('p',g.meaning,dictionary));}}
    if(b.text){const editor=add('details','',box,'learn-editor');add('summary',saved?'Edytuj swój polski zapis':'Dodaj własne tłumaczenie',editor);add('p','Zapis dotyczy tego wydania i tekstu. Pozostanie na tym urządzeniu; nie jest tłumaczeniem oficjalnym.',editor,'fine');
     const label=add('label','Polskie tłumaczenie tego fragmentu',editor),input=add('textarea','',label);input.value=saved;input.maxLength=12000;input.rows=6;input.setAttribute('aria-label','Polskie tłumaczenie: '+b.label);
     const feedback=add('p','',editor,'fine');feedback.setAttribute('role','status');const button=add('button','Zapisz tłumaczenie',editor,'secondary');button.type='button';
@@ -39,7 +39,7 @@
   try{const r=await fetch('/api/learn?'+new URLSearchParams(ref),{cache:'no-store',signal:AbortSignal.any([current.signal,AbortSignal.timeout(45000)])}),d=await r.json();if(attempt!==token)return;if(!r.ok)throw Error(d.error||'Nie udało się pobrać karty.');active=d.card;render(active);remember(active);el('content').hidden=false;el('status').textContent='Tryb wbudowany · bez AI i kluczy.';}
   catch(e){if(attempt!==token)return;const cached=read(cacheKey).find(x=>x.game===ref.game&&x.id===ref.id&&(x.language||'en')===ref.lang);if(cached){active=cached;render(active);el('content').hidden=false;el('status').textContent='Kopia z tego urządzenia · nie udało się sprawdzić aktualnego tekstu. Zapis: '+(cached.fetchedAt?new Date(cached.fetchedAt).toLocaleDateString('pl-PL'):'brak daty');}else el('status').textContent=e.message||'Nie udało się pobrać tekstu.';el('retry').hidden=false;}
  }
- function enter(){options=[];for(const c of [last,...cards.map(reference)])if(c&&!options.some(x=>x.game===c.game&&x.id===c.id&&x.lang===c.lang))options.push(c);el('select').replaceChildren();options.forEach((c,i)=>{const o=add('option',c.name+' · '+c.id,el('select'));o.value=i;});el('select').value='0';el('picker').hidden=!options.length;el('empty').hidden=!!options.length;el('content').hidden=true;el('status').textContent='';el('retry').hidden=true;if(options.length)load();else{token++;stop();active=null;}}
+ function enter(){options=[];for(const c of [last,...cards.map(reference)])if(c&&!options.some(x=>x.game===c.game&&x.id===c.id&&x.lang===c.lang))options.push(c);el('select').replaceChildren();options.forEach((c,i)=>{const o=CardI18n.protect(add('option',c.name+' · '+c.id,el('select')));o.value=i;});el('select').value='0';el('picker').hidden=!options.length;el('empty').hidden=!!options.length;el('content').hidden=true;el('status').textContent='';el('retry').hidden=true;if(options.length)load();else{token++;stop();active=null;}}
  el('select').onchange=load;el('retry').onclick=load;el('scan').onclick=()=>openScanner();
  root.CardLearning={remember(c){last=reference(c);},open(c){const ref=reference(c);if(!ref){message('Najpierw wybierz wydanie karty w katalogu.');return;}last=ref;show('learn');},enter,leave(){token++;stop();}};
  el('result-open').onclick=()=>root.CardLearning.open(matched);el('detail-open').onclick=()=>root.CardLearning.open(detailCard);

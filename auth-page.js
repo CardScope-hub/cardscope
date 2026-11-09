@@ -98,7 +98,7 @@
   function loadProfile(user){draft=CardProfile.read(user);baseline={...draft};window.CardMedia.reset(draft);$('profile-discoverable').checked=!!draft.discoverable;$('profile-private').checked=draft.accountPrivate!==false;$('profile-name').value=draft.displayName;$('profile-bio').value=draft.bio;$('profile-game').value=favoriteGame(draft.game);profileDirty=false;profileMessage();}
   function previewProfile(){
     const p=profileOwner?profileValue():CardProfile.read(null);window.CardMedia.preview(p);$('profile-cover').dataset.theme=p.theme;
-    $('profile-preview-name').textContent=p.displayName.trim()||'Twój nick';$('profile-preview-game').textContent=favoriteGameLabel(p.game);$('profile-preview-bio').textContent=p.bio.trim();$('profile-preview-bio').hidden=!p.bio.trim();$('profile-bio-count').textContent=Array.from(p.bio).length+' / 160';
+    CardI18n.userText($('profile-preview-name'),p.displayName.trim()||'Twój nick',!!p.displayName.trim());$('profile-preview-game').textContent=favoriteGameLabel(p.game);CardI18n.protect($('profile-preview-bio')).textContent=p.bio.trim();$('profile-preview-bio').hidden=!p.bio.trim();$('profile-bio-count').textContent=Array.from(p.bio).length+' / 160';
     for(const button of $('profile-theme-options').children){const selected=button.dataset.value===p.theme;button.setAttribute('aria-pressed',String(selected));button.textContent=selected?'✓':'';}
     $('profile-discard').hidden=!profileDirty;$('profile-save').textContent=profileSaving?'Zapisuję…':baseline?.version?'Zapisz zmiany ↗':'Utwórz profil ↗';
     $('profile-save').disabled=profileSaving||busy||window.CardSocial.state.status!=='ready'||(!!baseline?.version&&!profileDirty);

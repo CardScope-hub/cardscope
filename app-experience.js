@@ -52,7 +52,7 @@
    lastCount=quantity;
    const recent=cards[0];$('home-recent').hidden=!recent;$('home-no-recent').hidden=!!recent;
    if(!recent)return;
-   $('home-recent-name').textContent=recent.name;
+   CardI18n.protect($('home-recent-name')).textContent=recent.name;
    $('home-recent-set').textContent=[recent.game,recent.number].filter(Boolean).join(' · ');
    const image=$('home-recent-image'),art=recent.artwork||recent.photo;image.hidden=!art;
    if(art)image.src=art;else image.removeAttribute('src');
@@ -127,7 +127,7 @@
  globalThis.CardExperience=experience;
  function updateScannerLabel(){
   const language=$('scan-language');
-  const languageText=language.options?.[language.selectedIndex]?.textContent;
+  const languageText=CardI18n.rawText(language.options?.[language.selectedIndex]);
   $('scan-config-label').textContent=languageText||'Język karty';
  }
  $('collection-scan').onclick=openScanner;

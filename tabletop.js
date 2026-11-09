@@ -92,7 +92,7 @@
    seat.append(backdrop,who,counter,quick);panel.append(seat);board.append(panel);panels.push({panel,seat,playerName,badge,leaderPick,leaderImage,backdrop,leaderKey:null,value,latest,feedback,feedbackSum:0,feedbackUntil:0,feedbackTimer:0,buttons:[minus,plus,minus5,plus5],geometry:null});seatObserver?.observe(panel);
   }
   historyFilter.replaceChildren(el('option','','Wszyscy gracze'));historyFilter.firstChild.value='all';
-  state.players.forEach((p,i)=>{const option=el('option','',p.name);option.value=String(i);historyFilter.append(option);});scheduleSeats();
+  state.players.forEach((p,i)=>{const option=CardI18n.protect(el('option','',p.name));option.value=String(i);historyFilter.append(option);});scheduleSeats();
  }
  function pickLeader(player){
   if(!state||match.hidden||!dialog.open)return;
@@ -157,7 +157,7 @@
  function render(){
   if(!state)return;
   const lastByPlayer=new Map();for(const event of state.events)if(event.kind!=='draw')lastByPlayer.set(event.player,event);
-  panels.forEach((p,i)=>{const data=state.players[i];p.playerName.textContent=data.name;p.playerName.title=data.name;renderLeader(p,data);p.value.textContent=String(data.life);sizeScore(p);p.value.dataset.digits=String(String(data.life).length);p.value.setAttribute('aria-label',data.name+': '+data.life+' pkt życia');p.badge.hidden=state.starter!==i;p.panel.dataset.starts=String(state.starter===i);p.panel.dataset.empty=String(data.life<=0);const latest=lastByPlayer.get(i);p.latest.textContent=latest?(latest.kind==='undo'?'Cofnięcie: ':'Ostatnio: ')+(latest.after>latest.before?'+':'−')+Math.abs(latest.after-latest.before):'PUNKTY ŻYCIA';for(const b of p.buttons){const delta=Number(b.dataset.delta);b.setAttribute('aria-label',(delta>0?'Dodaj ':'Odejmij ')+Math.abs(delta)+' pkt życia: '+data.name);b.disabled=data.life+delta<C.MIN||data.life+delta>C.MAX;}});
+  panels.forEach((p,i)=>{const data=state.players[i];CardI18n.userText(p.playerName,data.name,data.name!=='Gracz '+(i+1));p.playerName.title=data.name;renderLeader(p,data);p.value.textContent=String(data.life);sizeScore(p);p.value.dataset.digits=String(String(data.life).length);p.value.setAttribute('aria-label',data.name+': '+data.life+' pkt życia');p.badge.hidden=state.starter!==i;p.panel.dataset.starts=String(state.starter===i);p.panel.dataset.empty=String(data.life<=0);const latest=lastByPlayer.get(i);p.latest.textContent=latest?(latest.kind==='undo'?'Cofnięcie: ':'Ostatnio: ')+(latest.after>latest.before?'+':'−')+Math.abs(latest.after-latest.before):'PUNKTY ŻYCIA';for(const b of p.buttons){const delta=Number(b.dataset.delta);b.setAttribute('aria-label',(delta>0?'Dodaj ':'Odejmij ')+Math.abs(delta)+' pkt życia: '+data.name);b.disabled=data.life+delta<C.MIN||data.life+delta>C.MAX;}});
   starts.textContent=state.starter===null?'Kto wykona pierwszy ruch?':'Zaczyna: '+state.players[state.starter].name;rollLabel.textContent=state.starter===null?'Losuj start':'Losuj ponownie';undo.disabled=!C.undoTarget(state);historyCount.textContent=String(state.events.filter(e=>e.kind!=='draw').length);historyCount.hidden=historyCount.textContent==='0';
   fab.dataset.active='true';fab.setAttribute('aria-label','Wróć do licznika życia');if(screen==='history')renderHistory();tickClock();
  }
@@ -168,7 +168,7 @@
   for(const event of shown){
    const row=el('li','life-history-row');row.dataset.kind=event.kind;row.dataset.player=String(event.player);row.dataset.event=String(event.id);
    const diff=event.kind==='draw'?null:event.after-event.before,delta=el('span','life-history-delta',diff===null?'✦':(diff>0?'+':'−')+Math.abs(diff));if(diff!==null)delta.dataset.sign=diff>0?'plus':'minus';
-   const copy=el('div','life-history-copy'),name=el('strong','',state.players[event.player].name),detail=el('span','',event.kind==='draw'?'Wylosowano do rozpoczęcia':event.before+' → '+event.after+' pkt życia'+(event.kind==='undo'?' · cofnięcie ruchu':''));copy.append(name,detail);
+   const copy=el('div','life-history-copy'),name=CardI18n.protect(el('strong','',state.players[event.player].name)),detail=el('span','',event.kind==='draw'?'Wylosowano do rozpoczęcia':event.before+' → '+event.after+' pkt życia'+(event.kind==='undo'?' · cofnięcie ruchu':''));copy.append(name,detail);
    if(undone.has(event.id))copy.append(el('small','life-undone','COFNIĘTO'));
    const when=el('span','life-history-time',event.at===null?'wcześniej':C.formatDuration(C.elapsed(state,event.at)));when.title=event.at===null?'Ruch sprzed aktualizacji':new Date(event.at).toLocaleString('pl-PL');row.append(delta,copy,when);historyList.append(row);
   }

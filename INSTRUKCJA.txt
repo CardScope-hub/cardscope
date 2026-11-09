@@ -1,30 +1,37 @@
-CARDSCOPE — POMOC Z KAMERĄ POD SKANEM NA ŻYWO
+CardScope — język polski i angielski (PL / EN)
 
-Wgraj cztery pliki z paczki do głównego folderu repozytorium GitHub,
-obok obecnego app.html, i zastąp pliki o tych samych nazwach:
+CO ZMIENIA AKTUALIZACJA
+Przełącznik PL / EN obok wyboru waluty. Wybór języka zostaje zapamiętany
+w danej przeglądarce / aplikacji na tym urządzeniu. Zmiana nie przeładowuje strony.
+Tłumaczenia obejmują interfejs, formularze i komunikaty aplikacji,
+ekran konta oraz udostępniony binder.
+Język interfejsu nie zmienia języka skanowanych kart, nazw kart,
+własnych nazw binderów ani danych zapisanych w kolekcji.
+Funkcja tłumaczenia treści kart na polski pozostaje osobną funkcją.
 
-app.html
-app-layout.css
-app-layout.js
-sw.js
+JAK WGRAĆ NA GITHUB
+1. Jeśli masz niezapisane zmiany w kolekcji, zsynchronizuj konto.
+2. Rozpakuj ten ZIP na komputerze.
+3. Otwórz repozytorium cardscope-hub/cardscope na GitHub, gałąź main.
+4. W głównym folderze (tam, gdzie app.html) kliknij Add file -> Upload files.
+5. Przeciągnij WSZYSTKIE pliki z rozpakowanego ZIP-a, oprócz INSTRUKCJA.txt.
+   Wgrywaj same pliki, nie folder, w którym je rozpakowano.
+6. Zapisz zmianę przyciskiem Commit changes.
+7. Poczekaj, aż GitHub Pages zakończy publikowanie. Otwórz cardscope.pl.
+   Na komputerze odśwież stronę przez Ctrl + F5.
+   Na telefonie zamknij i uruchom aplikację ponownie; jeśli pojawi się
+   komunikat o aktualizacji, zastosuj ją.
+8. W nagłówku, obok PLN / EUR / USD, wybierz EN. Wybierz PL, aby wrócić.
 
-Kliknij Commit changes. Po zakończeniu publikacji GitHub Pages odśwież
-cardscope.pl, a aplikację na telefonie zamknij i otwórz ponownie.
-Nie usuwaj pliku CNAME ani pozostałych plików repozytorium.
-Nie trzeba zmieniać niczego w Simply ani Supabase.
+To mała paczka aktualizacyjna, a nie samodzielna kopia całej aplikacji.
+Podmień pliki o tych samych nazwach i dodaj nowe i18n-en.js, i18n.js, i18n.css.
+Pozostaw pozostałe pliki repozytorium, bazy kart i modele skanera.
+Nie usuwaj ani nie zmieniaj CNAME, supabase-config.js czy ustawień domeny.
+Nie trzeba nic konfigurować w Simply ani Supabase.
 
-CO ZMIENIONO
-Instrukcja „Kamera się nie uruchamia?” znajduje się bezpośrednio pod
-sekcją skanu na żywo i nad „Język i ustawienia skanera”. Po rozwinięciu
-lub wystąpieniu błędu pozostaje w tym samym miejscu.
-Przyciski pomocnicze aparatu mają też określone miejsce w układzie,
-żeby po pokazaniu nie przeskakiwały nad przycisk skanowania.
-
-Paczka jest oparta na plikach pobranych z cardscope.pl i zawiera tylko
-zmiany układu oraz odświeżenie wersji pamięci podręcznej.
-
-WERYFIKACJA
-Sprawdzono kolejność elementów HTML i CSS, zachowanie treści pomocy
-oraz identyfikatorów, wersje zasobów i składnię JavaScript.
-Podgląd w przeglądarce był niedostępny; nie wykonano testu wizualnego
-na telefonie.
+SPRAWDZENIE PO WGRANIU
+Otwórz kolekcję, skaner i profil; przełącz PL / EN, a następnie uruchom
+aplikację ponownie i sprawdź, czy język został zachowany.
+Sprawdzono składnię JavaScript oraz 40 testów interfejsu i integracji,
+w tym zachowanie wartości formularzy i liczby punktów przy zmianie języka.
+Podgląd wizualny na fizycznym telefonie nie był dostępny w tym środowisku.

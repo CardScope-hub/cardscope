@@ -119,7 +119,7 @@
     const heading=node('div');
     const title=node('h3','Tekst karty po polsku');
     title.id=(el.id||'origins-translation')+'-title';
-    heading.append(title,node('span','Riftbound · '+entry.setName+' · '+entry.editionCode,'origins-pl-meta'));
+    heading.append(title,CardI18n.protect(node('span','Riftbound · '+entry.setName+' · '+entry.editionCode,'origins-pl-meta')));
     header.append(badge,heading);
     el.setAttribute('aria-labelledby',title.id);
     const fragment=document.createDocumentFragment();

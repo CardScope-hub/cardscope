@@ -31,7 +31,7 @@
  function render(){
   if(!data)return;const b=data.binder;page=Math.max(0,Math.min(page,b.pages-1));
   const owner=safeString(data.ownerName,50)||'Kolekcjoner';$('public-owner').textContent=owner;$('owner-avatar').textContent=Array.from(owner).slice(0,2).join('').toLocaleUpperCase('pl');
-  $('public-title').textContent=safeString(b.name,70);document.title=safeString(b.name,70)+' · '+owner+' · CardScope';$('public-subtitle').textContent=safeString(b.subtitle,120);$('cover-emblem').textContent=symbols[b.emblem]||'✧';
+  CardI18n.protect($('public-title')).textContent=safeString(b.name,70);document.title=safeString(b.name,70)+' · '+owner+' · CardScope';CardI18n.protect($('public-subtitle')).textContent=safeString(b.subtitle,120);$('cover-emblem').textContent=symbols[b.emblem]||'✧';
   document.documentElement.style.setProperty('--cover',themes[b.theme]||themes.amethyst);document.querySelector('.public-cover').dataset.pattern=['aurora','linen','stars'].includes(b.pattern)?b.pattern:'aurora';
   const filled=b.slots.filter(Boolean);let sum=0,missing=0,noFX=0,priced=0;
   for(const id of filled){const q=quote(data.byId.get(id));if(!q){missing++;continue;}const n=convert(q);if(n===null){noFX++;continue;}sum+=n;priced++;}
@@ -47,8 +47,8 @@
   $('public-page-title').textContent='Strona '+(page+1)+' z '+b.pages;grid.setAttribute('aria-label','Strona '+(page+1)+': karty w binderze');
   for(let n=0;n<per;n++){
    const id=b.slots[page*per+n],card=data.byId.get(id);const pocket=el(card?'button':'div',undefined,'public-pocket'+(card?'':' empty-pocket'));
-   if(card){pocket.type='button';pocket.setAttribute('aria-label',safeString(card.name)+' · '+price(quote(card))+' · powiększ kartę');const image=imageURL(card.artwork);if(image){const img=el('img');img.src=image;img.alt=safeString(card.name);img.loading='lazy';img.decoding='async';img.addEventListener('error',()=>{img.remove();pocket.prepend(el('span',safeString(card.name),'pocket-fallback'));},{once:true});pocket.append(img);}else pocket.append(el('span',safeString(card.name),'pocket-fallback'));
-    const caption=el('span',undefined,'pocket-caption');caption.append(el('b',safeString(card.name)),el('small',price(quote(card))));pocket.append(caption);pocket.onclick=()=>{selectedCard=card;back=false;renderCard();$('public-card-dialog').showModal();};
+   if(card){pocket.type='button';pocket.setAttribute('aria-label',safeString(card.name)+' · '+price(quote(card))+' · powiększ kartę');const image=imageURL(card.artwork);if(image){const img=el('img');img.src=image;img.alt=safeString(card.name);img.loading='lazy';img.decoding='async';img.addEventListener('error',()=>{img.remove();pocket.prepend(CardI18n.protect(el('span',safeString(card.name),'pocket-fallback')));},{once:true});pocket.append(img);}else pocket.append(CardI18n.protect(el('span',safeString(card.name),'pocket-fallback')));
+    const caption=el('span',undefined,'pocket-caption');caption.append(CardI18n.protect(el('b',safeString(card.name))),el('small',price(quote(card))));pocket.append(caption);pocket.onclick=()=>{selectedCard=card;back=false;renderCard();$('public-card-dialog').showModal();};
    }else{pocket.append(el('span',id?'Karta niedostępna':'✧'),el('small',id?'':'Wolna kieszonka'));}
    grid.append(pocket);
   }
@@ -57,8 +57,8 @@
  }
  function turn(n){if(!data||!Number.isInteger(n)||n<0||n>=data.binder.pages||n===page)return;page=n;renderPage();if(!matchMedia('(prefers-reduced-motion: reduce)').matches)$('public-page').animate?.([{opacity:.4,transform:'translateY(6px)'},{opacity:1,transform:'none'}],{duration:230,easing:'ease-out'});}
  function renderCard(){
-  const c=selectedCard,q=quote(c),src=imageURL(back?c.backArtwork:c.artwork);$('public-card-name').textContent=safeString(c.name);$('public-card-owner').textContent=safeString(data.ownerName,50);
-  $('public-card-meta').textContent=[c.game,c.set,c.number,c.rarity,c.language,c.variant].filter(Boolean).map(v=>safeString(v,120)).join(' · ');
+  const c=selectedCard,q=quote(c),src=imageURL(back?c.backArtwork:c.artwork);CardI18n.protect($('public-card-name')).textContent=safeString(c.name);$('public-card-owner').textContent=safeString(data.ownerName,50);
+  CardI18n.protect($('public-card-meta')).textContent=[c.game,c.set,c.number,c.rarity,c.language,c.variant].filter(Boolean).map(v=>safeString(v,120)).join(' · ');
   const img=$('public-card-image');img.hidden=!src;$('public-card-noimage').hidden=!!src;img.alt=safeString(c.name)+(back?' · rewers':'');if(src)img.src=src;else img.removeAttribute('src');img.onerror=()=>{img.hidden=true;$('public-card-noimage').hidden=false;};
   $('public-card-value').textContent=price(q);$('public-card-source').textContent=q?.source||'Źródło nie udostępnia ceny tego wydania.';$('public-card-date').textContent=q?'Data wyceny: '+date(q.at):'';
   globalThis.CardPriceLinks?.render($('public-card-ebay'),c,c.variant);const link=linkURL(quote(c)?.url);$('public-card-market').hidden=!link;if(link)$('public-card-market').href=link;else $('public-card-market').removeAttribute('href');
