@@ -4,8 +4,9 @@ globalThis.CardPokemon = (() => {
  const provider=lang=>lang==='pt-br'?'pt':lang;
  function snapshot(lang){
   lang=provider(lang);if(!['en','ja','de','fr','es','it','pt','ko','zh-cn','zh-tw'].includes(lang))return Promise.reject(Error('Nieobsługiwany język.'));
-  if(!snapshots.has(lang))snapshots.set(lang,raw('catalog-pokemon-'+lang+'.json?v='+(['ko','zh-cn','zh-tw'].includes(lang)?'pokemon-asian-1':'pokemon-hd-1'),{ttl:86400000}).then(d=>{
+  if(!snapshots.has(lang))snapshots.set(lang,raw('catalog-pokemon-'+lang+'.json?v='+(['ko','zh-cn','zh-tw'].includes(lang)?'pokemon-asian-1':'pokemon-hd-1'),{ttl:86400000}).then(async d=>{
    if(d.schema!==1||!Array.isArray(d.cards)||!Array.isArray(d.sets))throw Error('Nieprawidłowy katalog językowy.');
+   if(globalThis.CardPokemonRepair)d=await CardPokemonRepair.snapshot(d,lang).catch(()=>d);
    return {...d,byId:new Map(d.cards.map(c=>[c.id,c])),bySet:new Map(d.sets.map(s=>[s.id,s]))};
   }).catch(e=>{snapshots.delete(lang);throw e}));return snapshots.get(lang);
  }

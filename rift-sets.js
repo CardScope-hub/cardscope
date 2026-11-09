@@ -72,6 +72,7 @@
   if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) modal.close();
  });
  function image(card, cls = '') {
+  if(game==='pokemon'&&root.CardPokemonRepair)return root.CardPokemonRepair.image(card,cls);
   if (!card.image) { const placeholder=el('span','Brak ilustracji w źródle','rs-no-image');placeholder.setAttribute('role','img');placeholder.setAttribute('aria-label',card.name+' — brak ilustracji');return placeholder; }
   const img = el('img', null, cls); img.src = card.image; img.alt = card.name; img.loading = 'lazy'; img.decoding = 'async';
   img.addEventListener('error', () => { img.hidden = true; img.parentElement?.classList.add('rs-art-unavailable'); });
@@ -126,7 +127,8 @@
     if (catalogs.has(target)) return catalogs.get(target);
     const response = await fetch(new URL(config.file, document.baseURI));
     if (!response.ok) throw Error('catalog');
-    const data = await response.json();
+    let data = await response.json();
+    if(target.startsWith('pokemon:')&&root.CardPokemonRepair)data=await root.CardPokemonRepair.prepareIndex(data);
     if (data.version !== 1 || !data.sets?.length || config.count && data.sets.length !== config.count || !(config.lazy ? data.entries?.length : data.cards?.length)) throw Error('schema');
     const built = config.core.buildIndex(data); catalogs.set(target, built); return built;
    })();
@@ -205,7 +207,7 @@
   mount(intro,controls,shelfResults,shelf,shelfMore,el('p',game==='cyberpunk'
    ? 'Retail, Beta, talie i promocje mają osobne kolekcje. Różne numery oraz warianty a/b liczymy osobno; kilka kopii i wykończenia tego samego wydania zajmują jedno pole. Zapowiedzi obejmują karty udostępnione w katalogu.'
    : game==='pokemon'
-   ? 'Każdy język ma własne sety i postęp. Kilka kopii oraz wykończenia tego samego numeru liczymy razem. Karty pochodzą z katalogów aplikacji; brakującej ilustracji nie zastępujemy innym wydaniem. Szczegóły setu wczytują się po jego otwarciu.'
+   ? 'Każdy język ma własne sety i postęp. Kilka kopii oraz wykończenia tego samego numeru liczymy razem. Karty pochodzą z katalogów aplikacji; podgląd EN jest oznaczony i nie zmienia języka ani posiadania karty. Szczegóły setu wczytują się po jego otwarciu.'
    : game==='mtg'
    ? 'Wydania papierowe z katalogu Scryfall. Różne sety i numery mają osobne pola; wersje językowe i wykończenia tego samego numeru liczymy razem. Karty setu wczytują się po jego otwarciu.'
    : game === 'swu'
@@ -224,6 +226,10 @@
   mount(back(),el('h2',set.name),el('p','Wczytuję karty tego setu…','rs-loading'));
   const active=()=>game===target&&index===targetIndex&&navigationId===requestId;
   try{
+   if(target==='pokemon'&&set.repairOnly){
+    games[target].core.hydrate(targetIndex,id,root.CardPokemonRepair.mergeRows([],id));
+    if(active()){owned=core.ownership(index,saved);renderSet(id)}return;
+   }
    if(!(target==='pokemon'?/^pokemon-set-data\/pack-\d+\.json$/:/^mtg-set-data\/pack-\d+\.json$/).test(set.file))throw Error('Invalid pack path');
    let promise=packRequests.get(set.file);
    if(!promise){
@@ -236,7 +242,7 @@
     packRequests.set(set.file,promise);
    }
    let pack;try{pack=await promise}finally{if(packRequests.get(set.file)===promise)packRequests.delete(set.file)}
-   games[target].core.hydrate(targetIndex,id,pack.sets[id]);
+   games[target].core.hydrate(targetIndex,id,target==='pokemon'&&root.CardPokemonRepair?root.CardPokemonRepair.mergeRows(pack.sets[id],id):pack.sets[id]);
    if(active()){owned=core.ownership(index,saved);renderSet(id)}
   }catch{
    if(active())mount(back(),el('h2',set.name),el('p','Nie udało się wczytać kart. Sprawdź połączenie z internetem.','rs-muted'),button('Spróbuj ponownie','secondary rs-set-retry',()=>openSet(id)));

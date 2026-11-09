@@ -1,0 +1,58 @@
+CARDSCOPE — ZAKRES UZUPEŁNIENIA POKÉMON · 09.11.2026
+
+Nowe dostępne sety:
+• EN / fut20: Pokémon Futsal Collection — 5 kart
+• JA / ADV1: 拡張パック — 55 kart
+• JA / ADV2: 砂漠のきせき — 53 kart
+• JA / ADV3: 天空の覇者 — 54 kart
+• JA / ADV4: 強化拡張パックex1マグマVSアクア ふたつの野望 — 80 kart
+• JA / ADV5: とかれた封印 — 83 kart
+
+Łącznie dodano 413 wpisów: 85 EN i 328 JP.
+Wpisy poza sześcioma nowymi setami uzupełniają istniejące listy.
+Poprawiono także 1283 japońskie nazwy w uzupełnieniu, według list kart
+z potwierdzoną serią i numerem. Stare nazwy pozostają aliasami wyszukiwania.
+
+Zdjęcia i zgodność identyfikatorów:
+• Każda karta zachowuje swój język, set i identyfikator katalogowy.
+• Galerie korzystają ze ścieżek potwierdzonych manifestem TCGdex.
+• Classic Collection zachowuje oryginalne identyfikatory CC001…CC025.
+• Warianty Mew z 30th i połówki LEGEND zachowują wcześniejsze identyfikatory.
+• Stare nienumerowane karty JP są dopasowywane tylko po jednoznacznej nazwie
+  w potwierdzonym secie; nie traktujemy kolejności w tabeli jako numeru karty.
+• Produkty, dla których TCGplayer podaje imageCount = 0, nie są źródłem zdjęcia.
+
+Pozostałe wpisy bez znanego adresu obrazu (nie licząc ewentualnych awarii CDN):
+en: 246 / 21517 kart
+ja: 823 / 23209 kart
+de: 55 / 19155 kart
+fr: 297 / 20218 kart
+es: 38 / 14537 kart
+it: 29 / 14666 kart
+pt: 30 / 14215 kart
+ko: 0 / 20323 kart
+zh-cn: 0 / 24542 kart
+zh-tw: 5 / 14588 kart
+
+Te liczby opisują kompletność adresów w bazie. Nie są wynikiem sprawdzenia
+każdego obrazu HTTP. Gdy serwer obrazu odmawia pobrania lub zwraca błąd,
+aplikacja próbuje kolejnego źródła, o ile jest dostępne.
+
+Źródła danych i ilustracji:
+TCGdex: https://api.tcgdex.net/v2/
+Manifest ilustracji: https://assets.tcgdex.net/datas.json
+Pokémon TCG Data: https://github.com/PokemonTCG/pokemon-tcg-data
+Limitless: https://limitlesstcg.com/cards
+PCG Search: https://pcg-search.com/card/card_list.php
+Publiczny eksport katalogu TCGplayer: https://tcgcsv.com/docs
+Ilustracje pozostają u ich dostawców; w paczce są adresy oraz uzupełnienie danych.
+
+Pliki aplikacji do wgrania:
+app.html
+pokemon-art.js
+pokemon-expansions.js
+pokemon-repair-data.json
+pokemon-repair.js
+rift-sets.css
+rift-sets.js
+sw.js

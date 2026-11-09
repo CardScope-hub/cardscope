@@ -1,31 +1,50 @@
-CARDSCOPE — MAŁA AKTUALIZACJA CYBERPUNK
+CARDSCOPE — POPRAWKA ZDJĘĆ I BAZ POKÉMON
+Wersja: pokemon-repair-1 · 09.11.2026
 
-W paczce jest wyłącznie 6 nowych lub zmienionych plików aplikacji.
-Nie ma ponownie dołączonych baz Pokémon, MTG, Star Wars ani Riftbound.
+To mała aktualizacja do obecnej aplikacji, nie pełna instalacja.
+Zawiera tylko 8 nowych/zmienionych plików aplikacji i dwa pliki informacyjne.
+Nie zawiera ponownie starych baz, poprzednich aktualizacji, obrazków ani modeli skanera.
 
-WYMAGANIE
-Poprzednia aktualizacja z setami Pokémon jest już wgrana do aplikacji.
-Jeśli wgrałeś już większą paczkę Cyberpunka, ta paczka zawiera ten sam kod
-— nie musisz wgrywać go ponownie.
+JAK WGRYWAĆ
+1. Wypakuj ZIP.
+2. Na GitHubie wejdź do folderu repozytorium, w którym obecnie leży app.html.
+3. Wgraj WSZYSTKIE 8 plików aplikacji z paczki bezpośrednio do tego folderu,
+   zastępując pliki o tych samych nazwach. Zatwierdź zmianę (Commit changes).
+   Pliki INSTRUKCJA.txt i ZMIANY-I-ZRODLA.txt są dla Ciebie; nie trzeba ich wgrywać.
+4. Zachowaj istniejące foldery i pliki bazy. Ta poprawka korzysta m.in. z obecnego
+   pokemon-set-data oraz catalog-pokemon-*.json i nie zastępuje pełnej aplikacji.
+5. Poczekaj, aż publikacja GitHub Pages zakończy się powodzeniem. Otwórz stronę
+   i odśwież ją, następnie zamknij i ponownie otwórz aplikację z ekranu telefonu.
+   Nowa wersja pamięci podręcznej pobierze uzupełnienie danych.
 
-WGRANIE
-1. Rozpakuj ZIP.
-2. W GitHubie otwórz folder, w którym znajduje się app.html.
-3. Wgraj razem tych 6 plików i nadpisz ich poprzednie wersje:
-   app.html
-   sw.js
-   rift-sets.js
-   rift-sets.css
-   cyberpunk-set-core.js
-   cyberpunk-sets.json
-4. Zapisz commit i poczekaj na zakończenie wdrożenia GitHub Pages.
-5. Odśwież stronę. Jeśli używasz skrótu aplikacji na telefonie, zamknij
-   aplikację po pobraniu aktualizacji i uruchom ją ponownie.
+Nie trzeba zmieniać Supabase, wpisywać kluczy ani wykonywać SQL.
+Poprawka nie zapisuje ani nie usuwa kart, binderów i danych konta.
+Nie czyść danych aplikacji — nie jest to potrzebne do tej aktualizacji.
 
-INSTRUKCJA.txt jest tylko do przeczytania — nie musisz jej wgrywać.
-Pozostałe pliki i foldery w repozytorium zostaw na miejscu. Nie kasuj
-wcześniejszych baz, folderu assets, danych logowania ani plików Supabase.
+CO ZMIENIONO
+• Poprawione ścieżki zdjęć Trainer Gallery, Galarian Gallery i Shiny Vault.
+• Dodatkowe źródła ilustracji dla starszych i nowszych wydań, m.in. promek,
+  energii, McDonald's 2023/2024, My First Battle i dostępnych Trainer Kitów.
+• Uzupełnione zdjęcia Yellow A Alternate i Poké Card Creator Pack.
+• Odzyskiwanie zdjęcia z kolejnego źródła, gdy pierwsze nie działa.
+• Uzupełnienie list o 413 kart i 6 brakujących setów — lista w drugim pliku.
+• Uzupełnienie działa w kolekcjach setów oraz w katalogu używanym przez
+  wyszukiwarkę i skaner; istniejące identyfikatory kart pozostają zachowane.
+• Dla części europejskich wydań bez dostępnego lokalnego zdjęcia pojawia się
+  wyraźnie oznaczony „Podgląd EN”. Język karty, cena i posiadanie nie zmieniają się.
+• Obrazy setów ładują się dopiero w pobliżu widocznego obszaru ekranu;
+  przejście do innej zakładki zatrzymuje obsługę porzuconych obrazów.
 
-Nazwy rift-sets.js i rift-sets.css są nazwami wspólnego interfejsu setów
-wszystkich gier. Są konieczne do dodania przycisku Cyberpunk, mimo że
-w nazwie znajduje się słowo „rift”. Nie zawierają poprzednich baz kart.
+OGRANICZENIA
+Nie wszystkie archiwalne wydania mają opublikowane zdjęcia. Dotyczy to nadal
+części dawnych kart JP, pojedynczych Trainer Kitów i innych kart promocyjnych.
+Jeśli nie uda się pobrać właściwego obrazu, pozostaje czytelne oznaczenie braku.
+Aplikacja nie zastępuje wtedy karty przypadkowym Pokémonem.
+Ilustracje są pobierane z zewnętrznych publicznych źródeł; ich dostępność
+może się zmieniać. Dane uzupełniające są dołączone do tej paczki.
+
+WERYFIKACJA
+92 testy danych, tożsamości kart i interfejsu DOM zakończone powodzeniem.
+Sprawdzono też składnię JavaScript i przykładowe rzeczywiste adresy zdjęć.
+Pełny podgląd przeglądarkowy oraz test na fizycznym telefonie nie zostały
+wykonane — środowisko podglądu było niedostępne.

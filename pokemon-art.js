@@ -29,10 +29,10 @@ globalThis.CardPokemonArt=(()=>{
   if(size==='high'){
    const tcg=text.match(/^https:\/\/tcgplayer-cdn\.tcgplayer\.com\/product\/(\d+(?:_\d+)?)_(?:\d+w|in_\d+x\d+)\.jpg(?:[?#].*)?$/i)||text.match(/^https:\/\/product-images\.tcgplayer\.com\/fit-in\/\d+x\d+\/(\d+(?:_\d+)?)\.jpg(?:[?#].*)?$/i);
    if(tcg)return 'https://product-images.tcgplayer.com/'+tcg[1]+'.jpg';
-   if(/^https:\/\/images\.pokemontcg\.io\//i.test(text))return text.replace(/(?:_hi)?\.png(?=[?#]|$)/i,'_hi.png');
+   if(/^https:\/\/images\.pokemontcg\.io\//i.test(text)&&!/_hires\.png(?=[?#]|$)/i.test(text))return text.replace(/(?:_hi)?\.png(?=[?#]|$)/i,'_hi.png');
    if(/^https:\/\/limitlesstcg\.nyc3\.cdn\.digitaloceanspaces\.com\//i.test(text))return text.replace(/_SM\.png(?=[?#]|$)/,'_LG.png');
   }
-  return /\.(?:png|jpe?g|webp)(?:[?#]|$)/i.test(text)||/^(data:|blob:)/.test(text)?text:text.replace(/\/$/,'')+'/'+size+'.'+format;
+  return /^https:\/\/images\.scrydex\.com\//.test(text)||/\.(?:png|jpe?g|webp)(?:[?#]|$)/i.test(text)||/^(data:|blob:)/.test(text)?text:text.replace(/\/$/,'')+'/'+size+'.'+format;
  }
  function baseSources(c,size='high'){
   if(!c)return [];
@@ -62,6 +62,7 @@ globalThis.CardPokemonArt=(()=>{
   const [art,snapshot]=await Promise.all([data().catch(()=>null),CardPokemon.snapshot(who.lang).catch(()=>null)]);
   const exact=snapshot?.byId.get(who.id);
   const out=[];const add=(url,lang,source)=>{if(url)out.push({url,language:lang,source})};
+  const repaired=globalThis.CardPokemonRepair?await CardPokemonRepair.load().then(()=>CardPokemonRepair.choices(who.lang,who.id,null)).catch(()=>[]):[];
   const verified=art?.highResolution?.[provider(who.lang)]?.[who.id];
   if(verified)add(size==='low'&&verified.thumbnailUrl||verified.url,who.lang,verified.source);
   // Confirm the catalog ID. Never search by name or copy a Japanese card's number into an English set.
@@ -72,6 +73,7 @@ globalThis.CardPokemonArt=(()=>{
    if(jp){add(size==='low'?jp:jp.replace('_SM.png','_LG.png'),who.lang,'Limitless');add(jp,who.lang,'Limitless')}
    add(official(who.id,who.lang),who.lang,'Pokémon');
   }
+  out.push(...repaired.filter(x=>provider(x.language)===provider(who.lang)));
   // An earlier English reference must not outrank available native-language art.
   const same=base.filter(x=>x.source!=='scan'&&provider(x.language)===provider(who.lang));
   out.push(...same);
@@ -80,6 +82,7 @@ globalThis.CardPokemonArt=(()=>{
    add(imageURL(art.english[who.id],size),'en','TCGdex');
    add(imageURL(art.english[who.id],size,'png'),'en','TCGdex');
   }
+  out.push(...repaired.filter(x=>provider(x.language)!==provider(who.lang)));
   const seen=new Set();return out.filter(x=>x.url&&!seen.has(x.url)&&seen.add(x.url));
  }
  function caption(result,c){return result&&provider(result.language)!==provider(language(c))?'Podgląd wydania angielskiego — brak zdjęcia w języku tej karty.':''}
