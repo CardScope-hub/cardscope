@@ -120,3 +120,9 @@ dialog.rs-preview .rs-close{position:absolute!important;inset:12px 12px auto aut
 #collection-sets .rs-owned-toggle input{appearance:auto;-webkit-appearance:auto;display:block;flex:0 0 20px;width:20px;height:20px;min-height:20px;margin:0;padding:0;accent-color:#c8a2f2;cursor:pointer}
 #collection-sets .rs-owned-toggle:has(input:checked){border-color:#b991e1;background:#342343}
 #collection-sets .rs-owned-toggle input:focus-visible{outline:3px solid #e2c9ff;outline-offset:4px}
+
+/* Set toolbar: align the actual controls, without the app-wide label margin. */
+#collection-sets .rs-set-controls{align-items:end}
+#collection-sets .rs-set-controls .rs-order-label{margin:0;padding:0;align-self:end;line-height:16px}
+#collection-sets .rs-set-controls .rs-order-label>span{display:block;margin:0;padding:0;line-height:16px}
+#collection-sets .rs-set-controls input,#collection-sets .rs-set-controls select{box-sizing:border-box;align-self:end;height:46px;min-height:46px;margin:0;line-height:24px}
