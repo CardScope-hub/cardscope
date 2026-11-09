@@ -32,6 +32,8 @@
  const packCache = new Map(), packRequests = new Map();
  let navigationId=0, shelf, shelfResults, shelfMore, setQuery='',setCategory='all',setYear='all',setLimit=30;
  let setOrder='catalog';
+ let onlyOwnedSets=false,shelfOwnership='';
+ try{onlyOwnedSets=localStorage.getItem('cardscope:sets-owned-only')==='true'}catch{}
  const readOrder=()=>{try{return ['catalog','newest','oldest'].includes(localStorage.getItem('cardscope:set-order:'+game))?localStorage.getItem('cardscope:set-order:'+game):'catalog'}catch{return 'catalog'}};
  const releaseDate=s=>root.CardSetOrder?.date(game,s)||null;
  const displayDate=s=>{const d=releaseDate(s);return d?d.slice(8,10)+'.'+d.slice(5,7)+'.'+d.slice(0,4):''};
@@ -152,7 +154,9 @@
     if (!response.ok) throw Error('catalog');data=await response.json();}
     if(target.startsWith('pokemon:')&&root.CardPokemonRepair)data=await root.CardPokemonRepair.prepareIndex(data);
     if (data.version !== 1 || !data.sets?.length || config.count && data.sets.length !== config.count || !(config.lazy ? data.entries?.length : data.cards?.length)) throw Error('schema');
-    const built = config.core.buildIndex(data); catalogs.set(target, built); return built;
+    const built = config.core.buildIndex(data);
+    built.setByCardKey=new Map(built.data.cards.map(c=>[c.key,c.setId]));
+    catalogs.set(target, built); return built;
    })();
    requests.set(target, task);
   }
@@ -173,14 +177,22 @@
   tile.node.setAttribute('aria-label', `${set.name}: ${stats.owned} z ${stats.total} wydań w kolekcji. Otwórz set.`);
  }
  function cardsForSet(id) { return index.bySet?.get(id) || index.data.cards.filter(c=>c.setId===id); }
+ function ownedSetIds() {
+  const ids=new Set();
+  for(const key of owned.keys()){const id=index.setByCardKey.get(key);if(id)ids.add(id)}
+  return ids;
+ }
+ const ownershipSignature=ids=>JSON.stringify([...ids].sort());
  const onepieceCategories={main:'Główne dodatki',extra:'Extra Booster',premium:'Premium Booster',starter:'Talie startowe',event:'Wydania turniejowe',promo:'Promocje i pozostałe'};
  const lorcanaCategories={main:'Główne dodatki',quest:'Illumineer’s Quest',promo:'Wydania kolekcjonerskie',beta:'Format Coconut · beta'};
  const cyberpunkCategories={expansion:'Główne wydania',starter:'Talie startowe',promo:'Promocje',demo:'Talie demonstracyjne'};
  const categoryNames={main:'Dodatki i edycje główne',commander:'Commander',special:'Zestawy specjalne',promo:'Promocje',extra:'Tokeny i dodatki'};
  function renderShelf() {
+  const ownedIds=ownedSetIds();shelfOwnership=ownershipSignature(ownedIds);
   const normalized=s=>String(s||'').normalize('NFKD').replace(/\p{M}/gu,'').toLowerCase();
   const terms=normalized(setQuery).split(/\s+/).filter(Boolean);
   const matches=index.data.sets.filter(s=>(!['mtg','cyberpunk','lorcana','onepiece'].includes(game)||setCategory==='all'||s.category===setCategory)
+   && (!onlyOwnedSets||ownedIds.has(s.id))
    && (game!=='weiss'||setCategory==='all'||s.franchiseId===setCategory)
    && (game!=='mtg'||setYear==='all'||s.year===setYear)
    && terms.every(t=>normalized(s.id+' '+s.name+' '+(s.aliases||[]).join(' ')).includes(t)));
@@ -203,7 +215,7 @@
    tile.append(art, text, el('span', '↗', 'rs-set-arrow')); shelf.append(tile);
    tiles.set(set.id, { node: tile, count, bar }); updateTile(set);
   }
-  shelfResults.textContent=matches.length?`Wyświetlasz ${shown.length} z ${matches.length} setów`:'Nie znaleziono setu. Zmień nazwę lub filtry.';
+  shelfResults.textContent=matches.length?`Wyświetlasz ${shown.length} z ${matches.length} setów`:onlyOwnedSets?'Nie masz kart w setach pasujących do tych filtrów. Odznacz „Tylko sety z moimi kartami” lub zmień filtry.':'Nie znaleziono setu. Zmień nazwę lub filtry.';
   shelfMore.hidden=shown.length>=matches.length;
  }
  function overview() {
@@ -244,7 +256,16 @@
   const sort=el('select');sort.className='rs-set-sort';sort.setAttribute('aria-label','Sortowanie dodatków według daty wydania');
   for(const [value,label] of [['catalog','Kolejność katalogu'],['newest','Data wydania · od najnowszych'],['oldest','Data wydania · od najstarszych']]){const option=el('option',label);option.value=value;sort.append(option)}
   sort.value=setOrder;sort.addEventListener('change',()=>{setOrder=sort.value;setLimit=30;try{localStorage.setItem('cardscope:set-order:'+game,setOrder)}catch{}renderShelf()});orderLabel.append(sort);controls.append(orderLabel);
-  mount(intro,controls,el('p','Daty według katalogu danego wydania. Zestawy bez potwierdzonej daty są na końcu sortowania.','rs-sort-note'),shelfResults,shelf,shelfMore,el('p',game==='weiss'
+  const ownedLabel=el('label',null,'rs-owned-toggle'),ownedToggle=el('input');
+  ownedToggle.type='checkbox';ownedToggle.checked=onlyOwnedSets;
+  ownedToggle.setAttribute('aria-controls','rs-set-shelf');shelf.id='rs-set-shelf';
+  ownedToggle.addEventListener('change',()=>{
+   onlyOwnedSets=ownedToggle.checked;setLimit=30;
+   try{localStorage.setItem('cardscope:sets-owned-only',String(onlyOwnedSets))}catch{}
+   renderShelf();
+  });
+  ownedLabel.append(ownedToggle,el('span','Tylko sety z moimi kartami'));
+  mount(intro,controls,ownedLabel,el('p','Daty według katalogu danego wydania. Zestawy bez potwierdzonej daty są na końcu sortowania.','rs-sort-note'),shelfResults,shelf,shelfMore,el('p',game==='weiss'
    ? 'Albumy są podzielone według wydań serii. Promki i karty z talii znajdziesz w pasującym wydaniu, bez osobnych albumów. Różne ilustracje i rzadkości mają osobne miejsca; EN i JP mają oddzielny postęp. Karty bez pewnego przypisania do wydania pozostają w zwykłej kolekcji.'
    : game==='onepiece'
    ? 'Katalog angielski. Alternatywne ilustracje, promocje, reprinty i DON!! mają osobne miejsca. Kilka kopii tego samego wydania liczymy razem. OP18 jest oznaczone jako zapowiedź i obejmuje tylko udostępnione karty.'
@@ -358,7 +379,9 @@
  }
  function refresh() {
   if (!index) return;
-  if (currentSet) refreshGrid(); else for (const set of index.data.sets) updateTile(set);
+  if (currentSet) refreshGrid();
+  else if(onlyOwnedSets&&shelfOwnership!==ownershipSignature(ownedSetIds()))renderShelf();
+  else for (const set of index.data.sets) updateTile(set);
   if (modal.open && previewCard) preview(previewCard, true);
  }
  function collectionChanged(next) {

@@ -114,3 +114,9 @@ dialog.rs-preview .rs-close{position:absolute!important;inset:12px 12px auto aut
 
 /* Weiss filters share the same compact, touch-friendly collection controls. */
 #collection-sets .rs-weiss-franchise{width:100%;min-width:0}
+
+/* Owned-set filter: native checkbox, full-label touch target. */
+#collection-sets .rs-owned-toggle{display:flex;align-items:center;gap:10px;width:fit-content;max-width:100%;min-height:46px;padding:10px 14px;margin:0 0 14px;border:1px solid #665079;border-radius:12px;background:#22192f;color:#eee2ff;font-size:14px;line-height:1.45;cursor:pointer}
+#collection-sets .rs-owned-toggle input{appearance:auto;-webkit-appearance:auto;display:block;flex:0 0 20px;width:20px;height:20px;min-height:20px;margin:0;padding:0;accent-color:#c8a2f2;cursor:pointer}
+#collection-sets .rs-owned-toggle:has(input:checked){border-color:#b991e1;background:#342343}
+#collection-sets .rs-owned-toggle input:focus-visible{outline:3px solid #e2c9ff;outline-offset:4px}
