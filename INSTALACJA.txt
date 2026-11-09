@@ -1,85 +1,89 @@
-CARDSCOPE — SETY STAR WARS: UNLIMITED
+CARDSCOPE — SETY MAGIC: THE GATHERING
 Aktualizacja z 9 listopada 2026
 
 JAK WGRAC
-1. Rozpakuj ZIP.
-2. Otwórz w repozytorium GitHub folder z plikami app.html i sw.js.
-3. Wgraj do tego samego folderu osiem plików z paczki:
+1. Rozpakuj ZIP na komputerze.
+2. Otwórz w repozytorium GitHub folder, w którym znajdują się app.html i sw.js.
+3. Wgraj do niego pliki z paczki, zastępując istniejące:
    app.html
    sw.js
    rift-set-core.js
+   swu-set-core.js
+   mtg-set-core.js
    rift-sets.js
    rift-sets.css
    riftbound-sets.json
-   swu-set-core.js
    swu-sets.json
-   Zastąp istniejące pliki. Nie twórz dodatkowego podfolderu.
-4. Zapisz zmiany (Commit changes). Poczekaj, aż GitHub Pages zakończy publikację.
+   mtg-sets.json
+   ORAZ CAŁY FOLDER mtg-set-data wraz ze wszystkimi 40 plikami.
+   Nie zmieniaj nazw ani położenia plików w tym folderze.
+   Prawidłowo: obok app.html leży folder mtg-set-data, a w nim pack-01.json itd.
+4. Zapisz zmiany (Commit changes). Poczekaj na zakończenie publikacji GitHub Pages.
 5. Odśwież stronę. Na telefonie zamknij aplikację całkowicie i otwórz ponownie.
-6. Wejdź w Kolekcja → Sety gier → Star Wars: Unlimited.
+6. Wejdź w Kolekcja → Sety gier → Magic (MTG).
 
-Nie usuwaj innych plików aplikacji. Nie zmieniaj konfiguracji Supabase.
-INSTALACJA.txt i WERYFIKACJA.txt są instrukcjami; nie trzeba ich publikować.
-To paczka aktualizacyjna istniejącego CardScope, nie samodzielna nowa strona.
-Pliki o nazwach zaczynających się od „rift” obsługują teraz wspólny widok setów.
-Ich obecność w paczce jest zamierzona — zachowują kolekcje Riftbound.
+Nie usuwaj pozostałych plików strony. Supabase nie wymaga żadnych zmian.
+Nie trzeba wprowadzać kluczy API ani wykonywać SQL.
+INSTALACJA.txt, WERYFIKACJA.txt i LISTA_SETOW_MTG.txt są dokumentacją;
+nie musisz ich publikować.
+To aktualizacja obecnego CardScope, nie samodzielna nowa aplikacja.
+Pliki zaczynające się od „rift” obsługują wspólny widok setów wszystkich trzech gier.
 
 CO DODANO
-- Wspólną zakładkę „Sety gier” z wyborem Riftbound / Star Wars: Unlimited.
-- Wszystkie dziewięć wydanych głównych setów SWU oraz Intro Battle: Hoth
-  i Twin Suns 2026.
-- Automatyczne oznaczanie posiadanych wydań na podstawie istniejącej kolekcji.
-- Brakujące karty w szarości, posiadane w kolorze z liczbą kopii.
-- Kompletność setu, wyszukiwarkę po nazwie/numerze, filtry posiadane/brakujące.
-- Filtr podstawowego setu, wariantów oraz tokenów.
-- Powiększanie kart, a przy kartach dwustronnych również podgląd drugiej strony.
-- Przejście z posiadanej karty do jej dotychczasowego widoku z cenami.
-- Aktualizowanie posiadania bez okresowego przeładowywania siatki.
+- 998 papierowych wydań MTG i 110 821 numerowanych wydań kart w katalogu setów.
+- Dodatki od najstarszych edycji, Commander, promocje, zestawy specjalne,
+  tokeny oraz art series. Pełna lista w LISTA_SETOW_MTG.txt.
+- Automatyczne oznaczanie posiadanych kart z dotychczasowej kolekcji.
+- Posiadane karty w kolorze z liczbą kopii; brakujące na szaro.
+- Licznik kompletności każdego setu.
+- Wyszukiwanie setów po nazwie/kodzie oraz filtry rodzaju i roku wydania.
+- Wyszukiwanie kart w secie, filtry posiadania i specjalnych wariantów.
+- Powiększenie karty i druga strona, jeśli źródło udostępnia ją dla tego wydania.
+- Przejście z posiadanej karty do dotychczasowego widoku kolekcji z cenami.
+- Zachowane sety Riftbound i Star Wars: Unlimited.
 
-LISTA SETÓW — SWU
-SOR  Spark of Rebellion
-SHD  Shadows of the Galaxy
-TWI  Twilight of the Republic
-JTL  Jump To Lightspeed
-LOF  Legends of the Force
-SEC  Secrets of Power
-LAW  A Lawless Time
-ASH  Ashes of the Empire
-HMW  Homeworlds
-IBH  Intro Battle: Hoth
-TS26 Twin Suns 2026
+WYDAJNOŚĆ I INTERNET
+Na początku wczytuje się indeks wydań i ich identyfikatorów.
+Pełne dane i ilustracje kart są wczytywane przy otwieraniu setu.
+Dane podzielono na 40 małych paczek; aplikacja nie pobiera wszystkich przy wejściu.
+Odwiedzone paczki są zachowywane przez aplikację do późniejszego użycia.
+Pierwsze otwarcie danego setu wymaga internetu. Ilustracje pochodzą z dotychczasowych
+zewnętrznych źródeł i też mogą wymagać połączenia, jeśli nie były wczytywane.
+Nie dodano okresowego odświeżania siatki podczas przewijania.
 
-Icons 2027 nie jest jeszcze wydanym setem na dzień 9 listopada 2026;
-nie jest wliczany do tej listy. Oddzielne zestawy promocyjne OP/judges/event
-nie są przypisywane do podstawowego setu tylko z powodu identycznej nazwy karty.
+JAK DZIAŁA DOPASOWANIE
+Najpierw używany jest zapisany identyfikator konkretnego wydania Scryfall.
+Następnie sprawdzana jest seria i numer kolekcjonerski, np. LTR-001 lub FRA-43.
+Ręcznie dodana karta bez identyfikatora oraz numeru/serii nie jest zgadywana po nazwie.
+Jeśli ręczna karta nie zaznacza się w secie, uzupełnij właściwy numer i serię.
 
-JAK LICZYMY WŁASNOŚĆ I WARIANTY
-Jedno pole oznacza wydanie z konkretnym kodem setu i numerem karty.
-Kopie tego samego wydania sumują się w jednym polu. Karty o tej samej nazwie,
-ale różnych numerach, np. Normal, Hyperspace, Showcase i Prestige, mają osobne pola.
-Techniczny sufiks F jest łączony z wersją podstawową wyłącznie wtedy, gdy
-istniejący katalog potwierdza ten sam numer, tytuł, podtytuł i rodzaj ilustracji.
-Foil z własnym odrębnym numerem pozostaje osobnym wydaniem.
+Różne numery/serie to osobne pola, nawet gdy nazwa karty się powtarza.
+Foil, nonfoil i etched przy tym samym numerze liczymy jako jedno wydanie;
+ich kopie sumują się w polu. Wersje językowe tego samego setu i numeru również.
+Wariant z innym numerem, gwiazdką lub innym oznaczeniem ma osobne pole.
+Karty The List z numerami typu XLN-217 pozostają osobnymi wydaniami PLST.
+Licznik obejmuje wszystkie pola setu, również karty rozszerzone/specjalne.
+Filtry ilustracji opierają się na oznaczeniach źródłowych Scryfall.
 
-Główny licznik kompletności obejmuje wszystkie wydania danego setu w katalogu,
-także warianty i tokeny. Filtr „Podstawowy set” pokazuje zwykłą listę numerowaną.
-Karty ręczne bez numeru i serii nie są dopasowywane wyłącznie po nazwie.
-Po zapisaniu karty ze skanera/katalogu pojawi się ona automatycznie w secie.
-Sam podgląd szarej karty nie dodaje jej do kolekcji.
+ZAKRES I DATA
+Źródło: publiczny eksport Scryfall default_cards z 8 listopada 2026
+oraz aktualny wykaz setów Scryfall. Używane są wydania papierowe.
+Ta aktualizacja rozszerza widok kolekcji setów; nie podmienia silnika skanera,
+nie zastępuje dotychczasowej wyszukiwarki i nie aktualizuje zapisanych wycen.
 
-ZACHOWANE FUNKCJE
-Wszystkie sześć setów Riftbound oraz wcześniejsze funkcje aplikacji,
-w tym kolekcja, bindery, konto, ceny i skanowanie Pokémon KO/ZH.
-Ta aktualizacja nie wymaga kluczy API, nowej tabeli ani migracji bazy danych.
-Lista kart pobierana jest z pliku aplikacji. Obrazy z dotychczasowych źródeł
-mogą wymagać internetu, jeśli nie były wcześniej wczytane.
+Zasadniczo lista obejmuje już wydane karty. Zachowano także dostępne obecnie
+wydania Star Trek, Commander, Stardates, ich art series i tokeny, oznaczone jako
+przedsprzedaż z premierą 13 listopada 2026. Nie doliczono zapowiedzi na 2027 rok.
+Liczby oznaczają stan katalogu w dniu przygotowania; przyszłe wydania i nowo
+ujawnione karty wymagają kolejnej aktualizacji plików.
+Dla 162 rekordów źródło nie udostępnia ilustracji — wyświetla się ich nazwa,
+numer i czytelne oznaczenie braku ilustracji, bez usuwania ich z listy.
 
 ŹRÓDŁA
-Katalog SWU-DB obecny w CardScope, stan z 7 listopada 2026:
-https://www.swu-db.com/api
-Wykaz produktów i aktualnych wydań:
-https://starwarsunlimited.com/product-guide
+https://api.scryfall.com/bulk-data
+https://api.scryfall.com/sets
+https://magic.wizards.com/en/news/feature/star-trek-release-notes
 
-Paczka przygotowana dla obecnej strony:
+Przygotowano dla:
 https://cardscope-hub.github.io/cardscope/app.html
-Nie została automatycznie opublikowana na Twoim GitHub Pages.
+Paczka nie została automatycznie opublikowana na Twoim GitHub Pages.
