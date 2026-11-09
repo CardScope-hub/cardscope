@@ -1,50 +1,46 @@
-CARDSCOPE — POPRAWKA ZDJĘĆ I BAZ POKÉMON
-Wersja: pokemon-repair-1 · 09.11.2026
+CARDSCOPE — OSTATNIO DODANE W KOLEKCJI ZNAJOMEGO
 
-To mała aktualizacja do obecnej aplikacji, nie pełna instalacja.
-Zawiera tylko 8 nowych/zmienionych plików aplikacji i dwa pliki informacyjne.
-Nie zawiera ponownie starych baz, poprzednich aktualizacji, obrazków ani modeli skanera.
+To mała aktualizacja istniejącej aplikacji. Paczka nie zawiera baz kart
+ani poprzednich dodatków i nie zastępuje całego projektu.
 
-JAK WGRYWAĆ
-1. Wypakuj ZIP.
-2. Na GitHubie wejdź do folderu repozytorium, w którym obecnie leży app.html.
-3. Wgraj WSZYSTKIE 8 plików aplikacji z paczki bezpośrednio do tego folderu,
-   zastępując pliki o tych samych nazwach. Zatwierdź zmianę (Commit changes).
-   Pliki INSTRUKCJA.txt i ZMIANY-I-ZRODLA.txt są dla Ciebie; nie trzeba ich wgrywać.
-4. Zachowaj istniejące foldery i pliki bazy. Ta poprawka korzysta m.in. z obecnego
-   pokemon-set-data oraz catalog-pokemon-*.json i nie zastępuje pełnej aplikacji.
-5. Poczekaj, aż publikacja GitHub Pages zakończy się powodzeniem. Otwórz stronę
-   i odśwież ją, następnie zamknij i ponownie otwórz aplikację z ekranu telefonu.
-   Nowa wersja pamięci podręcznej pobierze uzupełnienie danych.
+1. SUPABASE — WYKONAJ RAZ
+Otwórz projekt Supabase, następnie SQL Editor > New query.
+Skopiuj całą zawartość pliku 08-ZNAJOMI-OSTATNIO-DODANE.sql,
+wklej ją do edytora i kliknij Run.
+Skrypt wymaga działającego wcześniej podglądu kolekcji znajomych.
+Nie kasuje kart, binderów, kont ani dotychczasowych funkcji.
 
-Nie trzeba zmieniać Supabase, wpisywać kluczy ani wykonywać SQL.
-Poprawka nie zapisuje ani nie usuwa kart, binderów i danych konta.
-Nie czyść danych aplikacji — nie jest to potrzebne do tej aktualizacji.
+2. GITHUB — PODMIEŃ CZTERY PLIKI
+W repozytorium strony, w tym samym folderze co obecny app.html,
+wgraj i zastąp:
+  app.html
+  sw.js
+  friend-view.js
+  social-client.js
+Nie wgrywaj całego folderu output ani ZIP-a. Nie usuwaj innych plików.
+Plik SQL uruchamiasz w Supabase; samo wgranie go do GitHub nie wystarczy.
 
-CO ZMIENIONO
-• Poprawione ścieżki zdjęć Trainer Gallery, Galarian Gallery i Shiny Vault.
-• Dodatkowe źródła ilustracji dla starszych i nowszych wydań, m.in. promek,
-  energii, McDonald's 2023/2024, My First Battle i dostępnych Trainer Kitów.
-• Uzupełnione zdjęcia Yellow A Alternate i Poké Card Creator Pack.
-• Odzyskiwanie zdjęcia z kolejnego źródła, gdy pierwsze nie działa.
-• Uzupełnienie list o 413 kart i 6 brakujących setów — lista w drugim pliku.
-• Uzupełnienie działa w kolekcjach setów oraz w katalogu używanym przez
-  wyszukiwarkę i skaner; istniejące identyfikatory kart pozostają zachowane.
-• Dla części europejskich wydań bez dostępnego lokalnego zdjęcia pojawia się
-  wyraźnie oznaczony „Podgląd EN”. Język karty, cena i posiadanie nie zmieniają się.
-• Obrazy setów ładują się dopiero w pobliżu widocznego obszaru ekranu;
-  przejście do innej zakładki zatrzymuje obsługę porzuconych obrazów.
+3. ODCZEKAJ NA PUBLIKACJĘ GITHUB PAGES
+Po zakończeniu publikacji odśwież stronę. W aplikacji na telefonie
+zamknij ją i uruchom ponownie. Jeżeli nadal widzisz starą wersję,
+otwórz stronę w przeglądarce, odśwież i uruchom aplikację ponownie.
+Nie trzeba usuwać aplikacji ani czyścić danych kolekcji.
 
-OGRANICZENIA
-Nie wszystkie archiwalne wydania mają opublikowane zdjęcia. Dotyczy to nadal
-części dawnych kart JP, pojedynczych Trainer Kitów i innych kart promocyjnych.
-Jeśli nie uda się pobrać właściwego obrazu, pozostaje czytelne oznaczenie braku.
-Aplikacja nie zastępuje wtedy karty przypadkowym Pokémonem.
-Ilustracje są pobierane z zewnętrznych publicznych źródeł; ich dostępność
-może się zmieniać. Dane uzupełniające są dołączone do tej paczki.
+4. UŻYWANIE
+Znajomi > profil znajomego > Karty > Sortuj karty > Ostatnio dodane.
+Najnowsze karty pojawiają się na początku. Sortowanie obejmuje całą
+widoczną kolekcję, również kolejne strony i wyniki wyszukiwania.
+Karty bez zapisanej daty dodania są na końcu. Aktualizacja ceny
+ani synchronizacja nie zmieniają daty dodania karty.
+
+Pozostają opcje sortowania po cenie. Ustawienia prywatności są
+sprawdzane przez dotychczasowy mechanizm podglądu znajomych.
 
 WERYFIKACJA
-92 testy danych, tożsamości kart i interfejsu DOM zakończone powodzeniem.
-Sprawdzono też składnię JavaScript i przykładowe rzeczywiste adresy zdjęć.
-Pełny podgląd przeglądarkowy oraz test na fizycznym telefonie nie zostały
-wykonane — środowisko podglądu było niedostępne.
+Sprawdzono składnię JavaScript oraz działanie interfejsu w Happy DOM.
+W testowej bazie PostgreSQL (PGlite) sprawdzono sortowanie całej
+kolekcji, paginację, wyszukiwanie, brakujące daty, niezmienność kolejności
+po odświeżeniu ceny, brak ujawniania ukrytych danych i uprawnienia.
+Testy korzystały z zastępczej implementacji dotychczasowej funkcji
+podglądu. Nie uruchamiano migracji w Twoim Supabase ani testów
+na rzeczywistym telefonie. Aktualizacja nie jest jeszcze opublikowana.
