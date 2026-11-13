@@ -54,7 +54,7 @@
    if(!recent)return;
    CardI18n.protect($('home-recent-name')).textContent=recent.name;
    $('home-recent-set').textContent=[recent.game,recent.number].filter(Boolean).join(' · ');
-   const image=$('home-recent-image'),art=recent.artwork||recent.photo;image.hidden=!art;
+   const image=$('home-recent-image'),art=CardArtwork.src;image.hidden=!art;
    if(art)image.src=art;else image.removeAttribute('src');
    $('home-recent').onclick=()=>openDetail(recent);
   },

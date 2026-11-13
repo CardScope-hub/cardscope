@@ -21,7 +21,9 @@
  function save(){const key=storageKey();if(!key)return;try{sessionStorage.setItem(key,JSON.stringify(C.pack(sides)));$('trade-draft-note').textContent='Szkic wymiany jest zachowywany w tej karcie przeglądarki.'}catch{$('trade-draft-note').textContent='Brak miejsca na zapis szkicu. Wymiana jest dostępna do zamknięcia strony.'}}
  function tell(text,error=false){clearTimeout(noticeTimer);$('trade-notice').textContent=text;$('trade-notice').dataset.error=String(error);$('trade-notice').hidden=!text;if(!error)noticeTimer=setTimeout(()=>{$('trade-notice').hidden=true},6500)}
  function cleanImages(root){for(const [img,stop]of imageBindings)if(root.contains(img)){stop();imageBindings.delete(img)}}
- function art(card,cls){const box=el('span',cls),src=C.safeURL(card.artworkUrl),im=el('img');im.alt=card.name;im.loading='lazy';im.decoding='async';im.referrerPolicy='no-referrer';
+ function art(card,cls){
+  if(globalThis.CardArtwork?.hidden){const box=el('span',cls);box.append(CardArtwork.node(card));return box;}
+const box=el('span',cls),src=C.safeURL(card.artworkUrl),im=el('img');im.alt=card.name;im.loading='lazy';im.decoding='async';im.referrerPolicy='no-referrer';
   if(card.gameKey==='pokemon'&&globalThis.CardPokemonArt?.identity(card)){const placeholder=el('span','trade-art-fallback','Wczytuję obraz…'),note=el('small','trade-art-note');note.hidden=true;box.append(im,placeholder,note);const stop=CardPokemonArt.bind(im,card,{placeholder,note,size:'high',compact:true});imageBindings.set(im,stop)}
   else if(src){im.src=src;im.onerror=()=>box.replaceChildren(el('span','trade-art-fallback','Brak obrazu'));box.append(im)}else box.append(el('span','trade-art-fallback','Brak obrazu'));return box;
  }

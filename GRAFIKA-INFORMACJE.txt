@@ -1,0 +1,6 @@
+Grafika: assets/card-coming-soon.webp
+Rozdzielczość: 1024 × 1536; jeden wspólny plik dla wszystkich kart.
+Wygenerowano wbudowanym narzędziem generowania obrazów, następnie zapisano w WebP do aplikacji.
+
+Prompt:
+Create a polished portrait placeholder artwork for the CardScope trading card collection app, aspect ratio 2:3. Flat front-on rectangular image filling the canvas, not a product mockup and no surrounding scene. Deep near-black plum background, refined violet and lavender glow, subtle fine concentric orbit lines and restrained grain, a small original abstract stack-of-cards emblem above the center in softly glowing lavender (no existing game symbols or logos). Center large beautifully readable Polish typography in two lines, exact wording: “Wkrótce” then “dostępne”. Preserve the Polish ó and ę accurately. Small spaced uppercase CARDSCOPE near the lower edge. Tasteful thin inset rounded lavender border. Elegant quiet premium UI design, plenty of negative space, legible at small thumbnail sizes, not busy. No characters, no real trading card artwork, no additional text.

@@ -112,7 +112,7 @@
   p.leaderPick.dataset.selected=String(!!leader);
   if(p.leaderKey===key)return;
   p.leaderKey=key;p.backdrop.hidden=true;
-  if(leader)p.leaderImage.src=leader.image;else p.leaderImage.removeAttribute('src');
+  if(leader)p.leaderImage.src=CardArtwork.src;else p.leaderImage.removeAttribute('src');
  }
  const historyView=el('section','life-history');historyView.id='life-history';historyView.hidden=true;historyView.setAttribute('aria-label','Historia partii');
  const historyHeading=el('div','life-history-heading'),historyTitle=el('h3','','Przebieg partii'),historyFilter=el('select');historyFilter.id='life-history-filter';historyFilter.setAttribute('aria-label','Filtruj historię według gracza');historyFilter.onchange=()=>{historyLimit=40;renderHistory();};historyHeading.append(historyTitle,historyFilter);

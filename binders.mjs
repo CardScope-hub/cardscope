@@ -7,7 +7,7 @@ let binders=[],currentId=null,page=0,moveFrom=null,zoom=false,busy=false,ready=f
 let shelfSignature='';
 let pageTurning=false,pageTurnToken=0,pageAnimation=null;
 let saveStatus='Wczytuję bindery…';const dialogIDs=['b-config-dialog','b-picker-dialog','b-slot-dialog','b-choose-dialog'];
-const current=()=>binders.find(b=>b.id===currentId),collection=()=>cards,art=card=>card?.artwork||card?.photo;
+const current=()=>binders.find(b=>b.id===currentId),collection=()=>cards,art=card=>card?globalThis.CardArtwork.src:null;
 const used=binder=>binder.slots.filter(Boolean).length,capacity=binder=>binder.pages*binder.columns*binder.rows;
 const openDialog=id=>{const d=$b(id);if(!d.open)d.showModal()};
 function closeDialogs(){for(const id of dialogIDs)if($b(id).open)$b(id).close()}

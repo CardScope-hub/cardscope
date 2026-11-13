@@ -47,7 +47,7 @@
   list.replaceChildren();notice.textContent=cards.length?'Liderzy: '+cards.length+(context.selected?' · Zaznaczono: '+context.selected.name:''):'Brak wyników. Spróbuj innej nazwy lub wybierz wszystkie dodatki.';
   for(const card of cards.slice(0,limit)){
    const selected=context.selected?.id===card.id,item=button('','life-leaders-card',()=>choose(card));item.dataset.leader=card.id;item.setAttribute('aria-pressed',String(selected));item.setAttribute('aria-label',[card.name,card.subtitle,card.setName,card.id,selected?'Wybrany':'Wybierz'].filter(Boolean).join(' · '));
-   const art=el('div','life-leaders-art'),image=el('img');image.alt='';image.loading='lazy';image.decoding='async';image.draggable=false;image.src=card.image;image.onerror=()=>{image.hidden=true;art.dataset.unavailable='true';};art.append(image);
+   const art=el('div','life-leaders-art'),image=el('img');image.alt='';image.loading='lazy';image.decoding='async';image.draggable=false;image.src=CardArtwork.src;image.onerror=()=>{image.hidden=true;art.dataset.unavailable='true';};art.append(image);
    const copy=el('span','life-leaders-copy');copy.append(CardI18n.protect(el('strong','',card.name)),CardI18n.protect(el('span','life-leaders-subtitle',card.subtitle)),CardI18n.protect(el('small','',card.id+' · '+card.setName)));item.append(art,copy);
    if(selected)item.append(el('span','life-leaders-check','✓'));
    list.append(item);

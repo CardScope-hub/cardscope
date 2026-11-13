@@ -52,7 +52,7 @@ async function openScanner(){
  // Do not invalidate a permission dialog after a second tap on the scan tab.
  if(cameraPhase==='permission'&&!$('scanner').hidden)return;
  show('scanner');$('recent-card').replaceChildren();
- if(cards[0]?.photo){const im=document.createElement('img');im.src=cards[0].photo;im.alt='Ostatnia karta';$('recent-card').append(im)}else $('recent-card').textContent='▤';
+ if(cards[0]){const im=document.createElement('img');im.src=CardArtwork.src;im.alt='Ostatnia karta';$('recent-card').append(im)}else $('recent-card').textContent='▤';
  const attempt=++cameraAttempt;cameraAbort=new AbortController();cameraPhase='permission';
  $('scan-card').disabled=true;$('camera-retry').hidden=true;$('camera-play').hidden=true;
  $('camera-quality').textContent='Kamera';$('camera-status').textContent='Uruchamiam kamerę… Zezwól na dostęp do aparatu.';

@@ -87,6 +87,7 @@ globalThis.CardPokemonArt=(()=>{
  }
  function caption(result,c){return result&&provider(result.language)!==provider(language(c))?'Podgląd wydania angielskiego — brak zdjęcia w języku tej karty.':''}
  function bind(img,c,{placeholder=null,note=null,size='high',onResolve=null,compact=false}={}){
+  if(globalThis.CardArtwork?.hidden)return CardArtwork.bind(img,c,{placeholder,note});
   bindings.get(img)?.cancel?.();const token={};bindings.set(img,token);img.onload=null;img.onerror=null;img.hidden=true;img.removeAttribute('src');
   const valid=()=>bindings.get(img)===token;
   const say=(text)=>{if(note){note.textContent=compact&&text?(text.startsWith('Podgląd')?'Podgląd EN':'Brak zdjęcia'):text;note.hidden=!text}};

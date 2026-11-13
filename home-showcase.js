@@ -8,7 +8,7 @@
   const options=series.filter(x=>x.id!==last),choice=options[Math.floor(Math.random()*options.length)]||series[0];
   last=choice.id;changedAt=Date.now();try{localStorage.setItem(key,last);}catch{}
   root.dataset.series=choice.id;root.setAttribute('aria-label','Karty: '+choice.label);
-  [...root.querySelectorAll('.home-card')].forEach((img,i)=>{const card=choice.cards[i];img.alt=card.name+' · '+card.rarity;img.title=card.name+' · '+card.rarity;img.dataset.rarity=card.rarity;img.src=card.image;img.decoding='async';img.setAttribute('fetchpriority','high');});
+  [...root.querySelectorAll('.home-card')].forEach((img,i)=>{const card=choice.cards[i];img.alt=card.name+' · '+card.rarity;img.title=card.name+' · '+card.rarity;img.dataset.rarity=card.rarity;img.src=CardArtwork.src;img.decoding='async';img.setAttribute('fetchpriority','high');});
   root.querySelector('.art-label').textContent='✧ '+choice.label;
  }
  rotate();

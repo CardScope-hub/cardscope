@@ -4,7 +4,7 @@
  const games = {
   weiss:{name:'Weiß Schwarz',core:root.CardWeissSetCore,
    kinds:[['all','Wszystkie karty'],['base','Standardowe rzadkości'],['parallel','Rzadkie i specjalne'],['extra','Promo i karty z talii']]},
-  riftbound: {name:'Riftbound', core:root.CardRiftSetCore, file:'riftbound-sets.json?v=rift-sets-1', count:6,
+  riftbound: {name:'Riftbound', core:root.CardRiftSetCore, file:'riftbound-sets.json?v=art-placeholder-1', count:6,
    kinds:[['all','Wszystkie wydania'],['base','Podstawowy set'],['alternate','Alternatywne i sygnatury'],['extra','Runy, tokeny i dodatki']]},
   swu: {name:'Star Wars: Unlimited', core:root.CardSWUSetCore, file:'swu-sets.json?v=swu-sets-1', count:11,
    kinds:[['all','Wszystkie wydania'],['base','Podstawowy set'],['alternate','Hyperspace, foil i inne warianty'],['extra','Tokeny']]},
@@ -94,6 +94,7 @@
   if(urls.length)img.src=urls[0];wrap.append(img,placeholder);return wrap;
  }
  function image(card, cls = '') {
+  if(root.CardArtwork?.hidden)return root.CardArtwork.node(card,cls);
   if(game==='lorcana'||game==='onepiece'||game==='weiss')return catalogImage(card,cls);
   if(game==='pokemon'&&root.CardPokemonRepair)return root.CardPokemonRepair.image(card,cls);
   if (!card.image) { const placeholder=el('span','Brak ilustracji w źródle','rs-no-image');placeholder.setAttribute('role','img');placeholder.setAttribute('aria-label',card.name+' — brak ilustracji');return placeholder; }

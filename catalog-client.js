@@ -1,7 +1,7 @@
 // Public catalog data only. No session, tokens or collection records enter this cache.
 globalThis.CardCatalog=(()=>{
  const base=new URL('./',document.currentScript?.src||location.href),memory=new Map(),snapshots=new Map();
- const cacheName='cardscope-public-catalog-v3',maxAge=6*60*60*1000;
+ const cacheName='cardscope-public-catalog-v4',maxAge=6*60*60*1000;
  async function json(url,{ttl=maxAge,timeout=18000,fallback=true}={}){
   url=new URL(url,base).href;const hit=memory.get(url);if(hit&&Date.now()-hit.at<ttl)return hit.promise;
   const promise=(async()=>{let cache,cached;
