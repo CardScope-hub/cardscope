@@ -1,35 +1,39 @@
-CARDSCOPE — PEŁNA APLIKACJA, TYMCZASOWO BEZ ILUSTRACJI
-Wersja: art-placeholder-1, 13 listopada 2026
+CARDSCOPE — GRAFIKI ZASTĘPCZE I OBJAŚNIENIA MECHANIK
 
-To aktualizacja starego, pełnego projektu z repozytorium CardScope-hub/cardscope. Nie jest to wersja CardScope Local.
-
-JAK WGRAĆ
+WGRANIE
 1. Rozpakuj ZIP.
-2. Otwórz repozytorium cardscope na GitHub, zakładkę Code.
-3. Kliknij Add file -> Upload files.
-4. Wgraj pliki z paczki do tego samego miejsca, gdzie masz app.html. Wgraj też folder assets z nowym obrazkiem. Nie wrzucaj folderu otaczającego wszystkie pliki.
-5. Zatwierdź Commit changes. Zaczekaj na zakończenie wdrożenia Pages.
-6. Odśwież stronę. Na telefonie zamknij aplikację i otwórz ją ponownie po wgraniu aktualizacji.
+2. W repozytorium CardScope na GitHub otwórz główny katalog z app.html.
+3. Wgraj pliki z tej paczki, zastępując pliki o tych samych nazwach. Zachowaj folder assets.
+   Nie wgrywaj samego ZIP-a ani dodatkowego nadrzędnego folderu.
+4. Zatwierdź zmiany i poczekaj na zakończenie publikacji GitHub Pages.
+5. Otwórz stronę ponownie. Jeśli pojawi się informacja o aktualizacji aplikacji, zastosuj ją.
+   Zamknij wszystkie stare okna CardScope i otwórz aplikację ponownie.
 
-Nie usuwaj pozostałych plików. Nie zmieniaj CNAME, supabase-config.js ani bazy Supabase. Dokumentów INSTRUKCJA-BEZ-ILUSTRACJI.txt i GRAFIKA-INFORMACJE.txt nie musisz wgrywać.
+ZAWARTOŚĆ
+Paczka obejmuje poprzednią zmianę grafik oraz tę aktualizację objaśnień.
+Nie zawiera kolejnych kopii całej bazy ani poprzednich paczek.
+Nie usuwa kart, binderów, kont ani synchronizacji.
 
-CO ZMIENIONO
-- Każda karta i okładka setu dostaje fioletowy obrazek „Wkrótce dostępne”.
-- Dotyczy to katalogów i wszystkich ich dodatków, kolekcji, binderów, kolekcji znajomych, publicznych binderów, wyników skanu, tradingu, strony głównej i wyboru liderów w liczniku życia.
-- Działa również przy kartach, które wcześniej nie miały obrazka.
-- Zostają nazwy, numery, warianty, ceny, liczba kopii i oznaczenia posiadanych kart.
-- Pozostają wszystkie dotychczasowe gry i sety. Dołączono także pliki przywracające katalog Riftbound, jeśli zainstalowano poprzednią minimalną poprawkę.
-- Zdjęcie robocze w skanerze i zdjęcia do centeringu pozostają widoczne. Zdjęcia profilowe i banery kont pozostają bez zmian.
-- Ukryto przyciski pobierania ilustracji oraz przewracania samego obrazka karty. Przewracanie stron bindera działa jak wcześniej.
-- Aktualizacja nie kasuje zapisanych zdjęć ani danych konta. Nie zapisuje nowej grafiki jako prawdziwej ilustracji karty. Podmiana jest tymczasową zmianą prezentacji.
+ZMIANY W OPISACH
+Wyłączono dosłowne polskie tłumaczenia oraz rozwijany podgląd oryginalnego tekstu
+w panelu objaśnień. Dawne pliki tłumaczeń Riftbound i SWU zastąpiono indeksem pojęć:
+nie zawierają już oryginalnych akapitów ani ich przekładów.
+Wskazówki są napisane własnymi słowami i wyraźnie oznaczone jako częściowe.
+Wyjaśniają pojęcia występujące w opisie karty, nie wszystkie jej szczegółowe efekty.
+Dla innych gier panel korzysta z dostępnych metadanych. Jeśli nie rozpozna pojęć,
+pokazuje informację o przygotowywaniu opisu, zamiast zgadywać mechaniki.
+Stary widok Jak grać nie pobiera tłumaczeń ani nie wyświetla starych zapisów
+z pamięci urządzenia. Nie usuwa prywatnych zapisów użytkownika.
 
-WAŻNE
-Paczka nie usuwa fizycznie starych ilustracji z repozytorium ani wcześniej zapisanych zdjęć w Supabase. Nie pokazuje ich w widokach kart i nie wczytuje ich do nowych miniaturek. Bezpośrednie stare adresy plików mogą nadal działać. To nie jest audyt prawny ani potwierdzenie licencji na pozostałe teksty i dane.
-
-Jeśli zastąpiłeś całą stronę wersją CardScope Local, najpierw przywróć pełny stary projekt z historii GitHub. Ta paczka jest aktualizacją pełnego projektu, a nie kompletem wszystkich jego baz i silników OCR.
+WAŻNE OGRANICZENIA
+To nie jest pełna baza indywidualnych omówień każdej karty.
+Dokładne wartości, cele, warunki i wyjątki należy sprawdzać na swojej karcie.
+Zmiana nie stanowi audytu prawnego. Katalogi źródłowe i pozostałe zasoby aplikacji
+nie zostały w tej aktualizacji usunięte ani ocenione pod względem licencji.
+Wcześniejsze pliki ilustracji nadal mogą być dostępne pod bezpośrednimi adresami
+w repozytorium. Wyłączenie ich wyświetlania nie usuwa tych plików.
 
 WERYFIKACJA
-Przeszło 8 testów: wszystkie gry, karty bez obrazu, brak pobierania oryginalnych zdjęć przez wspólny moduł, zachowanie danych zapisanej karty, ścieżki domeny i GitHub Pages, wersje PWA, przywrócony katalog Riftbound i niezmienione zdjęcia robocze skanera/centeringu.
-Sprawdzono składnię 106 plików JavaScript/modułów oraz skrypty osadzone w HTML. Środowisko podglądu przeglądarkowego było niedostępne; nie wykonano pełnego testu na fizycznym telefonie.
-
-Pliki zostały przygotowane do wgrania. Nie zmieniono zdalnego repozytorium GitHub, produkcyjnego cardscope.pl ani Supabase automatycznie.
+14 testów automatycznych zakończonych powodzeniem; sprawdzona składnia 107 modułów
+oraz skryptów w stronach HTML. Podgląd przeglądarkowy nie był dostępny — potrzebne
+jest sprawdzenie na telefonie po publikacji.

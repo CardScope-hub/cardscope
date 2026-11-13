@@ -3,3 +3,7 @@ img[data-card-placeholder],img[src*="card-coming-soon.webp"]{object-fit:contain!
 .rs-set-art img[src*="card-coming-soon.webp"]{width:100%;height:100%;object-position:center}
 .home-card[src*="card-coming-soon.webp"]{border-radius:18px}
 #detail-share,#result-flip,#public-card-flip,#visit-card-flip,.rs-flip{display:none!important}
+/* Editorial notes remain compact and readable beneath the valuation. */
+.card-explanation-topics{margin:1rem 0;display:grid;gap:.5rem}
+.card-explanation-topics dt{font-weight:650;color:var(--text,#eee4ff);margin-top:.55rem}
+.card-explanation-topics dd{margin:0;color:var(--muted,#bcb0cd);font-size:.9rem;line-height:1.65}
